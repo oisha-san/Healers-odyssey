@@ -38,7 +38,6 @@ const gameData = {
                     difficulty: "hard",
                     xp: 20
                 }
-                // Add more questions as needed
             ],
             boss: {
                 name: "Pathophysiology Phantom",
@@ -60,10 +59,8 @@ const gameData = {
                     questions: ['copd-1'],
                     description: "A series of cases exploring chronic obstructive pulmonary disease"
                 }
-                // Add more missions as needed
             ]
         }
-        // Add more worlds as needed
     },
     achievements: [
         {
@@ -74,23 +71,81 @@ const gameData = {
             xp: 100,
             unlocked: false
         }
-        // Add more achievements as needed
     ]
 };
+
+// ========== MISSION SYSTEM ==========
+function renderMissions() {
+    const missionList = document.getElementById('missionList');
+    const currentWorld = gameData.worlds[gameData.player.currentWorld];
+    
+    missionList.innerHTML = '';
+    
+    if (!currentWorld.missions || currentWorld.missions.length === 0) {
+        missionList.innerHTML = `
+            <div class="no-missions">
+                <i class="fas fa-question-circle"></i>
+                <p>No missions available in this world yet!</p>
+            </div>
+        `;
+        return;
+    }
+
+    currentWorld.missions.forEach(mission => {
+        const isCompleted = gameData.player.completedMissions.includes(mission.id);
+        const missionCard = document.createElement('div');
+        missionCard.className = `mission-card ${isCompleted ? 'completed' : ''}`;
+        missionCard.innerHTML = `
+            <div class="mission-icon">
+                <i class="fas ${mission.icon}"></i>
+            </div>
+            <div class="mission-content">
+                <h3>${mission.name}</h3>
+                <p>${mission.description}</p>
+                <div class="mission-meta">
+                    <span class="mission-difficulty difficulty-${mission.difficulty}">
+                        ${mission.difficulty}
+                    </span>
+                    <span class="mission-xp">
+                        <i class="fas fa-bolt"></i> ${mission.xp} XP
+                    </span>
+                </div>
+            </div>
+            <button class="btn btn-primary btn-start-mission" 
+                ${isCompleted ? 'disabled' : ''}>
+                ${isCompleted ? 'Completed' : 'Start Mission'}
+            </button>
+        `;
+
+        if (!isCompleted) {
+            missionCard.querySelector('button').addEventListener('click', () => {
+                startMission(mission.id);
+            });
+        }
+        
+        missionList.appendChild(missionCard);
+    });
+}
+
+function completeMission(missionId) {
+    if (!gameData.player.completedMissions.includes(missionId)) {
+        gameData.player.completedMissions.push(missionId);
+        saveGame();
+        renderMissions();
+    }
+}
 
 // ========== GAME FUNCTIONS ==========
 function initGame() {
     loadGame();
     setupNavigation();
     setupWorldSelection();
-    setupMissions();
     setupBossBattle();
     setupQuestionModal();
     updatePlayerStats();
     renderWorldProgress();
     renderMissions();
     renderBossStatus();
-    
     console.log("Game initialized!");
 }
 
@@ -100,11 +155,9 @@ function setupNavigation() {
             e.preventDefault();
             const section = link.dataset.section;
             
-            // Update active nav link
             document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
             link.classList.add('active');
             
-            // Show selected section
             document.querySelectorAll('.content-section').forEach(sec => {
                 sec.style.display = 'none';
             });
@@ -129,7 +182,6 @@ function startMission(missionId) {
     loadQuestion(mission.questions[0]);
 }
 
-// ========== CORE GAME LOGIC ==========
 function loadQuestion(questionId) {
     const world = gameData.worlds[gameData.player.currentWorld];
     const question = world.questions.find(q => q.id === questionId);
