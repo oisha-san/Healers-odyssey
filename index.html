@@ -950,35 +950,6 @@
 
                     <div class="mission-list" id="missionList">
                         <!-- Missions will be loaded here -->
-                        <div class="mission-card" data-mission="copd-case">
-                            <h3>
-                                <i class="fas fa-lungs"></i>
-                                COPD Case Study
-                            </h3>
-                            <div class="mission-meta">
-                                <span class="mission-xp">+50 XP</span>
-                                <span class="mission-difficulty difficulty-medium">Medium</span>
-                            </div>
-                            <p>A 65-year-old male smoker presents with worsening dyspnea...</p>
-                            <button class="btn btn-primary start-mission">
-                                <i class="fas fa-play"></i> Start Mission
-                            </button>
-                        </div>
-                        
-                        <div class="mission-card locked" data-mission="acs-case">
-                            <h3>
-                                <i class="fas fa-heart"></i>
-                                Acute Coronary Syndrome
-                            </h3>
-                            <div class="mission-meta">
-                                <span class="mission-xp">+80 XP</span>
-                                <span class="mission-difficulty difficulty-hard">Hard</span>
-                            </div>
-                            <p>A 58-year-old female presents with crushing chest pain...</p>
-                            <button class="btn btn-outline">
-                                <i class="fas fa-lock"></i> Locked
-                            </button>
-                        </div>
                     </div>
                 </div>
 
@@ -997,26 +968,7 @@
                         Achievements
                     </h2>
                     <div class="achievements-grid" id="achievementsGrid">
-                        <div class="achievement-card">
-                            <div class="achievement-icon">
-                                <i class="fas fa-medal"></i>
-                            </div>
-                            <h3 class="achievement-title">First Steps</h3>
-                            <p class="achievement-desc">Complete your first mission</p>
-                            <div class="achievement-progress">
-                                <div class="progress-bar" style="width: 0%;"></div>
-                            </div>
-                        </div>
-                        <div class="achievement-card achievement-locked">
-                            <div class="achievement-icon">
-                                <i class="fas fa-fire"></i>
-                            </div>
-                            <h3 class="achievement-title">Hot Streak</h3>
-                            <p class="achievement-desc">Maintain a 5-day streak</p>
-                            <div class="achievement-progress">
-                                <div class="progress-bar" style="width: 0%;"></div>
-                            </div>
-                        </div>
+                        <!-- Achievements will be loaded here -->
                     </div>
                 </div>
 
@@ -1026,9 +978,7 @@
                         Your Profile
                     </h2>
                     <div id="profileContent">
-                        <p>Total XP Earned: <span id="totalXP">0</span></p>
-                        <p>Missions Completed: <span id="missionsCompleted">0</span></p>
-                        <p>Bosses Defeated: <span id="bossesDefeated">0</span></p>
+                        <!-- Profile content will be loaded here -->
                     </div>
                 </div>
 
@@ -1038,7 +988,7 @@
                         Boss Battle Arena
                     </h2>
                     <div id="bossBattlesContent">
-                        <p>No bosses defeated yet. Challenge the weekly boss to begin!</p>
+                        <!-- Boss battle content will be loaded here -->
                     </div>
                 </div>
 
@@ -1048,7 +998,7 @@
                         Medical Library
                     </h2>
                     <div id="libraryContent">
-                        <p>Study resources will appear here as you unlock them.</p>
+                        <!-- Library content will be loaded here -->
                     </div>
                 </div>
             </div>
@@ -1129,6 +1079,8 @@
                 xp: 0,
                 level: 1,
                 streak: 0,
+                currentWorld: 'internal-medicine',
+                currentBossHealth: 100,
                 unlockedWorlds: ['internal-medicine'],
                 completedMissions: [],
                 defeatedBosses: [],
@@ -1160,6 +1112,24 @@
                             explanation: "ST elevation in the inferior leads (II, III, aVF) indicates an inferior wall MI, which is most commonly caused by occlusion of the right coronary artery (RCA).",
                             difficulty: "hard",
                             xp: 20
+                        },
+                        {
+                            id: 'htn-1',
+                            text: "A 45-year-old male presents with blood pressure of 165/100 mmHg on three separate occasions. He has no other medical conditions. What is the most appropriate first-line treatment?",
+                            options: ["Lifestyle modifications only", "ACE inhibitor", "Beta blocker", "Thiazide diuretic"],
+                            correct: 0,
+                            explanation: "For stage 1 hypertension without compelling indications, lifestyle modifications should be tried first for 3-6 months before initiating pharmacologic therapy.",
+                            difficulty: "easy",
+                            xp: 5
+                        },
+                        {
+                            id: 'diabetes-1',
+                            text: "A 52-year-old female with type 2 diabetes presents for follow-up. Her most recent HbA1c was 8.2%. She is currently on metformin 1000 mg twice daily. What is the most appropriate next step in management?",
+                            options: ["Add basal insulin", "Add SGLT2 inhibitor", "Add sulfonylurea", "Continue current regimen"],
+                            correct: 1,
+                            explanation: "For patients with established atherosclerotic cardiovascular disease, heart failure, or chronic kidney disease, an SGLT2 inhibitor or GLP-1 receptor agonist with proven cardiovascular benefit is recommended as part of the antihyperglycemic regimen.",
+                            difficulty: "medium",
+                            xp: 10
                         }
                     ],
                     boss: {
@@ -1191,6 +1161,25 @@
                             questions: ['acs-1'],
                             description: "Diagnose and manage acute coronary syndromes",
                             requiredLevel: 3
+                        },
+                        {
+                            id: "htn-case",
+                            name: "Hypertension Management",
+                            icon: "fa-heartbeat",
+                            difficulty: "easy",
+                            xp: 30,
+                            questions: ['htn-1'],
+                            description: "Approach to hypertension diagnosis and treatment"
+                        },
+                        {
+                            id: "diabetes-case",
+                            name: "Type 2 Diabetes",
+                            icon: "fa-syringe",
+                            difficulty: "medium",
+                            xp: 60,
+                            questions: ['diabetes-1'],
+                            description: "Management of type 2 diabetes mellitus",
+                            requiredLevel: 2
                         }
                     ]
                 },
@@ -1270,6 +1259,22 @@
                     icon: "fa-bolt",
                     xp: 150,
                     unlocked: false
+                },
+                {
+                    id: "world-explorer",
+                    name: "World Explorer",
+                    description: "Unlock all worlds",
+                    icon: "fa-globe",
+                    xp: 200,
+                    unlocked: false
+                },
+                {
+                    id: "streak-master",
+                    name: "Streak Master",
+                    description: "Maintain a 7-day streak",
+                    icon: "fa-fire",
+                    xp: 250,
+                    unlocked: false
                 }
             ]
         };
@@ -1286,6 +1291,7 @@
             renderWorldProgress();
             renderMissions();
             renderBossStatus();
+            renderAchievements();
             
             // Show welcome message
             setTimeout(() => {
@@ -1304,6 +1310,17 @@
                     
                     document.querySelectorAll('.content-section').forEach(sec => sec.style.display = 'none');
                     document.getElementById(section).style.display = 'block';
+                    
+                    // Refresh content when navigating
+                    if (section === 'achievements') {
+                        renderAchievements();
+                    } else if (section === 'profile') {
+                        renderProfile();
+                    } else if (section === 'boss-battles') {
+                        renderBossBattles();
+                    } else if (section === 'missions') {
+                        renderAllMissions();
+                    }
                 });
             });
         }
@@ -1368,9 +1385,76 @@
             });
         }
 
+        function renderAllMissions() {
+            const missionsSection = document.getElementById('missions');
+            missionsSection.innerHTML = `
+                <h2 class="section-title">
+                    <i class="fas fa-tasks"></i>
+                    All Missions
+                </h2>
+                <div class="mission-list" id="allMissionsList"></div>
+            `;
+            
+            const allMissionsList = document.getElementById('allMissionsList');
+            
+            // Group missions by world
+            Object.keys(gameData.worlds).forEach(worldId => {
+                const world = gameData.worlds[worldId];
+                if (world.missions.length > 0) {
+                    const worldHeader = document.createElement('h3');
+                    worldHeader.style.marginTop = '20px';
+                    worldHeader.style.color = 'var(--accent)';
+                    worldHeader.innerHTML = `<i class="fas ${world.icon}"></i> ${world.name}`;
+                    allMissionsList.appendChild(worldHeader);
+                    
+                    world.missions.forEach(mission => {
+                        const missionCard = document.createElement('div');
+                        missionCard.className = 'mission-card';
+                        missionCard.dataset.mission = mission.id;
+                        
+                        if (mission.requiredLevel && gameData.player.level < mission.requiredLevel) {
+                            missionCard.classList.add('locked');
+                        }
+                        
+                        if (gameData.player.completedMissions.includes(mission.id)) {
+                            missionCard.classList.add('completed');
+                        }
+                        
+                        missionCard.innerHTML = `
+                            <h3><i class="fas ${mission.icon}"></i> ${mission.name}</h3>
+                            <div class="mission-meta">
+                                <span class="mission-xp">+${mission.xp} XP</span>
+                                <span class="mission-difficulty difficulty-${mission.difficulty}">${mission.difficulty.charAt(0).toUpperCase() + mission.difficulty.slice(1)}</span>
+                                <span>${world.name}</span>
+                            </div>
+                            <p>${mission.description}</p>
+                            ${gameData.player.completedMissions.includes(mission.id) ? 
+                                '<button class="btn btn-outline"><i class="fas fa-check"></i> Completed</button>' : 
+                                mission.requiredLevel && gameData.player.level < mission.requiredLevel ?
+                                `<button class="btn btn-outline"><i class="fas fa-lock"></i> Level ${mission.requiredLevel} required</button>` :
+                                '<button class="btn btn-primary start-mission"><i class="fas fa-play"></i> Start Mission</button>'}
+                        `;
+                        allMissionsList.appendChild(missionCard);
+                    });
+                }
+            });
+            
+            document.querySelectorAll('#allMissionsList .start-mission').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const missionId = e.target.closest('.mission-card').dataset.mission;
+                    startMission(missionId);
+                });
+            });
+        }
+
         function startMission(missionId) {
             const world = gameData.worlds[gameData.player.currentWorld];
             const mission = world.missions.find(m => m.id === missionId);
+            
+            if (!mission) {
+                alert("Mission not found!");
+                return;
+            }
             
             gameData.player.currentMission = mission;
             gameData.player.currentQuestion = 0;
@@ -1382,6 +1466,11 @@
         function loadQuestion(questionId) {
             const world = gameData.worlds[gameData.player.currentWorld];
             const question = world.questions.find(q => q.id === questionId);
+            
+            if (!question) {
+                alert("Question not found!");
+                return;
+            }
             
             document.getElementById('questionTitle').textContent = `Mission: ${gameData.player.currentMission.name}`;
             document.getElementById('questionText').textContent = question.text;
@@ -1402,6 +1491,8 @@
             document.getElementById('streakCounter').textContent = `${gameData.player.streak}-day streak`;
             
             document.getElementById('feedbackSection').classList.remove('show');
+            document.getElementById('nextQuestionBtn').textContent = 'Submit Answer';
+            document.getElementById('nextQuestionBtn').onclick = checkAnswer;
             document.getElementById('mcqModal').classList.add('active');
         }
 
@@ -1413,68 +1504,84 @@
                 }
             });
             
-            document.getElementById('nextQuestionBtn').addEventListener('click', () => {
-                const selectedOption = document.querySelector('.option-item.selected');
-                if (!selectedOption) {
-                    alert('Please select an answer!');
-                    return;
-                }
-                
-                const questionId = gameData.player.currentMission.questions[gameData.player.currentQuestion];
-                const world = gameData.worlds[gameData.player.currentWorld];
-                const question = world.questions.find(q => q.id === questionId);
-                const isCorrect = parseInt(selectedOption.dataset.index) === question.correct;
-                
-                document.getElementById('feedbackSection').classList.add('show');
-                selectedOption.classList.add(isCorrect ? 'correct' : 'incorrect');
-                
-                if (isCorrect) {
-                    gameData.player.correctAnswers++;
-                    gameData.player.xp += question.xp;
-                    gameData.player.streak++;
-                    
-                    if (gameData.player.selectedDifficulty) {
-                        const damage = {
-                            easy: 5,
-                            medium: 10,
-                            hard: 20
-                        }[gameData.player.selectedDifficulty];
-                        
-                        gameData.player.currentBossHealth = Math.max(0, gameData.player.currentBossHealth - damage);
-                        renderBossStatus();
-                        
-                        if (gameData.player.currentBossHealth <= 0) {
-                            setTimeout(() => {
-                                document.getElementById('mcqModal').classList.remove('active');
-                                showVictory();
-                            }, 1500);
-                            return;
-                        }
-                    }
-                } else {
-                    gameData.player.streak = 0;
-                }
-                
-                updatePlayerStats();
-                
-                gameData.player.currentQuestion++;
-                if (gameData.player.currentQuestion < gameData.player.currentMission.questions.length) {
-                    document.getElementById('nextQuestionBtn').textContent = 'Next Question';
-                    setTimeout(() => {
-                        loadQuestion(gameData.player.currentMission.questions[gameData.player.currentQuestion]);
-                    }, 1500);
-                } else {
-                    document.getElementById('nextQuestionBtn').textContent = 'Complete Mission';
-                    document.getElementById('nextQuestionBtn').onclick = () => {
-                        completeMission(gameData.player.currentMission.id);
-                        document.getElementById('mcqModal').classList.remove('active');
-                    };
-                }
-            });
-            
             document.querySelector('.close-modal').addEventListener('click', () => {
                 document.getElementById('mcqModal').classList.remove('active');
             });
+        }
+
+        function checkAnswer() {
+            const selectedOption = document.querySelector('.option-item.selected');
+            if (!selectedOption) {
+                alert('Please select an answer!');
+                return;
+            }
+            
+            const questionId = gameData.player.currentMission.questions[gameData.player.currentQuestion];
+            const world = gameData.worlds[gameData.player.currentWorld];
+            const question = world.questions.find(q => q.id === questionId);
+            const isCorrect = parseInt(selectedOption.dataset.index) === question.correct;
+            
+            document.getElementById('feedbackSection').classList.add('show');
+            selectedOption.classList.add(isCorrect ? 'correct' : 'incorrect');
+            
+            if (isCorrect) {
+                gameData.player.correctAnswers++;
+                gameData.player.xp += question.xp;
+                gameData.player.streak++;
+                
+                if (gameData.player.selectedDifficulty) {
+                    const damage = {
+                        easy: 5,
+                        medium: 10,
+                        hard: 20
+                    }[gameData.player.selectedDifficulty];
+                    
+                    gameData.player.currentBossHealth = Math.max(0, gameData.player.currentBossHealth - damage);
+                    renderBossStatus();
+                    
+                    if (gameData.player.currentBossHealth <= 0) {
+                        setTimeout(() => {
+                            document.getElementById('mcqModal').classList.remove('active');
+                            showVictory();
+                        }, 1500);
+                        return;
+                    }
+                }
+            } else {
+                gameData.player.streak = 0;
+                
+                if (gameData.player.selectedDifficulty) {
+                    // Boss counter-attacks
+                    const damage = {
+                        easy: 5,
+                        medium: 10,
+                        hard: 20
+                    }[gameData.player.selectedDifficulty];
+                    
+                    gameData.player.currentBossHealth = Math.min(100, gameData.player.currentBossHealth + damage);
+                    renderBossStatus();
+                    document.getElementById('bossImage').classList.add('shake');
+                    setTimeout(() => {
+                        document.getElementById('bossImage').classList.remove('shake');
+                    }, 500);
+                }
+            }
+            
+            updatePlayerStats();
+            
+            gameData.player.currentQuestion++;
+            if (gameData.player.currentQuestion < gameData.player.currentMission.questions.length) {
+                document.getElementById('nextQuestionBtn').textContent = 'Next Question';
+                document.getElementById('nextQuestionBtn').onclick = () => {
+                    loadQuestion(gameData.player.currentMission.questions[gameData.player.currentQuestion]);
+                };
+            } else {
+                document.getElementById('nextQuestionBtn').textContent = 'Complete Mission';
+                document.getElementById('nextQuestionBtn').onclick = () => {
+                    completeMission(gameData.player.currentMission.id);
+                    document.getElementById('mcqModal').classList.remove('active');
+                };
+            }
         }
 
         function completeMission(missionId) {
@@ -1482,12 +1589,15 @@
                 gameData.player.completedMissions.push(missionId);
                 saveGame();
                 renderMissions();
+                renderAllMissions();
                 
                 // Check for achievement unlocks
                 checkAchievements();
                 
                 // Update world progress
                 updateWorldProgress();
+                
+                alert(`Mission Complete! +${gameData.worlds[gameData.player.currentWorld].missions.find(m => m.id === missionId).xp} XP earned`);
             }
         }
 
@@ -1528,6 +1638,8 @@
                 document.getElementById('streakCounter').textContent = `${gameData.player.streak}-day streak`;
                 
                 document.getElementById('feedbackSection').classList.remove('show');
+                document.getElementById('nextQuestionBtn').textContent = 'Submit Answer';
+                document.getElementById('nextQuestionBtn').onclick = checkAnswer;
                 document.getElementById('mcqModal').classList.add('active');
             });
         }
@@ -1553,6 +1665,7 @@
                 document.getElementById('bossImage').classList.remove('victory');
                 checkWorldUnlocks();
                 checkAchievements();
+                renderBossBattles();
             };
         }
 
@@ -1583,6 +1696,51 @@
             }
         }
 
+        function renderBossBattles() {
+            const bossBattlesContent = document.getElementById('bossBattlesContent');
+            bossBattlesContent.innerHTML = `
+                <h3>Your Boss Battle Progress</h3>
+                ${gameData.player.defeatedBosses.length > 0 ? 
+                    `<p>Bosses Defeated: ${gameData.player.defeatedBosses.length}</p>
+                    <ul>
+                        ${gameData.player.defeatedBosses.map(boss => `<li>${boss}</li>`).join('')}
+                    </ul>` :
+                    `<p>No bosses defeated yet. Challenge the weekly boss to begin!</p>`}
+            `;
+        }
+
+        function renderProfile() {
+            const profileContent = document.getElementById('profileContent');
+            profileContent.innerHTML = `
+                <div class="stat-box">
+                    <h3>Total XP Earned</h3>
+                    <p>${gameData.player.xp}</p>
+                </div>
+                <div class="stat-box">
+                    <h3>Missions Completed</h3>
+                    <p>${gameData.player.completedMissions.length}</p>
+                </div>
+                <div class="stat-box">
+                    <h3>Bosses Defeated</h3>
+                    <p>${gameData.player.defeatedBosses.length}</p>
+                </div>
+                <div class="stat-box">
+                    <h3>Current Streak</h3>
+                    <p>${gameData.player.streak} days</p>
+                </div>
+                <h3 style="margin-top: 20px;">Player Title</h3>
+                <p>${getPlayerTitle(gameData.player.level)}</p>
+            `;
+        }
+
+        function getPlayerTitle(level) {
+            if (level >= 30) return "Grand Scholar";
+            if (level >= 20) return "Medical Specialist";
+            if (level >= 10) return "Attending Physician";
+            if (level >= 5) return "Resident Physician";
+            return "Medical Student";
+        }
+
         function updatePlayerStats() {
             const xpNeeded = gameData.player.level * 100;
             if (gameData.player.xp >= xpNeeded) {
@@ -1593,13 +1751,7 @@
             
             document.getElementById('playerLevel').textContent = gameData.player.level;
             document.getElementById('playerStreak').textContent = `${gameData.player.streak} day${gameData.player.streak !== 1 ? 's' : ''}`;
-            
-            let title = "Medical Student";
-            if (gameData.player.level >= 5) title = "Resident Physician";
-            if (gameData.player.level >= 10) title = "Attending Physician";
-            if (gameData.player.level >= 20) title = "Medical Specialist";
-            if (gameData.player.level >= 30) title = "Master Healer";
-            document.getElementById('playerTitle').textContent = title;
+            document.getElementById('playerTitle').textContent = getPlayerTitle(gameData.player.level);
             
             const xpPercentage = (gameData.player.xp / (gameData.player.level * 100)) * 100;
             document.getElementById('xpBar').style.width = `${xpPercentage}%`;
@@ -1643,6 +1795,53 @@
             saveGame();
         }
 
+        function renderWorldProgress() {
+            Object.keys(gameData.worlds).forEach(worldId => {
+                const world = gameData.worlds[worldId];
+                if (world.missions.length > 0) {
+                    const completedMissions = world.missions.filter(m => 
+                        gameData.player.completedMissions.includes(m.id)
+                    ).length;
+                    const progress = Math.round((completedMissions / world.missions.length) * 100);
+                    
+                    const progressElement = document.querySelector(`.world-card[data-world="${worldId}"] .progress`);
+                    if (progressElement) {
+                        progressElement.textContent = `${progress}% Complete`;
+                    }
+                }
+            });
+        }
+
+        function renderAchievements() {
+            const achievementsGrid = document.getElementById('achievementsGrid');
+            if (!achievementsGrid) return;
+            
+            achievementsGrid.innerHTML = '';
+            
+            gameData.achievements.forEach(achievement => {
+                const achievementCard = document.createElement('div');
+                achievementCard.className = `achievement-card ${achievement.unlocked ? '' : 'achievement-locked'}`;
+                
+                achievementCard.innerHTML = `
+                    <div class="achievement-icon">
+                        <i class="fas ${achievement.icon}"></i>
+                    </div>
+                    <h3 class="achievement-title">${achievement.name}</h3>
+                    <p class="achievement-desc">${achievement.description}</p>
+                    <div class="achievement-progress">
+                        <div class="progress-bar" style="width: ${achievement.unlocked ? '100%' : '0%'};"></div>
+                    </div>
+                    ${achievement.unlocked ? 
+                        `<div class="xp-gained" style="justify-content: center; margin-top: 10px;">
+                            <i class="fas fa-star"></i>
+                            <span>+${achievement.xp} XP</span>
+                        </div>` : ''}
+                `;
+                
+                achievementsGrid.appendChild(achievementCard);
+            });
+        }
+
         function checkAchievements() {
             gameData.achievements.forEach(achievement => {
                 if (!achievement.unlocked) {
@@ -1658,11 +1857,22 @@
                         shouldUnlock = true;
                     }
                     
+                    if (achievement.id === "world-explorer" && 
+                        gameData.player.unlockedWorlds.length === Object.keys(gameData.worlds).length) {
+                        shouldUnlock = true;
+                    }
+                    
+                    if (achievement.id === "streak-master" && 
+                        gameData.player.streak >= 7) {
+                        shouldUnlock = true;
+                    }
+                    
                     if (shouldUnlock) {
                         achievement.unlocked = true;
                         gameData.player.xp += achievement.xp;
                         alert(`Achievement Unlocked: ${achievement.name} (+${achievement.xp} XP)`);
                         updatePlayerStats();
+                        renderAchievements();
                     }
                 }
             });
@@ -1678,17 +1888,29 @@
             if (savedGame) {
                 try {
                     const savedData = JSON.parse(savedGame);
-                    Object.assign(gameData.player, savedData);
+                    
+                    // Only load properties that exist in our default gameData
+                    Object.keys(savedData).forEach(key => {
+                        if (gameData.player.hasOwnProperty(key)) {
+                            gameData.player[key] = savedData[key];
+                        }
+                    });
                     
                     // Update UI based on loaded data
                     document.getElementById('playerLevel').textContent = gameData.player.level;
                     document.getElementById('playerStreak').textContent = 
                         `${gameData.player.streak} day${gameData.player.streak !== 1 ? 's' : ''}`;
+                    document.getElementById('playerTitle').textContent = getPlayerTitle(gameData.player.level);
                     
                     const xpPercentage = (gameData.player.xp / (gameData.player.level * 100)) * 100;
                     document.getElementById('xpBar').style.width = `${xpPercentage}%`;
                     document.getElementById('xpText').textContent = 
                         `${gameData.player.xp}/${gameData.player.level * 100} XP`;
+                    
+                    // Initialize currentBossHealth if not set
+                    if (typeof gameData.player.currentBossHealth === 'undefined') {
+                        gameData.player.currentBossHealth = gameData.worlds[gameData.player.currentWorld || 'internal-medicine'].boss.health;
+                    }
                     
                     // Unlock worlds based on level
                     checkWorldUnlocks();
