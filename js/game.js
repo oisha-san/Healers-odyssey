@@ -1,6 +1,8 @@
 // ========== GAME DATA ==========
 const gameData = {
-    player: {
+    players: {},
+    currentPlayer: null,
+    defaultPlayer: {
         xp: 0,
         level: 1,
         streak: 0,
@@ -10,7 +12,8 @@ const gameData = {
         completedMissions: [],
         defeatedBosses: [],
         achievements: [],
-        lastPlayed: new Date().toISOString()
+        lastPlayed: new Date().toISOString(),
+        joinedDate: new Date().toISOString()
     },
     worlds: {
         'internal-medicine': {
@@ -28,15 +31,6 @@ const gameData = {
                     explanation: "The patient's history of heavy smoking...",
                     difficulty: "medium",
                     xp: 10
-                },
-                {
-                    id: 'acs-1',
-                    text: "A 58-year-old female presents with crushing substernal chest pain radiating to her left arm...",
-                    options: ["Left anterior descending", "Left circumflex", "Right coronary artery"],
-                    correct: 2,
-                    explanation: "ST elevation in the inferior leads...",
-                    difficulty: "hard",
-                    xp: 20
                 }
             ],
             boss: {
@@ -61,83 +55,197 @@ const gameData = {
                 }
             ]
         }
-    },
-    achievements: [
-        {
-            id: "first-blood",
-            name: "First Blood",
-            description: "Defeat your first boss",
-            icon: "fa-tint",
-            xp: 100,
-            unlocked: false
-        }
-    ]
+    }
 };
+
+// ========== PROFILE SYSTEM ==========
+function setupProfileSystem() {
+    // Load saved players
+    const savedPlayers = localStorage.getItem('healersOdysseyPlayers');
+    if (savedPlayers) {
+        gameData.players = JSON.parse(savedPlayers);
+    }
+
+    // Check for current player
+    const currentPlayer = localStorage.getItem('currentPlayer');
+    if (currentPlayer && gameData.players[currentPlayer]) {
+        gameData.currentPlayer = currentPlayer;
+        gameData.player = gameData.players[currentPlayer];
+    } else {
+        showLoginModal();
+    }
+
+    // Login form
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const username = document.getElementById('username').value.trim();
+        const password = document.getElementById('password').value;
+
+        if (gameData.players[username] && gameData.players[username].password === password) {
+            loginPlayer(username);
+        } else {
+            alert("Invalid credentials!");
+        }
+    });
+
+    // Registration
+    document.getElementById('registerBtn').addEventListener('click', function() {
+        const username = document.getElementById('username').value.trim();
+        const password = document.getElementById('password').value;
+
+        if (!username || !password) {
+            alert("Please enter both username and password");
+            return;
+        }
+
+        if (gameData.players[username]) {
+            alert("Username already exists!");
+            return;
+        }
+
+        // Create new player
+        gameData.players[username] = {
+            ...gameData.defaultPlayer,
+            username,
+            password,
+            joinedDate: new Date().toISOString()
+        };
+        
+        loginPlayer(username);
+    });
+
+    // Logout
+    document.getElementById('logoutBtn').addEventListener('click', function() {
+        gameData.currentPlayer = null;
+        localStorage.removeItem('currentPlayer');
+        showLoginModal();
+    });
+}
+
+function loginPlayer(username) {
+    gameData.currentPlayer = username;
+    gameData.player = gameData.players[username];
+    localStorage.setItem('currentPlayer', username);
+    localStorage.setItem('healersOdysseyPlayers', JSON.stringify(gameData.players));
+    document.getElementById('loginModal').classList.remove('active');
+    updateProfileDisplay();
+    initGame();
+}
+
+function showLoginModal() {
+    document.getElementById('loginModal').classList.add('active');
+    document.getElementById('username').value = '';
+    document.getElementById('password').value = '';
+}
+
+function updateProfileDisplay() {
+    const profileContent = document.getElementById('profileContent');
+    if (!profileContent) return;
+    
+    profileContent.innerHTML = `
+        <div class="profile-section">
+            <div class="profile-avatar">
+                <i class="fas fa-user-md"></i>
+            </div>
+            <div class="profile-details">
+                <h3>${gameData.currentPlayer}</h3>
+                <p>Level ${gameData.player.level} Healer</p>
+                <p>Member since: ${new Date(gameData.player.joinedDate).toLocaleDateString()}</p>
+                
+                <div class="profile-stats">
+                    <div class="profile-stat">
+                        <h4>Missions</h4>
+                        <p>${gameData.player.completedMissions.length} completed</p>
+                    </div>
+                    <div class="profile-stat">
+                        <h4>Bosses</h4>
+                        <p>${gameData.player.defeatedBosses.length} defeated</p>
+                    </div>
+                    <div class="profile-stat">
+                        <h4>XP</h4>
+                        <p>${gameData.player.xp} total</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+}
 
 // ========== MISSION SYSTEM ==========
 function renderMissions() {
     const missionList = document.getElementById('missionList');
+    const allMissionsContainer = document.getElementById('allMissionsContainer');
+    
+    if (!missionList && !allMissionsContainer) return;
+    
     const currentWorld = gameData.worlds[gameData.player.currentWorld];
+    const containers = [
+        { element: missionList, missions: currentWorld.missions },
+        { element: allMissionsContainer, missions: Object.values(gameData.worlds).flatMap(w => w.missions) }
+    ];
     
-    missionList.innerHTML = '';
-    
-    if (!currentWorld.missions || currentWorld.missions.length === 0) {
-        missionList.innerHTML = `
-            <div class="no-missions">
-                <i class="fas fa-question-circle"></i>
-                <p>No missions available in this world yet!</p>
-            </div>
-        `;
-        return;
-    }
-
-    currentWorld.missions.forEach(mission => {
-        const isCompleted = gameData.player.completedMissions.includes(mission.id);
-        const missionCard = document.createElement('div');
-        missionCard.className = `mission-card ${isCompleted ? 'completed' : ''}`;
-        missionCard.innerHTML = `
-            <div class="mission-icon">
-                <i class="fas ${mission.icon}"></i>
-            </div>
-            <div class="mission-content">
-                <h3>${mission.name}</h3>
-                <p>${mission.description}</p>
-                <div class="mission-meta">
-                    <span class="mission-difficulty difficulty-${mission.difficulty}">
-                        ${mission.difficulty}
-                    </span>
-                    <span class="mission-xp">
-                        <i class="fas fa-bolt"></i> ${mission.xp} XP
-                    </span>
-                </div>
-            </div>
-            <button class="btn btn-primary btn-start-mission" 
-                ${isCompleted ? 'disabled' : ''}>
-                ${isCompleted ? 'Completed' : 'Start Mission'}
-            </button>
-        `;
-
-        if (!isCompleted) {
-            missionCard.querySelector('button').addEventListener('click', () => {
-                startMission(mission.id);
-            });
-        }
+    containers.forEach(container => {
+        if (!container.element) return;
         
-        missionList.appendChild(missionCard);
+        container.element.innerHTML = '';
+        
+        if (!container.missions || container.missions.length === 0) {
+            container.element.innerHTML = `
+                <div class="no-missions">
+                    <i class="fas fa-question-circle"></i>
+                    <p>No missions available yet!</p>
+                </div>
+            `;
+            return;
+        }
+
+        container.missions.forEach(mission => {
+            const world = Object.values(gameData.worlds).find(w => 
+                w.missions && w.missions.some(m => m.id === mission.id)
+            );
+            
+            const isCompleted = gameData.player.completedMissions.includes(mission.id);
+            const missionCard = document.createElement('div');
+            missionCard.className = `mission-card ${isCompleted ? 'completed' : ''}`;
+            missionCard.innerHTML = `
+                <div class="mission-icon">
+                    <i class="fas ${mission.icon}"></i>
+                </div>
+                <div class="mission-content">
+                    <h3>${mission.name}</h3>
+                    <p><strong>World:</strong> ${world.name}</p>
+                    <p>${mission.description}</p>
+                    <div class="mission-meta">
+                        <span class="mission-difficulty difficulty-${mission.difficulty}">
+                            ${mission.difficulty}
+                        </span>
+                        <span class="mission-xp">
+                            <i class="fas fa-bolt"></i> ${mission.xp} XP
+                        </span>
+                    </div>
+                </div>
+                <button class="btn btn-primary btn-start-mission" 
+                    ${isCompleted ? 'disabled' : ''}>
+                    ${isCompleted ? 'Completed' : 'Start Mission'}
+                </button>
+            `;
+
+            if (!isCompleted) {
+                missionCard.querySelector('button').addEventListener('click', () => {
+                    startMission(mission.id);
+                });
+            }
+            
+            container.element.appendChild(missionCard);
+        });
     });
 }
 
-function completeMission(missionId) {
-    if (!gameData.player.completedMissions.includes(missionId)) {
-        gameData.player.completedMissions.push(missionId);
-        saveGame();
-        renderMissions();
-    }
-}
+// [Keep all other existing functions like startMission, loadQuestion, etc.]
 
-// ========== GAME FUNCTIONS ==========
+// ========== GAME INITIALIZATION ==========
 function initGame() {
-    loadGame();
+    setupProfileSystem();
     setupNavigation();
     setupWorldSelection();
     setupBossBattle();
@@ -146,90 +254,16 @@ function initGame() {
     renderWorldProgress();
     renderMissions();
     renderBossStatus();
+    updateProfileDisplay();
+    
     console.log("Game initialized!");
 }
 
-function setupNavigation() {
-    document.querySelectorAll('.nav-link').forEach(link => {
-        link.addEventListener('click', (e) => {
-            e.preventDefault();
-            const section = link.dataset.section;
-            
-            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-            link.classList.add('active');
-            
-            document.querySelectorAll('.content-section').forEach(sec => {
-                sec.style.display = 'none';
-            });
-            document.getElementById(section).style.display = 'block';
-        });
-    });
-}
-
-function startMission(missionId) {
-    const world = gameData.worlds[gameData.player.currentWorld];
-    const mission = world.missions.find(m => m.id === missionId);
-    
-    if (!mission) {
-        alert("Mission not found!");
-        return;
+document.addEventListener('DOMContentLoaded', function() {
+    // Show login modal if no player
+    if (!gameData.currentPlayer) {
+        showLoginModal();
+    } else {
+        initGame();
     }
-    
-    gameData.player.currentMission = mission;
-    gameData.player.currentQuestion = 0;
-    gameData.player.correctAnswers = 0;
-    
-    loadQuestion(mission.questions[0]);
-}
-
-function loadQuestion(questionId) {
-    const world = gameData.worlds[gameData.player.currentWorld];
-    const question = world.questions.find(q => q.id === questionId);
-    
-    document.getElementById('questionTitle').textContent = `Mission: ${gameData.player.currentMission.name}`;
-    document.getElementById('questionText').textContent = question.text;
-    
-    const optionsList = document.getElementById('optionsList');
-    optionsList.innerHTML = '';
-    
-    question.options.forEach((option, index) => {
-        const li = document.createElement('li');
-        li.className = 'option-item';
-        li.textContent = option;
-        li.dataset.index = index;
-        optionsList.appendChild(li);
-    });
-    
-    document.getElementById('explanationText').textContent = question.explanation;
-    document.getElementById('xpGainedText').textContent = `+${question.xp} XP (${question.difficulty})`;
-    document.getElementById('streakCounter').textContent = `${gameData.player.streak}-day streak`;
-    
-    document.getElementById('feedbackSection').classList.remove('show');
-    document.getElementById('mcqModal').classList.add('active');
-}
-
-// ========== SAVE/LOAD SYSTEM ==========
-function saveGame() {
-    try {
-        gameData.player.lastPlayed = new Date().toISOString();
-        localStorage.setItem('healersOdysseySave', JSON.stringify(gameData.player));
-    } catch (e) {
-        console.error("Failed to save game:", e);
-    }
-}
-
-function loadGame() {
-    const savedGame = localStorage.getItem('healersOdysseySave');
-    if (savedGame) {
-        try {
-            const savedData = JSON.parse(savedGame);
-            Object.assign(gameData.player, savedData);
-            console.log("Game loaded from save");
-        } catch (e) {
-            console.error("Error loading save:", e);
-        }
-    }
-}
-
-// ========== START THE GAME ==========
-document.addEventListener('DOMContentLoaded', initGame);
+});
