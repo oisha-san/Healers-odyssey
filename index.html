@@ -3,99 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Healer's Odyssey - Medical RPG</title>
-    <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Healer's Odyssey</title>
+    <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet">
 </head>
 <body>
     <div class="container">
-        <!-- Login Modal -->
-        <div class="modal" id="loginModal">
-            <div class="modal-content">
-                <button class="close-modal" aria-label="Close">&times;</button>
-                <h2>Login / Register</h2>
-                <div class="error-message" id="errorMessage"></div>
-                <form id="loginForm">
-                    <div class="form-group">
-                        <label for="username">Username</label>
-                        <input type="text" id="username" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="password">Password</label>
-                        <input type="password" id="password" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Login</button>
-                </form>
-            </div>
-        </div>
-
         <header>
             <div class="logo">
-                <img src="https://via.placeholder.com/50" alt="Game Logo">
+                <img src="images/logo.png" alt="Healer's Odyssey">
                 <h1>Healer's Odyssey</h1>
             </div>
             <div class="player-stats">
-                <div class="stat-box">
+                <div class="stat">
                     <h3>Level</h3>
                     <p id="playerLevel">1</p>
                 </div>
-                <div class="stat-box">
-                    <h3>Title</h3>
-                    <p id="playerTitle">Medical Student</p>
+                <div class="stat">
+                    <h3>Health</h3>
+                    <p id="playerHealth">100</p>
                 </div>
-                <div class="xp-bar-container">
-                    <div class="xp-bar" id="xpBar"></div>
-                    <div class="xp-text" id="xpText">0/100 XP</div>
+                <div class="xp-bar">
+                    <div id="xpBar"></div>
                 </div>
             </div>
         </header>
 
         <div class="main-content">
-            <div class="sidebar">
-                <ul class="nav-menu">
-                    <li class="nav-item">
-                        <a href="#" class="nav-link active" data-section="missions">
-                            <i class="fas fa-tasks"></i> Missions
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link" id="logoutBtn">
-                            <i class="fas fa-sign-out-alt"></i> Logout
-                        </a>
-                    </li>
-                </ul>
-            </div>
-
-            <div class="content-area">
-                <!-- Missions Section -->
-                <div class="content-section active" id="missions">
-                    <h2 class="section-title"><i class="fas fa-tasks"></i> Available Missions</h2>
-                    <div class="mission-list" id="missionList"></div>
-                </div>
-            </div>
+            <div class="mission-list" id="missionList"></div>
         </div>
 
-        <!-- MCQ Modal -->
-        <div class="modal" id="mcqModal">
+        <!-- Boss Battle Modal -->
+        <div class="modal" id="bossModal">
             <div class="modal-content">
-                <button class="close-modal" aria-label="Close">&times;</button>
-                <div class="question-container">
-                    <h3 id="questionTitle">Mission: Loading...</h3>
-                    <p class="question-text" id="questionText">Loading question...</p>
-                    <ul class="options-list" id="optionsList"></ul>
-                    <div class="feedback-section" id="feedbackSection">
-                        <p class="feedback-title">Explanation:</p>
-                        <p id="explanationText"></p>
-                        <div class="xp-gained">
-                            <i class="fas fa-bolt"></i>
-                            <span id="xpGainedText">+0 XP gained</span>
-                        </div>
-                        <button class="btn btn-primary" id="nextQuestionBtn">
-                            <i class="fas fa-arrow-right"></i> Next Question
-                        </button>
-                    </div>
+                <h2>Boss Battle: <span id="bossName">The Black Death</span></h2>
+                <div class="health-bar">
+                    <div id="bossHealth" class="health-fill"></div>
                 </div>
+                <div id="battleLog"></div>
+                <button class="btn" onclick="attackBoss()">Attack!</button>
             </div>
         </div>
     </div>
