@@ -10,9 +10,29 @@
 </head>
 <body>
     <div class="container">
+        <!-- Login Modal -->
+        <div class="modal" id="loginModal">
+            <div class="modal-content">
+                <button class="close-modal">&times;</button>
+                <h2>Login / Register</h2>
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <input type="text" id="username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Login</button>
+                    <button type="button" id="registerBtn" class="btn btn-outline">Register</button>
+                </form>
+            </div>
+        </div>
+
         <header>
             <div class="logo">
-                <img src="./images/logo.png" alt="Healer's Odyssey Logo">
+                <img src="./images/logo.png" alt="Game Logo">
                 <h1>Healer's Odyssey</h1>
             </div>
             <div class="player-stats">
@@ -29,7 +49,7 @@
                     <p id="playerStreak">0 days</p>
                 </div>
                 <div class="xp-bar-container">
-                    <div class="xp-bar" id="xpBar" style="width: 0%;"></div>
+                    <div class="xp-bar" id="xpBar"></div>
                     <div class="xp-text" id="xpText">0/100 XP</div>
                 </div>
             </div>
@@ -40,44 +60,22 @@
                 <ul class="nav-menu">
                     <li class="nav-item">
                         <a href="#" class="nav-link active" data-section="world-map">
-                            <i class="fas fa-map"></i>
-                            <span>World Map</span>
+                            <i class="fas fa-map"></i> World Map
                         </a>
                     </li>
                     <li class="nav-item">
                         <a href="#" class="nav-link" data-section="missions">
-                            <i class="fas fa-tasks"></i>
-                            <span>Missions</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link" data-section="achievements">
-                            <i class="fas fa-trophy"></i>
-                            <span>Achievements</span>
+                            <i class="fas fa-tasks"></i> Missions
                         </a>
                     </li>
                     <li class="nav-item">
                         <a href="#" class="nav-link" data-section="profile">
-                            <i class="fas fa-user"></i>
-                            <span>Profile</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link" data-section="boss-battles">
-                            <i class="fas fa-swords"></i>
-                            <span>Boss Battles</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link" data-section="library">
-                            <i class="fas fa-book"></i>
-                            <span>Medical Library</span>
+                            <i class="fas fa-user"></i> Profile
                         </a>
                     </li>
                     <li class="nav-item">
                         <a href="#" class="nav-link" id="logoutBtn">
-                            <i class="fas fa-sign-out-alt"></i>
-                            <span>Logout</span>
+                            <i class="fas fa-sign-out-alt"></i> Logout
                         </a>
                     </li>
                 </ul>
@@ -85,61 +83,47 @@
 
             <div class="content-area">
                 <!-- World Map Section -->
-                <div class="content-section" id="world-map">
-                    <!-- [Previous world map content remains unchanged] -->
+                <div class="content-section active" id="world-map">
+                    <h2 class="section-title"><i class="fas fa-map-marked-alt"></i> World Map</h2>
+                    <div class="world-selector">
+                        <!-- World cards would go here -->
+                    </div>
+                    
+                    <h2 class="section-title"><i class="fas fa-tasks"></i> Available Missions</h2>
+                    <div class="mission-list" id="missionList"></div>
                 </div>
 
-                <!-- Other sections -->
-                <div class="content-section" id="missions" style="display: none;">
-                    <h2 class="section-title">
-                        <i class="fas fa-tasks"></i>
-                        All Missions
-                    </h2>
-                    <div id="allMissionsContainer"></div>
-                </div>
-
-                <div class="content-section" id="achievements" style="display: none;">
-                    <h2 class="section-title">
-                        <i class="fas fa-trophy"></i>
-                        Achievements
-                    </h2>
-                    <div class="achievements-grid" id="achievementsGrid"></div>
-                </div>
-
+                <!-- Profile Section -->
                 <div class="content-section" id="profile" style="display: none;">
-                    <h2 class="section-title">
-                        <i class="fas fa-user"></i>
-                        Your Profile
-                    </h2>
+                    <h2 class="section-title"><i class="fas fa-user"></i> Profile</h2>
                     <div id="profileContent"></div>
                 </div>
+            </div>
+        </div>
 
-                <!-- [Other sections remain unchanged] -->
+        <!-- MCQ Modal -->
+        <div class="modal" id="mcqModal">
+            <div class="modal-content">
+                <button class="close-modal">&times;</button>
+                <div class="question-container">
+                    <h3 id="questionTitle">Mission: Loading...</h3>
+                    <p class="question-text" id="questionText">Loading question...</p>
+                    <ul class="options-list" id="optionsList"></ul>
+                    <div class="feedback-section" id="feedbackSection">
+                        <p class="feedback-title">Explanation:</p>
+                        <p id="explanationText"></p>
+                        <div class="xp-gained">
+                            <i class="fas fa-bolt"></i>
+                            <span id="xpGainedText">+0 XP gained</span>
+                        </div>
+                        <button class="btn btn-primary" id="nextQuestionBtn">
+                            <i class="fas fa-arrow-right"></i> Next Question
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-
-    <!-- Login Modal -->
-    <div class="modal" id="loginModal">
-        <div class="modal-content">
-            <button class="close-modal">&times;</button>
-            <h2>Login / Register</h2>
-            <form id="loginForm">
-                <div class="form-group">
-                    <label for="username">Username</label>
-                    <input type="text" id="username" required>
-                </div>
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" required>
-                </div>
-                <button type="submit" class="btn btn-primary">Login</button>
-                <button type="button" id="registerBtn" class="btn btn-outline">Register</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- [Keep other modals like MCQ and Victory] -->
 
     <script src="./js/game.js"></script>
 </body>
