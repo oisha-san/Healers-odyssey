@@ -1,1 +1,11 @@
+/* [PASTE ALL YOUR CSS HERE] */
+:root {
+    --primary: #4a2c82;
+    --secondary: #2d1b4e;
+    /* ALL your CSS variables */
+}
 
+/* ALL your CSS rules from the <style> tag */
+body { /* ... */ }
+.container { /* ... */ }
+/* EVERY style rule */
