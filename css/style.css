@@ -8,6 +8,14 @@
     --light-bg: #2a1f3d;
 }
 
+.ff-theme {
+    --world-color: #1e90ff;
+}
+
+.octopath-theme {
+    --world-color: #a0522d;
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -21,56 +29,27 @@ body {
     min-height: 100vh;
 }
 
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-}
-
-header {
+.world-selector {
+    margin: 20px 0;
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px 0;
-    border-bottom: 2px solid var(--secondary);
+    gap: 15px;
 }
 
-.logo img {
-    width: 50px;
-    height: 50px;
-    margin-right: 15px;
-}
-
-.player-stats {
-    display: flex;
-    gap: 20px;
-    align-items: center;
-}
-
-.stat {
-    text-align: center;
-}
-
-.xp-bar {
-    width: 200px;
-    height: 10px;
+.world-btn {
     background: var(--secondary);
+    padding: 10px 20px;
+    border: none;
     border-radius: 5px;
-    margin-left: 20px;
+    cursor: pointer;
+    transition: 0.3s;
 }
 
-#xpBar {
-    height: 100%;
-    width: 0%;
-    background: var(--accent);
-    transition: width 0.3s;
+.world-btn.ff-theme {
+    background: #1e90ff;
 }
 
-.mission-list {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 20px;
-    margin-top: 30px;
+.world-btn.octopath-theme {
+    background: #a0522d;
 }
 
 .mission-card {
@@ -79,10 +58,6 @@ header {
     border-radius: 10px;
     cursor: pointer;
     transition: transform 0.2s;
-}
-
-.mission-card:hover {
-    transform: translateY(-5px);
 }
 
 .modal {
@@ -97,33 +72,21 @@ header {
     align-items: center;
 }
 
-.modal-content {
-    background: var(--light-bg);
-    padding: 30px;
-    border-radius: 10px;
-    width: 90%;
-    max-width: 500px;
-}
-
 .health-bar {
     height: 20px;
     background: #444;
     border-radius: 10px;
-    margin: 20px 0;
+    margin: 10px 0;
 }
 
 .health-fill {
     height: 100%;
-    background: red;
     transition: width 0.3s;
 }
 
-.btn {
-    background: var(--accent);
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
+.explanation {
     margin-top: 20px;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
 }
