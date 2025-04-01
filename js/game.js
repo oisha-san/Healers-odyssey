@@ -1,269 +1,177 @@
-// ========== GAME DATA ==========
+// Game Data Structure
 const gameData = {
     players: {},
     currentPlayer: null,
-    defaultPlayer: {
-        xp: 0,
-        level: 1,
-        streak: 0,
-        currentWorld: 'internal-medicine',
-        currentBossHealth: 100,
-        unlockedWorlds: ['internal-medicine'],
-        completedMissions: [],
-        defeatedBosses: [],
-        achievements: [],
-        lastPlayed: new Date().toISOString(),
-        joinedDate: new Date().toISOString()
-    },
     worlds: {
         'internal-medicine': {
-            name: 'Internal Medicine',
-            icon: 'fa-heartbeat',
-            theme: 'Final Fantasy',
-            requiredLevel: 1,
-            progress: 0,
+            missions: [
+                {
+                    id: 'copd-case',
+                    name: 'COPD Case Study',
+                    icon: 'fa-lungs',
+                    difficulty: 'medium',
+                    xp: 50,
+                    questions: ['copd-1'],
+                    description: 'Diagnose and treat COPD cases'
+                }
+            ],
             questions: [
                 {
                     id: 'copd-1',
-                    text: "A 65-year-old male with a 40-pack-year smoking history presents with worsening dyspnea...",
-                    options: ["Asthma", "COPD", "Pulmonary fibrosis", "Bronchiectasis"],
+                    text: 'A 65-year-old smoker presents with dyspnea...',
+                    options: ['Asthma', 'COPD', 'Bronchiectasis'],
                     correct: 1,
-                    explanation: "The patient's history of heavy smoking...",
-                    difficulty: "medium",
-                    xp: 10
-                }
-            ],
-            boss: {
-                name: "Pathophysiology Phantom",
-                icon: "fa-ghost",
-                health: 100,
-                rewards: {
-                    xp: 500,
-                    title: "Pulmonary Master",
-                    item: "Wizard Hat"
-                }
-            },
-            missions: [
-                {
-                    id: "copd-case",
-                    name: "COPD Case Study",
-                    icon: "fa-lungs",
-                    difficulty: "medium",
-                    xp: 50,
-                    questions: ['copd-1'],
-                    description: "A series of cases exploring chronic obstructive pulmonary disease"
+                    explanation: 'COPD is most likely...',
+                    xp: 20
                 }
             ]
         }
     }
 };
 
-// ========== PROFILE SYSTEM ==========
-function setupProfileSystem() {
-    // Load saved players
-    const savedPlayers = localStorage.getItem('healersOdysseyPlayers');
-    if (savedPlayers) {
-        gameData.players = JSON.parse(savedPlayers);
-    }
+// Game Initialization
+function initGame() {
+    setupEventListeners();
+    loadPlayerData();
+    renderMissions();
+    updatePlayerStats();
+}
 
-    // Check for current player
-    const currentPlayer = localStorage.getItem('currentPlayer');
-    if (currentPlayer && gameData.players[currentPlayer]) {
-        gameData.currentPlayer = currentPlayer;
-        gameData.player = gameData.players[currentPlayer];
-    } else {
-        showLoginModal();
-    }
-
-    // Login form
-    document.getElementById('loginForm').addEventListener('submit', function(e) {
+// Event Listeners
+function setupEventListeners() {
+    // Login/Register
+    document.getElementById('loginForm').addEventListener('submit', e => {
         e.preventDefault();
-        const username = document.getElementById('username').value.trim();
+        const username = document.getElementById('username').value;
         const password = document.getElementById('password').value;
-
-        if (gameData.players[username] && gameData.players[username].password === password) {
-            loginPlayer(username);
-        } else {
-            alert("Invalid credentials!");
-        }
-    });
-
-    // Registration
-    document.getElementById('registerBtn').addEventListener('click', function() {
-        const username = document.getElementById('username').value.trim();
-        const password = document.getElementById('password').value;
-
-        if (!username || !password) {
-            alert("Please enter both username and password");
-            return;
-        }
-
-        if (gameData.players[username]) {
-            alert("Username already exists!");
-            return;
-        }
-
-        // Create new player
-        gameData.players[username] = {
-            ...gameData.defaultPlayer,
-            username,
-            password,
-            joinedDate: new Date().toISOString()
-        };
         
-        loginPlayer(username);
+        if (gameData.players[username]) {
+            if (gameData.players[username].password === password) {
+                loginUser(username);
+            }
+        } else {
+            registerUser(username, password);
+        }
     });
 
-    // Logout
-    document.getElementById('logoutBtn').addEventListener('click', function() {
-        gameData.currentPlayer = null;
-        localStorage.removeItem('currentPlayer');
-        showLoginModal();
+    // Mission Start
+    document.addEventListener('click', e => {
+        if (e.target.classList.contains('btn-start-mission')) {
+            const missionId = e.target.closest('.mission-card').dataset.missionId;
+            startMission(missionId);
+        }
+    });
+
+    // Answer Selection
+    document.getElementById('optionsList').addEventListener('click', e => {
+        if (e.target.classList.contains('option-item')) {
+            handleAnswer(e.target.dataset.index);
+        }
     });
 }
 
-function loginPlayer(username) {
+// Mission System
+function renderMissions() {
+    const missionList = document.getElementById('missionList');
+    missionList.innerHTML = '';
+    
+    const currentWorld = gameData.worlds[gameData.currentPlayer.currentWorld];
+    currentWorld.missions.forEach(mission => {
+        const missionCard = document.createElement('div');
+        missionCard.className = 'mission-card';
+        missionCard.innerHTML = `
+            <div class="mission-icon">
+                <i class="fas ${mission.icon}"></i>
+            </div>
+            <div class="mission-content">
+                <h3>${mission.name}</h3>
+                <p>${mission.description}</p>
+                <div class="mission-meta">
+                    <span class="mission-difficulty difficulty-${mission.difficulty}">
+                        ${mission.difficulty}
+                    </span>
+                    <span class="mission-xp">
+                        <i class="fas fa-bolt"></i> ${mission.xp} XP
+                    </span>
+                </div>
+            </div>
+            <button class="btn btn-primary btn-start-mission">
+                Start Mission
+            </button>
+        `;
+        missionList.appendChild(missionCard);
+    });
+}
+
+function startMission(missionId) {
+    const mission = gameData.worlds[gameData.currentPlayer.currentWorld]
+        .missions.find(m => m.id === missionId);
+    
+    gameData.currentPlayer.currentMission = mission;
+    gameData.currentPlayer.currentQuestion = 0;
+    showQuestion(mission.questions[0]);
+}
+
+function showQuestion(questionId) {
+    const question = gameData.worlds[gameData.currentPlayer.currentWorld]
+        .questions.find(q => q.id === questionId);
+    
+    document.getElementById('mcqModal').classList.add('active');
+    document.getElementById('questionText').textContent = question.text;
+    
+    const optionsList = document.getElementById('optionsList');
+    optionsList.innerHTML = '';
+    
+    question.options.forEach((option, index) => {
+        const li = document.createElement('li');
+        li.className = 'option-item';
+        li.textContent = option;
+        li.dataset.index = index;
+        optionsList.appendChild(li);
+    });
+}
+
+function handleAnswer(selectedIndex) {
+    const question = gameData.currentPlayer.currentMission
+        .questions[gameData.currentPlayer.currentQuestion];
+    
+    if (selectedIndex == question.correct) {
+        gameData.currentPlayer.xp += question.xp;
+        updatePlayerStats();
+    }
+    
+    gameData.currentPlayer.currentQuestion++;
+    
+    if (gameData.currentPlayer.currentQuestion < question.options.length) {
+        showQuestion(question.id);
+    } else {
+        completeMission();
+    }
+}
+
+// User System
+function registerUser(username, password) {
+    gameData.players[username] = {
+        ...gameData.defaultPlayer,
+        username,
+        password
+    };
+    loginUser(username);
+}
+
+function loginUser(username) {
     gameData.currentPlayer = username;
-    gameData.player = gameData.players[username];
     localStorage.setItem('currentPlayer', username);
-    localStorage.setItem('healersOdysseyPlayers', JSON.stringify(gameData.players));
     document.getElementById('loginModal').classList.remove('active');
-    updateProfileDisplay();
     initGame();
 }
 
-function showLoginModal() {
-    document.getElementById('loginModal').classList.add('active');
-    document.getElementById('username').value = '';
-    document.getElementById('password').value = '';
-}
-
-function updateProfileDisplay() {
-    const profileContent = document.getElementById('profileContent');
-    if (!profileContent) return;
+// Initialize when DOM loads
+document.addEventListener('DOMContentLoaded', () => {
+    const savedPlayers = localStorage.getItem('players');
+    if (savedPlayers) gameData.players = JSON.parse(savedPlayers);
     
-    profileContent.innerHTML = `
-        <div class="profile-section">
-            <div class="profile-avatar">
-                <i class="fas fa-user-md"></i>
-            </div>
-            <div class="profile-details">
-                <h3>${gameData.currentPlayer}</h3>
-                <p>Level ${gameData.player.level} Healer</p>
-                <p>Member since: ${new Date(gameData.player.joinedDate).toLocaleDateString()}</p>
-                
-                <div class="profile-stats">
-                    <div class="profile-stat">
-                        <h4>Missions</h4>
-                        <p>${gameData.player.completedMissions.length} completed</p>
-                    </div>
-                    <div class="profile-stat">
-                        <h4>Bosses</h4>
-                        <p>${gameData.player.defeatedBosses.length} defeated</p>
-                    </div>
-                    <div class="profile-stat">
-                        <h4>XP</h4>
-                        <p>${gameData.player.xp} total</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    `;
-}
-
-// ========== MISSION SYSTEM ==========
-function renderMissions() {
-    const missionList = document.getElementById('missionList');
-    const allMissionsContainer = document.getElementById('allMissionsContainer');
-    
-    if (!missionList && !allMissionsContainer) return;
-    
-    const currentWorld = gameData.worlds[gameData.player.currentWorld];
-    const containers = [
-        { element: missionList, missions: currentWorld.missions },
-        { element: allMissionsContainer, missions: Object.values(gameData.worlds).flatMap(w => w.missions) }
-    ];
-    
-    containers.forEach(container => {
-        if (!container.element) return;
-        
-        container.element.innerHTML = '';
-        
-        if (!container.missions || container.missions.length === 0) {
-            container.element.innerHTML = `
-                <div class="no-missions">
-                    <i class="fas fa-question-circle"></i>
-                    <p>No missions available yet!</p>
-                </div>
-            `;
-            return;
-        }
-
-        container.missions.forEach(mission => {
-            const world = Object.values(gameData.worlds).find(w => 
-                w.missions && w.missions.some(m => m.id === mission.id)
-            );
-            
-            const isCompleted = gameData.player.completedMissions.includes(mission.id);
-            const missionCard = document.createElement('div');
-            missionCard.className = `mission-card ${isCompleted ? 'completed' : ''}`;
-            missionCard.innerHTML = `
-                <div class="mission-icon">
-                    <i class="fas ${mission.icon}"></i>
-                </div>
-                <div class="mission-content">
-                    <h3>${mission.name}</h3>
-                    <p><strong>World:</strong> ${world.name}</p>
-                    <p>${mission.description}</p>
-                    <div class="mission-meta">
-                        <span class="mission-difficulty difficulty-${mission.difficulty}">
-                            ${mission.difficulty}
-                        </span>
-                        <span class="mission-xp">
-                            <i class="fas fa-bolt"></i> ${mission.xp} XP
-                        </span>
-                    </div>
-                </div>
-                <button class="btn btn-primary btn-start-mission" 
-                    ${isCompleted ? 'disabled' : ''}>
-                    ${isCompleted ? 'Completed' : 'Start Mission'}
-                </button>
-            `;
-
-            if (!isCompleted) {
-                missionCard.querySelector('button').addEventListener('click', () => {
-                    startMission(mission.id);
-                });
-            }
-            
-            container.element.appendChild(missionCard);
-        });
-    });
-}
-
-// [Keep all other existing functions like startMission, loadQuestion, etc.]
-
-// ========== GAME INITIALIZATION ==========
-function initGame() {
-    setupProfileSystem();
-    setupNavigation();
-    setupWorldSelection();
-    setupBossBattle();
-    setupQuestionModal();
-    updatePlayerStats();
-    renderWorldProgress();
-    renderMissions();
-    renderBossStatus();
-    updateProfileDisplay();
-    
-    console.log("Game initialized!");
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-    // Show login modal if no player
-    if (!gameData.currentPlayer) {
-        showLoginModal();
-    } else {
-        initGame();
-    }
+    const currentPlayer = localStorage.getItem('currentPlayer');
+    if (currentPlayer) loginUser(currentPlayer);
+    else document.getElementById('loginModal').classList.add('active');
 });
