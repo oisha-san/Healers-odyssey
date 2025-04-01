@@ -30,19 +30,40 @@
             </div>
         </header>
 
+        <div class="world-selector">
+            <button onclick="switchWorld('internal-medicine')" class="world-btn ff-theme">Final Fantasy Realm</button>
+            <button onclick="switchWorld('surgery')" class="world-btn octopath-theme">Surgery Trials</button>
+        </div>
+
         <div class="main-content">
             <div class="mission-list" id="missionList"></div>
         </div>
 
-        <!-- Boss Battle Modal -->
+        <!-- Question Modal -->
+        <div class="modal" id="questionModal">
+            <div class="modal-content">
+                <h2 id="questionTitle"></h2>
+                <div id="questionText"></div>
+                <div id="optionsContainer"></div>
+                <div id="explanation" class="hidden"></div>
+                <button id="nextQuestion" class="btn hidden" onclick="nextQuestion()">Next</button>
+            </div>
+        </div>
+
+        <!-- Boss Modal -->
         <div class="modal" id="bossModal">
             <div class="modal-content">
-                <h2>Boss Battle: <span id="bossName">The Black Death</span></h2>
-                <div class="health-bar">
-                    <div id="bossHealth" class="health-fill"></div>
+                <h2>Boss Battle: <span id="bossName"></span></h2>
+                <div class="health-container">
+                    <div class="health-bar player-health">
+                        <div id="playerHealthBar"></div>
+                    </div>
+                    <div class="health-bar boss-health">
+                        <div id="bossHealthBar"></div>
+                    </div>
                 </div>
                 <div id="battleLog"></div>
-                <button class="btn" onclick="attackBoss()">Attack!</button>
+                <button class="btn" onclick="attackBoss()">Attack</button>
             </div>
         </div>
     </div>
