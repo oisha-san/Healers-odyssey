@@ -3,32 +3,303 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Healer’s Odyssey</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Healer's Odyssey - Medical RPG</title>
+    <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="css/style.css" rel="stylesheet">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' fonts.googleapis.com cdnjs.cloudflare.com; font-src 'self' fonts.gstatic.com cdnjs.cloudflare.com;">
 </head>
 <body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <img src="images/logo.png" alt="Healer's Odyssey Logo">
+                <h1>Healer's Odyssey</h1>
+            </div>
+            <div class="player-stats">
+                <div class="stat-box">
+                    <h3>Level</h3>
+                    <p id="playerLevel">1</p>
+                </div>
+                <div class="stat-box">
+                    <h3>Title</h3>
+                    <p id="playerTitle">Medical Student</p>
+                </div>
+                <div class="stat-box">
+                    <h3>Streak</h3>
+                    <p id="playerStreak">0 days</p>
+                </div>
+                <div class="xp-bar-container">
+                    <div class="xp-bar" id="xpBar" style="width: 0%;"></div>
+                    <div class="xp-text" id="xpText">0/100 XP</div>
+                </div>
+            </div>
+        </header>
 
-    <header>
-        <h1>Healer’s Odyssey</h1>
-        <p>Medical RPG Learning Adventure</p>
-    </header>
+        <div class="main-content">
+            <div class="sidebar">
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="#" class="nav-link active" data-section="world-map">
+                            <i class="fas fa-map"></i>
+                            <span>World Map</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-section="missions">
+                            <i class="fas fa-tasks"></i>
+                            <span>Missions</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-section="achievements">
+                            <i class="fas fa-trophy"></i>
+                            <span>Achievements</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-section="profile">
+                            <i class="fas fa-user"></i>
+                            <span>Profile</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-section="boss-battles">
+                            <i class="fas fa-swords"></i>
+                            <span>Boss Battles</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-section="library">
+                            <i class="fas fa-book"></i>
+                            <span>Medical Library</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
 
-    <section id="missions">
-        <h2>Missions</h2>
-        <button onclick="startMission('copd-case')">Start COPD Case Study</button>
-    </section>
+            <div class="content-area">
+                <!-- World Map Section -->
+                <div class="content-section" id="world-map">
+                    <h2 class="section-title">
+                        <i class="fas fa-map-marked-alt"></i>
+                        World Map
+                    </h2>
 
-    <section id="questionSection" style="display:none;">
-        <h2>Question</h2>
-        <p id="questionText"></p>
-        <div id="optionsList"></div>
-    </section>
+                    <div class="world-selector">
+                        <!-- Internal Medicine (Starter World) -->
+                        <div class="world-card active" data-world="internal-medicine">
+                            <div class="world-icon">
+                                <i class="fas fa-heartbeat"></i>
+                            </div>
+                            <h3>Internal Medicine</h3>
+                            <p>Final Fantasy World</p>
+                            <div class="progress" id="im-progress">0% Complete</div>
+                        </div>
+                        
+                        <!-- Pediatrics (Locked until Level 5) -->
+                        <div class="world-card locked" data-world="pediatrics" data-required-level="5">
+                            <div class="world-icon">
+                                <i class="fas fa-baby"></i>
+                            </div>
+                            <h3>Pediatrics</h3>
+                            <p>Dragon Quest World</p>
+                        </div>
+                        
+                        <!-- Surgery (Locked until Level 10) -->
+                        <div class="world-card locked" data-world="surgery" data-required-level="10">
+                            <div class="world-icon">
+                                <i class="fas fa-scalpel"></i>
+                            </div>
+                            <h3>Surgery</h3>
+                            <p>Octopath Traveler World</p>
+                        </div>
+                        
+                        <!-- Neurology (Locked until Level 15) -->
+                        <div class="world-card locked" data-world="neurology" data-required-level="15">
+                            <div class="world-icon">
+                                <i class="fas fa-brain"></i>
+                            </div>
+                            <h3>Neurology</h3>
+                            <p>Sea of Stars World</p>
+                        </div>
+                    </div>
 
-    <section id="achievements">
-        <h2>Achievements</h2>
-        <ul id="achievementsList"></ul>
-    </section>
+                    <div class="boss-section">
+                        <div class="boss-content">
+                            <h2 class="boss-title">Weekly Boss: <span id="bossName">Pathophysiology Phantom</span></h2>
+                            <p class="boss-subtitle">Defeat the boss by answering questions correctly!</p>
+                            
+                            <div class="boss-health">
+                                <div class="boss-health-bar" id="bossHealthBar" style="width: 100%;"></div>
+                                <div class="boss-health-text" id="bossHealthText">100% Health</div>
+                            </div>
+                            
+                            <div class="boss-image pulse" id="bossImage">
+                                <i class="fas fa-ghost"></i>
+                            </div>
+                            
+                            <p>Choose your attack strength:</p>
+                            <div class="boss-attack-options">
+                                <div class="attack-option attack-easy" data-difficulty="easy">
+                                    <i class="fas fa-sword"></i> Easy (+5 XP, 5 damage)
+                                </div>
+                                <div class="attack-option attack-medium" data-difficulty="medium">
+                                    <i class="fas fa-swords"></i> Medium (+10 XP, 10 damage)
+                                </div>
+                                <div class="attack-option attack-hard" data-difficulty="hard">
+                                    <i class="fas fa-fire"></i> Hard (+20 XP, 20 damage)
+                                </div>
+                            </div>
+                            
+                            <button class="btn btn-primary" id="challengeBossBtn">
+                                <i class="fas fa-fist-raised"></i> Challenge the Boss
+                            </button>
+                            
+                            <div class="boss-rewards">
+                                <div class="reward-item">
+                                    <div class="reward-icon">
+                                        <i class="fas fa-star"></i>
+                                    </div>
+                                    <div class="reward-amount">500 XP</div>
+                                </div>
+                                <div class="reward-item">
+                                    <div class="reward-icon">
+                                        <i class="fas fa-medal"></i>
+                                    </div>
+                                    <div class="reward-amount">"Bane of Patho" Title</div>
+                                </div>
+                                <div class="reward-item">
+                                    <div class="reward-icon">
+                                        <i class="fas fa-hat-wizard"></i>
+                                    </div>
+                                    <div class="reward-amount">Wizard Hat</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-    <script src="game.js"></script>
+                    <h2 class="section-title">
+                        <i class="fas fa-tasks"></i>
+                        Available Missions
+                    </h2>
+
+                    <div class="mission-list" id="missionList">
+                        <!-- Missions will be loaded here via JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Other sections (initially hidden) -->
+                <div class="content-section" id="missions" style="display: none;">
+                    <h2 class="section-title">
+                        <i class="fas fa-tasks"></i>
+                        All Missions
+                    </h2>
+                    <div id="allMissionsContainer"></div>
+                </div>
+
+                <div class="content-section" id="achievements" style="display: none;">
+                    <h2 class="section-title">
+                        <i class="fas fa-trophy"></i>
+                        Achievements
+                    </h2>
+                    <div class="achievements-grid" id="achievementsGrid"></div>
+                </div>
+
+                <div class="content-section" id="profile" style="display: none;">
+                    <h2 class="section-title">
+                        <i class="fas fa-user"></i>
+                        Your Profile
+                    </h2>
+                    <div id="profileContent"></div>
+                </div>
+
+                <div class="content-section" id="boss-battles" style="display: none;">
+                    <h2 class="section-title">
+                        <i class="fas fa-swords"></i>
+                        Boss Battle Arena
+                    </h2>
+                    <div id="bossBattlesContent"></div>
+                </div>
+
+                <div class="content-section" id="library" style="display: none;">
+                    <h2 class="section-title">
+                        <i class="fas fa-book"></i>
+                        Medical Library
+                    </h2>
+                    <div id="libraryContent"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MCQ Modal -->
+    <div class="modal" id="mcqModal">
+        <div class="modal-content">
+            <button class="close-modal">&times;</button>
+            
+            <div class="question-container">
+                <h3 id="questionTitle">Mission: Loading...</n>
+                <p class="question-text" id="questionText">
+                    Loading question...
+                </p>
+                
+                <ul class="options-list" id="optionsList">
+                    <!-- Options will be loaded here -->
+                </ul>
+                
+                <div class="feedback-section" id="feedbackSection">
+                    <p class="feedback-title">Explanation:</p>
+                    <p id="explanationText">Explanation will appear here.</p>
+                    
+                    <div class="xp-gained">
+                        <i class="fas fa-bolt"></i>
+                        <span id="xpGainedText">+0 XP gained</span>
+                    </div>
+                    
+                    <div class="streak-counter">
+                        <i class="fas fa-fire streak-icon"></i>
+                        <span id="streakCounter">0-day streak</span>
+                    </div>
+                </div>
+                
+                <button class="btn btn-primary next-btn" id="nextQuestionBtn">
+                    <i class="fas fa-arrow-right"></i> Next Question
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Victory Modal -->
+    <div class="modal" id="victoryModal">
+        <div class="modal-content" style="text-align: center;">
+            <button class="close-modal">&times;</button>
+            <div style="font-size: 60px; color: gold; margin: 20px 0;">
+                <i class="fas fa-trophy"></i>
+            </div>
+            <h2 style="font-size: 32px; color: gold; margin-bottom: 20px;">BOSS DEFEATED!</h2>
+            <h3 id="victoryBossName">Pathophysiology Phantom</h3>
+            <p>You've earned:</p>
+            <div class="boss-rewards" style="justify-content: center; margin: 20px 0;">
+                <div class="reward-item">
+                    <div class="reward-icon">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <div class="reward-amount" id="victoryXP">500 XP</div>
+                </div>
+                <div class="reward-item">
+                    <div class="reward-icon">
+                        <i class="fas fa-medal"></i>
+                    </div>
+                    <div class="reward-amount" id="victoryTitle">"Bane of Patho" Title</div>
+                </div>
+            </div>
+            <button class="btn btn-primary" id="claimRewardsBtn">
+                <i class="fas fa-gift"></i> Claim Rewards
+            </button>
+        </div>
+    </div>
+
+    <script src="js/game.js"></script>
 </body>
 </html>
