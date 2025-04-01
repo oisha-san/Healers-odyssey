@@ -6,15 +6,16 @@
     <title>Healer's Odyssey - Medical RPG</title>
     <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="./css/style.css" rel="stylesheet">
+    <link href="style.css" rel="stylesheet">
 </head>
 <body>
     <div class="container">
         <!-- Login Modal -->
         <div class="modal" id="loginModal">
             <div class="modal-content">
-                <button class="close-modal">&times;</button>
+                <button class="close-modal" aria-label="Close">&times;</button>
                 <h2>Login / Register</h2>
+                <div class="error-message" id="errorMessage"></div>
                 <form id="loginForm">
                     <div class="form-group">
                         <label for="username">Username</label>
@@ -25,14 +26,13 @@
                         <input type="password" id="password" required>
                     </div>
                     <button type="submit" class="btn btn-primary">Login</button>
-                    <button type="button" id="registerBtn" class="btn btn-outline">Register</button>
                 </form>
             </div>
         </div>
 
         <header>
             <div class="logo">
-                <img src="./images/logo.png" alt="Game Logo">
+                <img src="https://via.placeholder.com/50" alt="Game Logo">
                 <h1>Healer's Odyssey</h1>
             </div>
             <div class="player-stats">
@@ -43,10 +43,6 @@
                 <div class="stat-box">
                     <h3>Title</h3>
                     <p id="playerTitle">Medical Student</p>
-                </div>
-                <div class="stat-box">
-                    <h3>Streak</h3>
-                    <p id="playerStreak">0 days</p>
                 </div>
                 <div class="xp-bar-container">
                     <div class="xp-bar" id="xpBar"></div>
@@ -59,18 +55,8 @@
             <div class="sidebar">
                 <ul class="nav-menu">
                     <li class="nav-item">
-                        <a href="#" class="nav-link active" data-section="world-map">
-                            <i class="fas fa-map"></i> World Map
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link" data-section="missions">
+                        <a href="#" class="nav-link active" data-section="missions">
                             <i class="fas fa-tasks"></i> Missions
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link" data-section="profile">
-                            <i class="fas fa-user"></i> Profile
                         </a>
                     </li>
                     <li class="nav-item">
@@ -82,21 +68,10 @@
             </div>
 
             <div class="content-area">
-                <!-- World Map Section -->
-                <div class="content-section active" id="world-map">
-                    <h2 class="section-title"><i class="fas fa-map-marked-alt"></i> World Map</h2>
-                    <div class="world-selector">
-                        <!-- World cards would go here -->
-                    </div>
-                    
+                <!-- Missions Section -->
+                <div class="content-section active" id="missions">
                     <h2 class="section-title"><i class="fas fa-tasks"></i> Available Missions</h2>
                     <div class="mission-list" id="missionList"></div>
-                </div>
-
-                <!-- Profile Section -->
-                <div class="content-section" id="profile" style="display: none;">
-                    <h2 class="section-title"><i class="fas fa-user"></i> Profile</h2>
-                    <div id="profileContent"></div>
                 </div>
             </div>
         </div>
@@ -104,7 +79,7 @@
         <!-- MCQ Modal -->
         <div class="modal" id="mcqModal">
             <div class="modal-content">
-                <button class="close-modal">&times;</button>
+                <button class="close-modal" aria-label="Close">&times;</button>
                 <div class="question-container">
                     <h3 id="questionTitle">Mission: Loading...</h3>
                     <p class="question-text" id="questionText">Loading question...</p>
@@ -124,7 +99,6 @@
             </div>
         </div>
     </div>
-
-    <script src="./js/game.js"></script>
+    <script src="game.js"></script>
 </body>
 </html>
