@@ -21,32 +21,32 @@
                     <p id="playerLevel">1</p>
                 </div>
                 <div class="stat">
-                    <h3>Health</h3>
-                    <p id="playerHealth">100</p>
-                </div>
-                <div class="xp-bar">
-                    <div id="xpBar"></div>
+                    <h3>XP</h3>
+                    <div class="xp-bar">
+                        <div id="xpBar"></div>
+                    </div>
                 </div>
             </div>
         </header>
 
         <div class="world-selector">
-            <button onclick="switchWorld('internal-medicine')" class="world-btn ff-theme">Final Fantasy Realm</button>
-            <button onclick="switchWorld('surgery')" class="world-btn octopath-theme">Surgery Trials</button>
+            <button onclick="switchWorld('internal-medicine')" class="world-btn ff-theme">Internal Medicine</button>
+            <button onclick="switchWorld('surgery')" class="world-btn octopath-theme">Surgery</button>
         </div>
 
         <div class="main-content">
             <div class="mission-list" id="missionList"></div>
+            <button class="boss-btn" onclick="startBossBattle()">Challenge Boss</button>
         </div>
 
         <!-- Question Modal -->
         <div class="modal" id="questionModal">
             <div class="modal-content">
                 <h2 id="questionTitle"></h2>
-                <div id="questionText"></div>
+                <p id="questionText"></p>
                 <div id="optionsContainer"></div>
                 <div id="explanation" class="hidden"></div>
-                <button id="nextQuestion" class="btn hidden" onclick="nextQuestion()">Next</button>
+                <button id="nextBtn" class="btn hidden" onclick="nextQuestion()">Next</button>
             </div>
         </div>
 
@@ -63,7 +63,7 @@
                     </div>
                 </div>
                 <div id="battleLog"></div>
-                <button class="btn" onclick="attackBoss()">Attack</button>
+                <div class="attack-container" id="attackOptions"></div>
             </div>
         </div>
     </div>
