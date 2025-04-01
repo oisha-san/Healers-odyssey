@@ -16,17 +16,26 @@
     --world-color: #a0522d;
 }
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
 body {
     font-family: 'Poppins', sans-serif;
     background-color: var(--dark-bg);
     color: white;
+    margin: 0;
+    padding: 20px;
     min-height: 100vh;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 0;
+    border-bottom: 2px solid var(--secondary);
 }
 
 .world-selector {
@@ -36,20 +45,12 @@ body {
 }
 
 .world-btn {
-    background: var(--secondary);
     padding: 10px 20px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    font-weight: 600;
     transition: 0.3s;
-}
-
-.world-btn.ff-theme {
-    background: #1e90ff;
-}
-
-.world-btn.octopath-theme {
-    background: #a0522d;
 }
 
 .mission-card {
@@ -58,6 +59,11 @@ body {
     border-radius: 10px;
     cursor: pointer;
     transition: transform 0.2s;
+    margin-bottom: 15px;
+}
+
+.mission-card:hover {
+    transform: translateY(-5px);
 }
 
 .modal {
@@ -72,6 +78,14 @@ body {
     align-items: center;
 }
 
+.modal-content {
+    background: var(--light-bg);
+    padding: 30px;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 500px;
+}
+
 .health-bar {
     height: 20px;
     background: #444;
@@ -79,14 +93,15 @@ body {
     margin: 10px 0;
 }
 
-.health-fill {
-    height: 100%;
-    transition: width 0.3s;
+.attack-btn {
+    background: var(--accent);
+    border: none;
+    padding: 10px;
+    margin: 5px;
+    border-radius: 5px;
+    cursor: pointer;
 }
 
-.explanation {
-    margin-top: 20px;
-    padding: 10px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 5px;
+.hidden {
+    display: none;
 }
