@@ -5,16 +5,124 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Healer's Odyssey</title>
   <style>
-    /* Your existing CSS styles here */
+    /* Basic styling for layout and progress */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      line-height: 1.6;
+    }
+    h1, h2 {
+      color: #333;
+    }
+    .section {
+      margin-bottom: 30px;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+    .progress-bar {
+      width: 100%;
+      background-color: #ccc;
+      height: 20px;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-top: 5px;
+    }
+    .progress-fill {
+      height: 100%;
+      background-color: #76c7c0;
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+    button {
+      margin: 5px;
+      padding: 5px 10px;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+      background-color: #76c7c0;
+      color: white;
+    }
+    button:hover {
+      opacity: 0.9;
+    }
+    #chat-window {
+      border: 1px solid #ccc;
+      height: 200px;
+      overflow-y: auto;
+      padding: 10px;
+      background-color: #f9f9f9;
+    }
+    label {
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
-  <!-- Your HTML structure here -->
-
+  <h1>Healer's Odyssey</h1>
+  
+  <!-- XP Section -->
+  <div class="section" id="xp-section">
+    <h2>XP</h2>
+    <p>Current XP: <span id="current-xp">0</span></p>
+    <div class="progress-bar">
+      <div id="xp-progress" class="progress-fill"></div>
+    </div>
+    <p id="prestige-message"></p>
+    <button onclick="resetXP()">Reset Progress (Prestige)</button>
+  </div>
+  
+  <!-- Multiple Choice Questions Section -->
+  <div class="section" id="mcq-section">
+    <h2>Multiple Choice Questions</h2>
+    <label for="specialty-select">Select Specialty:</label>
+    <select id="specialty-select">
+      <option value="cardiology" selected>Cardiology</option>
+      <!-- Add more specialties as needed -->
+    </select>
+    <button onclick="fetchQuestion()">Get Question</button>
+    <div id="mcq-content"></div>
+    <div id="mcq-explanation"></div>
+  </div>
+  
+  <!-- Missions Section -->
+  <div class="section" id="mission-section">
+    <h2>Missions</h2>
+    <label for="mission-specialty-select">Select Specialty:</label>
+    <select id="mission-specialty-select">
+      <option value="cardiology" selected>Cardiology</option>
+      <!-- Add more specialties as needed -->
+    </select>
+    <button onclick="fetchMission()">Get Mission</button>
+    <div id="mission-content"></div>
+    <div id="mission-explanation"></div>
+  </div>
+  
+  <!-- Boss Battles Section -->
+  <div class="section" id="boss-section">
+    <h2>Boss Battles</h2>
+    <label for="boss-specialty-select">Select Specialty:</label>
+    <select id="boss-specialty-select">
+      <option value="cardiology" selected>Cardiology</option>
+      <!-- Add more specialties as needed -->
+    </select>
+    <button onclick="fetchBoss()">Get Boss</button>
+    <div id="boss-content"></div>
+    <div id="boss-explanation"></div>
+  </div>
+  
+  <!-- Chat Section -->
+  <div class="section" id="chat-section">
+    <h2>Chat with the Oracle</h2>
+    <div id="chat-window"></div>
+    <input type="text" id="chat-input" placeholder="Type your message here" style="width: 80%;" />
+    <button onclick="sendChat()">Send</button>
+  </div>
+  
   <script>
     // Global configuration
-    const API_BASE_URL = "http://localhost:3000"; // Change for production
-    const userId = "localUser"; // Replace with dynamic ID in real apps
+    const API_BASE_URL = "http://localhost:3000"; // Change for production if needed
+    const userId = "localUser"; // Replace with dynamic ID in real applications
     let currentXP = 0;
 
     // XP Management
@@ -64,8 +172,8 @@
                 this
               )">${key}: ${val}</button>`).join('')}
           </div>
-          <div id="mcq-explanation" style="display: none;"></div>
         `;
+        document.getElementById('mcq-explanation').style.display = 'block';
       } catch (err) {
         container.innerHTML = "Failed to load question. Check console.";
         console.error(err);
@@ -129,8 +237,8 @@
                 this
               )">${key}: ${val}</button>`).join('')}
           </div>
-          <div id="mission-explanation" style="display: none;"></div>
         `;
+        document.getElementById('mission-explanation').style.display = 'block';
       } catch (err) {
         container.innerHTML = "Failed to load mission. Check console.";
         console.error(err);
@@ -193,8 +301,8 @@
                 this
               )">${key}: ${val}</button>`).join('')}
           </div>
-          <div id="boss-explanation" style="display: none;"></div>
         `;
+        document.getElementById('boss-explanation').style.display = 'block';
       } catch (err) {
         container.innerHTML = "Failed to load boss. Check console.";
         console.error(err);
