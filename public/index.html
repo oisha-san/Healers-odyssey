@@ -1,1 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Healer's Odyssey</title>
+  <style>
+    /* Your existing CSS styles here */
+  </style>
+</head>
+<body>
+  <!-- Your HTML structure here -->
 
+  <script>
+    // Global configuration
+    const API_BASE_URL = "http://localhost:3000"; // Change for production
+    const userId = "localUser"; // Replace with dynamic ID in real apps
+    let currentXP = 0;
+
+    // XP Management
+    async function updateXP(newTotalXP) {
+      currentXP = newTotalXP;
+      document.getElementById('current-xp').innerText = currentXP;
+      const progress = (currentXP % 100);
+      document.getElementById('xp-progress').style.width = `${progress}%`;
+    }
+
+    async function resetXP() {
+      if (confirm("Reset all progress? This cannot be undone.")) {
+        try {
+          await fetch(`${API_BASE_URL}/api/reset`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId })
+          });
+          updateXP(0);
+          document.getElementById('prestige-message').innerText = 'Prestige Mode Activated!';
+        } catch (err) {
+          alert("Reset failed. Please try again.");
+        }
+      }
+    }
+
+    // MCQ Functions
+    async function fetchQuestion() {
+      const specialty = document.getElementById('specialty-select').value;
+      const container = document.getElementById('mcq-content');
+      container.innerHTML = "Loading...";
+
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/question?topic=${specialty}`);
+        const data = await res.json();
+
+        container.innerHTML = `
+          <div class="question">${data.question}</div>
+          <div class="answers">
+            ${Object.entries(data.options).map(([key, val]) => 
+              `<button onclick="submitAnswer(
+                '${encodeURIComponent(data.question)}',
+                '${key}',
+                '${data.correct}',
+                ${data.xp},
+                '${encodeURIComponent(data.explanation)}',
+                this
+              )">${key}: ${val}</button>`).join('')}
+          </div>
+          <div id="mcq-explanation" style="display: none;"></div>
+        `;
+      } catch (err) {
+        container.innerHTML = "Failed to load question. Check console.";
+        console.error(err);
+      }
+    }
+
+    async function submitAnswer(question, selected, correct, xp, explanation, btn) {
+      const buttons = btn.parentElement.querySelectorAll("button");
+      buttons.forEach(b => b.disabled = true);
+
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/answer`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userId,
+            question: decodeURIComponent(question),
+            selected,
+            correct,
+            xp
+          })
+        });
+
+        const result = await res.json();
+        const expDiv = document.getElementById('mcq-explanation');
+
+        if (result.awarded > 0) {
+          updateXP(result.totalXP);
+          expDiv.style.color = "#76c7c0";
+          expDiv.innerHTML = `✅ Correct! ${decodeURIComponent(explanation)}`;
+        } else {
+          expDiv.style.color = "#e57373";
+          expDiv.innerHTML = `🚫 Already answered. ${decodeURIComponent(explanation)}`;
+        }
+      } catch (err) {
+        alert("Submission failed. Please try again.");
+      }
+    }
+
+    // Mission Functions
+    async function fetchMission() {
+      const specialty = document.getElementById('mission-specialty-select').value;
+      const container = document.getElementById('mission-content');
+      container.innerHTML = "Loading mission...";
+
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/mission?topic=${specialty}`);
+        const data = await res.json();
+
+        container.innerHTML = `
+          <div class="question">Mission: ${data.title}</div>
+          <p>${data.story}</p>
+          <div class="answers">
+            ${Object.entries(data.options).map(([key, val]) => 
+              `<button onclick="submitMission(
+                '${encodeURIComponent(data.title)}',
+                '${key}',
+                '${data.correct}',
+                ${data.xp},
+                '${encodeURIComponent(data.explanation)}',
+                this
+              )">${key}: ${val}</button>`).join('')}
+          </div>
+          <div id="mission-explanation" style="display: none;"></div>
+        `;
+      } catch (err) {
+        container.innerHTML = "Failed to load mission. Check console.";
+        console.error(err);
+      }
+    }
+
+    async function submitMission(title, selected, correct, xp, explanation, btn) {
+      const buttons = btn.parentElement.querySelectorAll("button");
+      buttons.forEach(b => b.disabled = true);
+
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/answer`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userId,
+            question: decodeURIComponent(title),
+            selected,
+            correct,
+            xp
+          })
+        });
+
+        const result = await res.json();
+        const expDiv = document.getElementById('mission-explanation');
+
+        if (result.awarded > 0) {
+          updateXP(result.totalXP);
+          expDiv.style.color = "#76c7c0";
+          expDiv.innerHTML = `✅ Success! ${decodeURIComponent(explanation)}`;
+        } else {
+          expDiv.style.color = "#e57373";
+          expDiv.innerHTML = `🚫 Already completed. ${decodeURIComponent(explanation)}`;
+        }
+      } catch (err) {
+        alert("Submission failed. Please try again.");
+      }
+    }
+
+    // Boss Battle Functions
+    async function fetchBoss() {
+      const specialty = document.getElementById('boss-specialty-select').value;
+      const container = document.getElementById('boss-content');
+      container.innerHTML = "Loading boss...";
+
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/boss?topic=${specialty}`);
+        const data = await res.json();
+
+        container.innerHTML = `
+          <div class="question">Boss Battle: ${data.question}</div>
+          <div class="answers">
+            ${Object.entries(data.options).map(([key, val]) => 
+              `<button onclick="submitBoss(
+                '${encodeURIComponent(data.question)}',
+                '${key}',
+                '${data.correct}',
+                ${data.xp},
+                '${encodeURIComponent(data.explanation)}',
+                this
+              )">${key}: ${val}</button>`).join('')}
+          </div>
+          <div id="boss-explanation" style="display: none;"></div>
+        `;
+      } catch (err) {
+        container.innerHTML = "Failed to load boss. Check console.";
+        console.error(err);
+      }
+    }
+
+    async function submitBoss(question, selected, correct, xp, explanation, btn) {
+      const buttons = btn.parentElement.querySelectorAll("button");
+      buttons.forEach(b => b.disabled = true);
+
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/answer`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userId,
+            question: decodeURIComponent(question),
+            selected,
+            correct,
+            xp
+          })
+        });
+
+        const result = await res.json();
+        const expDiv = document.getElementById('boss-explanation');
+
+        if (result.awarded > 0) {
+          updateXP(result.totalXP);
+          expDiv.style.color = "#76c7c0";
+          expDiv.innerHTML = `🔥 Boss Defeated! ${decodeURIComponent(explanation)}`;
+        } else {
+          expDiv.style.color = "#e57373";
+          expDiv.innerHTML = `🛡️ Already defeated. ${decodeURIComponent(explanation)}`;
+        }
+      } catch (err) {
+        alert("Submission failed. Please try again.");
+      }
+    }
+
+    // Chat System
+    async function sendChat() {
+      const input = document.getElementById('chat-input');
+      const message = input.value.trim();
+      if (!message) return;
+
+      const chatWindow = document.getElementById('chat-window');
+      chatWindow.innerHTML += `<p><strong>You:</strong> ${message}</p>`;
+      input.value = '';
+
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/chat`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message })
+        });
+
+        const data = await res.json();
+        chatWindow.innerHTML += `<p><strong>Oracle:</strong> ${data.response}</p>`;
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+      } catch (err) {
+        chatWindow.innerHTML += `<p>Chat failed. Please try again.</p>`;
+      }
+    }
+  </script>
+</body>
+</html>
