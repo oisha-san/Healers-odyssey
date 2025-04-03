@@ -1,4 +1,4 @@
-// Add "type": "module" to your package.json first!
+// Ensure "type": "module" is set in package.json
 import express from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
@@ -13,13 +13,13 @@ app.use(bodyParser.json());
 const adapter = new FileSync('db.json');
 const db = low(adapter);
 
+// Initialize the database if empty
 await db.read();
 db.data = db.data || { users: {} };
 await db.write();
 
 // Local datasets for questions, missions, and boss challenges
 const questions = [
-  // Cardiology questions
   {
     topic: "cardiology",
     question: "What is the normal resting heart rate for an adult?",
@@ -28,11 +28,10 @@ const questions = [
     explanation: "The normal resting heart rate for an adult is between 60 and 100 beats per minute.",
     xp: 10
   },
-  // ... (keep your existing questions)
+  // ... add other questions as needed
 ];
 
 const missions = [
-  // Cardiology mission
   {
     topic: "cardiology",
     title: "The Lost Pulse",
@@ -42,11 +41,10 @@ const missions = [
     explanation: "An ECG is the essential first step in diagnosing cardiac irregularities.",
     xp: 20
   },
-  // ... (keep your existing missions)
+  // ... add other missions as needed
 ];
 
 const bossChallenges = [
-  // Cardiology boss
   {
     topic: "cardiology",
     question: "Which electrolyte imbalance is most likely to cause dangerous cardiac arrhythmias?",
@@ -55,31 +53,42 @@ const bossChallenges = [
     explanation: "Hyperkalemia can lead to life-threatening arrhythmias.",
     xp: 30
   },
-  // ... (keep your existing boss challenges)
+  // ... add other boss challenges as needed
 ];
 
 // API Endpoints
+
+// Retrieve a random question by topic
 app.get('/api/question', (req, res) => {
   const topic = req.query.topic || "cardiology";
   const filtered = questions.filter(q => q.topic.toLowerCase() === topic.toLowerCase());
-  if (!filtered.length) return res.status(404).json({ error: "No questions found" });
+  if (!filtered.length) {
+    return res.status(404).json({ error: "No questions found" });
+  }
   res.json(filtered[Math.floor(Math.random() * filtered.length)]);
 });
 
+// Retrieve a random mission by topic
 app.get('/api/mission', (req, res) => {
   const topic = req.query.topic || "cardiology";
   const filtered = missions.filter(m => m.topic.toLowerCase() === topic.toLowerCase());
-  if (!filtered.length) return res.status(404).json({ error: "No missions found" });
+  if (!filtered.length) {
+    return res.status(404).json({ error: "No missions found" });
+  }
   res.json(filtered[Math.floor(Math.random() * filtered.length)]);
 });
 
+// Retrieve a random boss challenge by topic
 app.get('/api/boss', (req, res) => {
   const topic = req.query.topic || "cardiology";
   const filtered = bossChallenges.filter(b => b.topic.toLowerCase() === topic.toLowerCase());
-  if (!filtered.length) return res.status(404).json({ error: "No bosses found" });
+  if (!filtered.length) {
+    return res.status(404).json({ error: "No bosses found" });
+  }
   res.json(filtered[Math.floor(Math.random() * filtered.length)]);
 });
 
+// Submit an answer for a question
 app.post('/api/answer', async (req, res) => {
   const { userId, question, selected, correct, xp } = req.body;
   await db.read();
@@ -90,19 +99,22 @@ app.post('/api/answer', async (req, res) => {
   }
 
   user.answered.push(question);
-  if (selected === correct) user.xp += xp;
+  if (selected === correct) {
+    user.xp += xp;
+  }
 
   db.data.users[userId] = user;
   await db.write();
   res.json({ awarded: selected === correct ? xp : 0, totalXP: user.xp });
 });
 
+// Chat endpoint for in-game dialogue or hints
 app.post('/api/chat', (req, res) => {
   const { message } = req.body;
   let response = "I sense a great journey ahead.";
   if (message.toLowerCase().includes("challenge")) {
     response = "Prepare yourself for the next mission – danger and glory await!";
-  } else if (message.match(/(lore|story)/i)) {
+  } else if (/(lore|story)/i.test(message)) {
     response = "Long ago, the realms were forged in healing light. Each specialty holds its own secrets.";
   } else if (message.includes("help")) {
     response = "Ask me about missions, bosses, or lore!";
@@ -110,7 +122,7 @@ app.post('/api/chat', (req, res) => {
   res.json({ response });
 });
 
-// New prestige endpoint
+// Reset (prestige) endpoint to clear user progress
 app.post('/api/reset', async (req, res) => {
   const { userId } = req.body;
   db.data.users[userId] = { answered: [], xp: 0 };
@@ -119,4 +131,4 @@ app.post('/api/reset', async (req, res) => {
 });
 
 const PORT = 3000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`)); 
