@@ -88,7 +88,7 @@ app.get('/api/boss', (req, res) => {
   res.json(filtered[Math.floor(Math.random() * filtered.length)]);
 });
 
-// Submit an answer for a question
+// Submit an answer for a question, mission, or boss challenge
 app.post('/api/answer', async (req, res) => {
   const { userId, question, selected, correct, xp } = req.body;
   await db.read();
@@ -131,4 +131,4 @@ app.post('/api/reset', async (req, res) => {
 });
 
 const PORT = 3000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`)); 
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
