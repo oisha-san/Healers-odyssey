@@ -120,8 +120,7 @@
   </div>
   
   <script>
-    // Global configuration
-    const API_BASE_URL = "http://localhost:3000"; // Change for production if needed
+    const API_BASE_URL = "https://your-new-backend-url.onrender.com"; // Replace with the new Render backend URL
     const userId = "localUser"; // Replace with dynamic ID in real applications
     let currentXP = 0;
 
@@ -360,7 +359,8 @@
         });
 
         const data = await res.json();
-        chatWindow.innerHTML += `<p><strong>Oracle:</strong> ${data.response}</p>`;
+        const response = data.response || "The Oracle is silent...";
+        chatWindow.innerHTML += `<p><strong>Oracle:</strong> ${response}</p>`;
         chatWindow.scrollTop = chatWindow.scrollHeight;
       } catch (err) {
         chatWindow.innerHTML += `<p>Chat failed. Please try again.</p>`;
