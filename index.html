@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Healer's Odyssey</title>
+  <style>
+    /* Basic styling for layout and progress */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      line-height: 1.6;
+    }
+    h1, h2 {
+      color: #333;
+    }
+    .section {
+      margin-bottom: 30px;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+    .progress-bar {
+      width: 100%;
+      background-color: #ccc;
+      height: 20px;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-top: 5px;
+    }
+    .progress-fill {
+      height: 100%;
+      background-color: #76c7c0;
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+    button {
+      margin: 5px;
+      padding: 5px 10px;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+      background-color: #76c7c0;
+      color: white;
+    }
+    button:hover {
+      opacity: 0.9;
+    }
+    #chat-window {
+      border: 1px solid #ccc;
+      height: 200px;
+      overflow-y: auto;
+      padding: 10px;
+      background-color: #f9f9f9;
+    }
+    label {
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>Healer's Odyssey</h1>
+  
+  <!-- XP Section -->
+  <div class="section" id="xp-section">
+    <h2>XP</h2>
+    <p>Current XP: <span id="current-xp">0</span></p>
+    <div class="progress-bar">
+      <div id="xp-progress" class="progress-fill"></div>
+    </div>
+    <p id="prestige-message"></p>
+    <button onclick="resetXP()">Reset Progress (Prestige)</button>
+  </div>
+  
+  <!-- Multiple Choice Questions Section -->
+  <div class="section" id="mcq-section">
+    <h2>Multiple Choice Questions</h2>
+    <label for="specialty-select">Select Specialty:</label>
+    <select id="specialty-select">
+      <option value="cardiology" selected>Cardiology</option>
+      <!-- Add more specialties as needed -->
+    </select>
+    <button onclick="fetchQuestion()">Get Question</button>
+    <div id="mcq-content"></div>
+    <div id="mcq-explanation"></div>
+  </div>
+  
+  <!-- Missions Section -->
+  <div class="section" id="mission-section">
+    <h2>Missions</h2>
+    <label for="mission-specialty-select">Select Specialty:</label>
+    <select id="mission-specialty-select">
+      <option value="cardiology" selected>Cardiology</option>
+      <!-- Add more specialties as needed -->
+    </select>
+    <button onclick="fetchMission()">Get Mission</button>
+    <div id="mission-content"></div>
+    <div id="mission-explanation"></div>
+  </div>
+  
+  <!-- Boss Battles Section -->
+  <div class="section" id="boss-section">
+    <h2>Boss Battles</h2>
+    <label for="boss-specialty-select">Select Specialty:</label>
+    <select id="boss-specialty-select">
+      <option value="cardiology" selected>Cardiology</option>
+      <!-- Add more specialties as needed -->
+    </select>
+    <button onclick="fetchBoss()">Get Boss</button>
+    <div id="boss-content"></div>
+    <div id="boss-explanation"></div>
+  </div>
+  
+  <!-- Chat Section -->
+  <div class="section" id="chat-section">
+    <h2>Chat with the Oracle</h2>
+    <div id="chat-window"></div>
+    <input type="text" id="chat-input" placeholder="Type your message here" style="width: 80%;" />
+    <button onclick="sendChat()">Send</button>
+  </div>
+  
+  <script>
+    const API_BASE_URL = "https://healers-odyssey-1.onrender.com"; // Replace with your Render backend URL
+    const userId = "localUser"; // Replace with dynamic ID in real applications
+    let currentXP = 0;
+
+    // XP Management
+    async function updateXP(newTotalXP) {
+      currentXP = newTotalXP;
+      document.getElementById('current-xp').innerText = currentXP;
+      const progress = (currentXP % 100);
+      document.getElementById('xp-progress').style.width = `${progress}%`;
+    }
+
+    async function resetXP() {
+      if (confirm("Reset all progress? This cannot be undone.")) {
+        try {
+          await fetch(`${API_BASE_URL}/api/reset`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId })
+          });
+          updateXP(0);
+          document.getElementById('prestige-message').innerText = 'Prestige Mode Activated!';
+        } catch (err) {
+          alert("Reset failed. Please try again.");
+        }
+      }
+    }
+
+    // MCQ Functions
+    async function fetchQuestion() {
+      const specialty = document.getElementById('specialty-select').value;
+      const container = document.getElementById('mcq-content');
+      container.innerHTML = "Loading...";
+
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/question?topic=${specialty}`);
+        const data = await res.json();
+
+        container.innerHTML = `
+          <div class="question">${data.question}</div>
+          <div class="answers">
+            ${Object.entries(data.options).map(([key, val]) => 
+              `<button onclick="submitAnswer(
+                '${encodeURIComponent(data.question)}',
+                '${key}',
+                '${data.correct}',
+                ${data.xp},
+                '${encodeURIComponent(data.explanation)}',
+                this
+              )">${key}: ${val}</button>`).join('')}
+          </div>
+        `;
+        document.getElementById('mcq-explanation').style.display = 'block';
+      } catch (err) {
+        container.innerHTML = "Failed to load question. Check console.";
+        console.error(err);
+      }
+    }
+
+    async function submitAnswer(question, selected, correct, xp, explanation, btn) {
+      const buttons = btn.parentElement.querySelectorAll("button");
+      buttons.forEach(b => b.disabled = true);
+
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/answer`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userId,
+            question: decodeURIComponent(question),
+            selected,
+            correct,
+            xp
+          })
+        });
+
+        const result = await res.json();
+        const expDiv = document.getElementById('mcq-explanation');
+
+        if (result.awarded > 0) {
+          updateXP(result.totalXP);
+          expDiv.style.color = "#76c7c0";
+          expDiv.innerHTML = `✅ Correct! ${decodeURIComponent(explanation)}`;
+        } else {
+          expDiv.style.color = "#e57373";
+          expDiv.innerHTML = `🚫 Already answered. ${decodeURIComponent(explanation)}`;
+        }
+      } catch (err) {
+        alert("Submission failed. Please try again.");
+      }
+    }
+
+    // Mission Functions
+    async function fetchMission() {
+      const specialty = document.getElementById('mission-specialty-select').value;
+      const container = document.getElementById('mission-content');
+      container.innerHTML = "Loading mission...";
+
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/mission?topic=${specialty}`);
+        const data = await res.json();
+
+        container.innerHTML = `
+          <div class="question">Mission: ${data.title}</div>
+          <p>${data.story}</p>
+          <div class="answers">
+            ${Object.entries(data.options).map(([key, val]) => 
+              `<button onclick="submitMission(
+                '${encodeURIComponent(data.title)}',
+                '${key}',
+                '${data.correct}',
+                ${data.xp},
+                '${encodeURIComponent(data.explanation)}',
+                this
+              )">${key}: ${val}</button>`).join('')}
+          </div>
+        `;
+        document.getElementById('mission-explanation').style.display = 'block';
+      } catch (err) {
+        container.innerHTML = "Failed to load mission. Check console.";
+        console.error(err);
+      }
+    }
+
+    async function submitMission(title, selected, correct, xp, explanation, btn) {
+      const buttons = btn.parentElement.querySelectorAll("button");
+      buttons.forEach(b => b.disabled = true);
+
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/answer`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userId,
+            question: decodeURIComponent(title),
+            selected,
+            correct,
+            xp
+          })
+        });
+
+        const result = await res.json();
+        const expDiv = document.getElementById('mission-explanation');
+
+        if (result.awarded > 0) {
+          updateXP(result.totalXP);
+          expDiv.style.color = "#76c7c0";
+          expDiv.innerHTML = `✅ Success! ${decodeURIComponent(explanation)}`;
+        } else {
+          expDiv.style.color = "#e57373";
+          expDiv.innerHTML = `🚫 Already completed. ${decodeURIComponent(explanation)}`;
+        }
+      } catch (err) {
+        alert("Submission failed. Please try again.");
+      }
+    }
+
+    // Boss Battle Functions
+    async function fetchBoss() {
+      const specialty = document.getElementById('boss-specialty-select').value;
+      const container = document.getElementById('boss-content');
+      container.innerHTML = "Loading boss...";
+
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/boss?topic=${specialty}`);
+        const data = await res.json();
+
+        container.innerHTML = `
+          <div class="question">Boss Battle: ${data.question}</div>
+          <div class="answers">
+            ${Object.entries(data.options).map(([key, val]) => 
+              `<button onclick="submitBoss(
+                '${encodeURIComponent(data.question)}',
+                '${key}',
+                '${data.correct}',
+                ${data.xp},
+                '${encodeURIComponent(data.explanation)}',
+                this
+              )">${key}: ${val}</button>`).join('')}
+          </div>
+        `;
+        document.getElementById('boss-explanation').style.display = 'block';
+      } catch (err) {
+        container.innerHTML = "Failed to load boss. Check console.";
+        console.error(err);
+      }
+    }
+
+    async function submitBoss(question, selected, correct, xp, explanation, btn) {
+      const buttons = btn.parentElement.querySelectorAll("button");
+      buttons.forEach(b => b.disabled = true);
+
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/answer`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userId,
+            question: decodeURIComponent(question),
+            selected,
+            correct,
+            xp
+          })
+        });
+
+        const result = await res.json();
+        const expDiv = document.getElementById('boss-explanation');
+
+        if (result.awarded > 0) {
+          updateXP(result.totalXP);
+          expDiv.style.color = "#76c7c0";
+          expDiv.innerHTML = `🔥 Boss Defeated! ${decodeURIComponent(explanation)}`;
+        } else {
+          expDiv.style.color = "#e57373";
+          expDiv.innerHTML = `🛡️ Already defeated. ${decodeURIComponent(explanation)}`;
+        }
+      } catch (err) {
+        alert("Submission failed. Please try again.");
+      }
+    }
+
+    // Chat System
+    async function sendChat() {
+      const input = document.getElementById('chat-input');
+      const message = input.value.trim();
+      if (!message) return;
+
+      const chatWindow = document.getElementById('chat-window');
+      chatWindow.innerHTML += `<p><strong>You:</strong> ${message}</p>`;
+      input.value = '';
+
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/chat`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message })
+        });
+
+        const data = await res.json();
+        const response = data.response || "The Oracle is silent...";
+        chatWindow.innerHTML += `<p><strong>Oracle:</strong> ${response}</p>`;
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+      } catch (err) {
+        chatWindow.innerHTML += `<p>Chat failed. Please try again.</p>`;
+      }
+    }
+  </script>
+</body>
+</html>

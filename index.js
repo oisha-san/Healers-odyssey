@@ -12,8 +12,8 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(bodyParser.json());
 
-// Serve static files from the "public" directory
-app.use(express.static('public'));
+// Serve static files from the root directory
+app.use(express.static('.'));
 
 // Database setup using JSONFile adapter (async)
 const adapter = new JSONFile('db.json');
