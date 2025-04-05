@@ -168,18 +168,14 @@ function randomizeAnswers(question) {
 
 // API Endpoints
 
-// Retrieve a random question by specialty, excluding already answered questions
+// Fix the questions endpoint
 app.get('/api/question', async (req, res) => {
   try {
-    const topic = req.query.topic; // Ensure topic is provided
-    const userId = req.query.userId; // Ensure userId is provided
+    const topic = req.query.topic;
+    const userId = req.query.userId;
 
-    if (!topic) {
-      return res.status(400).json({ error: "Topic is required" });
-    }
-
-    if (!userId) {
-      return res.status(400).json({ error: "User ID is required" });
+    if (!topic || !userId) {
+      return res.status(400).json({ error: "Topic and User ID are required" });
     }
 
     await db.read();
@@ -191,13 +187,12 @@ app.get('/api/question', async (req, res) => {
     }
 
     const filtered = questions.filter(q => !user.answered.includes(q.question));
-
     if (!filtered.length) {
       return res.status(404).json({ error: "No new questions available" });
     }
 
     const randomQuestion = filtered[Math.floor(Math.random() * filtered.length)];
-    const randomizedQuestion = randomizeAnswers(randomQuestion); // Randomize answers
+    const randomizedQuestion = randomizeAnswers(randomQuestion);
 
     res.json(randomizedQuestion);
   } catch (error) {
@@ -206,30 +201,25 @@ app.get('/api/question', async (req, res) => {
   }
 });
 
-// Retrieve a random mission by topic, excluding already completed missions
+// Fix the missions endpoint
 app.get('/api/mission', async (req, res) => {
   try {
-    const topic = req.query.topic; // Ensure topic is provided
-    const userId = req.query.userId; // Ensure userId is provided
+    const topic = req.query.topic;
+    const userId = req.query.userId;
 
-    if (!topic) {
-      return res.status(400).json({ error: "Topic is required" });
-    }
-
-    if (!userId) {
-      return res.status(400).json({ error: "User ID is required" });
+    if (!topic || !userId) {
+      return res.status(400).json({ error: "Topic and User ID are required" });
     }
 
     await db.read();
-    const user = db.data.users[userId] || { completedMissions: [], xp: 0 };
+    const user = db.data.users[userId] || { completedMissions: [] };
 
     const missionsForTopic = missions[topic.toLowerCase()];
     if (!missionsForTopic) {
       return res.status(404).json({ error: "Specialty not found" });
     }
 
-    const filtered = missionsForTopic.filter(m => !user.completedMissions?.includes(m.title));
-
+    const filtered = missionsForTopic.filter(m => !user.completedMissions.includes(m.title));
     if (!filtered.length) {
       return res.status(404).json({ error: "No new missions available" });
     }
@@ -241,30 +231,25 @@ app.get('/api/mission', async (req, res) => {
   }
 });
 
-// Retrieve a random boss challenge by topic, excluding already defeated bosses
+// Fix the boss battles endpoint
 app.get('/api/boss', async (req, res) => {
   try {
-    const topic = req.query.topic; // Ensure topic is provided
-    const userId = req.query.userId; // Ensure userId is provided
+    const topic = req.query.topic;
+    const userId = req.query.userId;
 
-    if (!topic) {
-      return res.status(400).json({ error: "Topic is required" });
-    }
-
-    if (!userId) {
-      return res.status(400).json({ error: "User ID is required" });
+    if (!topic || !userId) {
+      return res.status(400).json({ error: "Topic and User ID are required" });
     }
 
     await db.read();
-    const user = db.data.users[userId] || { defeatedBosses: [], xp: 0 };
+    const user = db.data.users[userId] || { defeatedBosses: [] };
 
     const bossesForTopic = bossChallenges[topic.toLowerCase()];
     if (!bossesForTopic) {
       return res.status(404).json({ error: "Specialty not found" });
     }
 
-    const filtered = bossesForTopic.filter(b => !user.defeatedBosses?.includes(b.question));
-
+    const filtered = bossesForTopic.filter(b => !user.defeatedBosses.includes(b.question));
     if (!filtered.length) {
       return res.status(404).json({ error: "No new bosses available" });
     }
@@ -320,6 +305,7 @@ app.post('/api/answer', async (req, res) => {
 
     db.data.users[userId] = user;
     await db.write(); // Save progress to db.json
+
     res.json({ awarded: selected === correct ? xp : 0, totalXP: user.xp });
   } catch (error) {
     console.error('Error processing answer:', error);
@@ -339,6 +325,7 @@ app.post('/api/reset', async (req, res) => {
 
     db.data.users[userId] = { answered: [], xp: 0 };
     await db.write();
+
     res.json({ success: true });
   } catch (error) {
     console.error('Error resetting user progress:', error);
@@ -355,6 +342,7 @@ app.get('/api/leaderboard', async (req, res) => {
       .map(([userId, userData]) => ({ name: userId, xp: userData.xp || 0 }))
       .sort((a, b) => b.xp - a.xp)
       .slice(0, 10); // Top 10 players
+
     res.json(leaderboard);
   } catch (error) {
     console.error('Error fetching leaderboard:', error);
@@ -367,6 +355,7 @@ app.post('/api/signup', async (req, res) => {
   try {
     const { username, password } = req.body;
 
+    // Validate input
     if (!username || !password) {
       return res.status(400).json({ error: "Username and password are required." });
     }
@@ -395,6 +384,7 @@ app.post('/api/login', async (req, res) => {
   try {
     const { username, password } = req.body;
 
+    // Validate input
     if (!username || !password) {
       return res.status(400).json({ error: "Username and password are required." });
     }
@@ -411,6 +401,38 @@ app.post('/api/login', async (req, res) => {
   } catch (error) {
     console.error("Error during login:", error);
     res.status(500).json({ error: "Internal server error." });
+  }
+});
+
+// Prestige logic
+app.post('/api/prestige', async (req, res) => {
+  try {
+    const { userId } = req.body;
+
+    // Validate input
+    if (!userId) {
+      return res.status(400).json({ error: "User ID is required" });
+    }
+
+    await db.read();
+    const user = db.data.users[userId] || { xp: 0, level: 1, prestige: 0 };
+
+    if (user.level < 100) {
+      return res.status(400).json({ error: "Level 100 required to Prestige" });
+    }
+
+    user.prestige = (user.prestige || 0) + 1;
+    user.level = 1;
+    user.xp = 0;
+    user.title = `Prestige ${user.prestige}`;
+
+    db.data.users[userId] = user;
+    await db.write();
+
+    res.json({ success: true, title: user.title });
+  } catch (error) {
+    console.error("Error processing prestige:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 });
 
