@@ -45,102 +45,116 @@ await initializeDatabase();
 const questions = [
   {
     topic: "cardiology",
-    question: "What is the normal resting heart rate for an adult?",
-    options: { A: "60-100 bpm", B: "40-60 bpm", C: "100-120 bpm" },
+    question: "A 55-year-old male presents with crushing chest pain lasting 30 minutes, radiating to the jaw. ECG shows ST-segment elevation in leads II, III, and aVF. What is the most likely diagnosis?",
+    options: { A: "Inferior myocardial infarction", B: "Pericarditis", C: "Aortic dissection" },
     correct: "A",
-    explanation: "The normal resting heart rate for an adult is between 60 and 100 beats per minute.",
-    xp: 10
-  },
-  {
-    topic: "cardiology",
-    question: "A 65-year-old male presents with chest pain radiating to the left arm. What is the most likely diagnosis?",
-    options: { A: "Myocardial infarction", B: "Pneumothorax", C: "Gastroesophageal reflux disease" },
-    correct: "A",
-    explanation: "Chest pain radiating to the left arm is a classic symptom of myocardial infarction.",
+    explanation: "ST-segment elevation in leads II, III, and aVF is indicative of an inferior myocardial infarction.",
     xp: 20
   },
   {
     topic: "cardiology",
-    question: "A patient with a history of hypertension presents with shortness of breath and bilateral leg swelling. What is the most likely cause?",
-    options: { A: "Heart failure", B: "Pulmonary embolism", C: "Asthma" },
+    question: "A 70-year-old female with a history of atrial fibrillation presents with sudden onset of left-sided weakness and slurred speech. What is the most likely cause?",
+    options: { A: "Ischemic stroke", B: "Transient ischemic attack", C: "Subarachnoid hemorrhage" },
     correct: "A",
-    explanation: "Shortness of breath and bilateral leg swelling are common symptoms of heart failure.",
-    xp: 20
+    explanation: "Atrial fibrillation increases the risk of ischemic stroke due to embolism formation.",
+    xp: 25
   },
-  // ... add other questions as needed
+  {
+    topic: "cardiology",
+    question: "A 60-year-old male with a history of hypertension presents with tearing chest pain radiating to the back. Chest X-ray shows a widened mediastinum. What is the next best step?",
+    options: { A: "CT angiography", B: "ECG", C: "Echocardiography" },
+    correct: "A",
+    explanation: "CT angiography is the diagnostic test of choice for suspected aortic dissection.",
+    xp: 30
+  },
+  // ... add more challenging questions for other topics...
 ];
 
 const missions = [
   {
     topic: "cardiology",
-    title: "The Lost Pulse",
-    story: "A mysterious patient arrives with irregular heartbeats. Investigate the cause and determine your first diagnostic step.",
-    options: { A: "Order an ECG", B: "Schedule an MRI", C: "Prescribe medication immediately" },
+    title: "The Silent Arrhythmia",
+    story: "A 45-year-old patient presents with palpitations and dizziness. ECG reveals an irregularly irregular rhythm with no distinct P waves. What is your diagnosis?",
+    options: { A: "Atrial fibrillation", B: "Ventricular tachycardia", C: "Sinus arrhythmia" },
     correct: "A",
-    explanation: "An ECG is the essential first step in diagnosing cardiac irregularities.",
-    xp: 20
-  },
-  {
-    topic: "cardiology",
-    title: "The Silent Killer",
-    story: "A 55-year-old patient with no prior symptoms suddenly collapses. You suspect a cardiac event. What is your immediate action?",
-    options: { A: "Perform CPR", B: "Administer aspirin", C: "Call for an MRI" },
-    correct: "A",
-    explanation: "Immediate CPR is critical in cases of sudden cardiac arrest.",
+    explanation: "An irregularly irregular rhythm with no distinct P waves is characteristic of atrial fibrillation.",
     xp: 30
   },
   {
     topic: "cardiology",
-    title: "The Racing Heart",
-    story: "A 40-year-old patient complains of a racing heart and dizziness. What is your first diagnostic step?",
-    options: { A: "Order an ECG", B: "Perform a stress test", C: "Administer beta-blockers" },
+    title: "The Collapsing Patient",
+    story: "A 65-year-old male collapses in the emergency room. His blood pressure is 70/40 mmHg, and jugular venous distension is noted. What is the most likely diagnosis?",
+    options: { A: "Cardiac tamponade", B: "Pulmonary embolism", C: "Septic shock" },
     correct: "A",
-    explanation: "An ECG is the first diagnostic step to evaluate arrhythmias.",
-    xp: 25
+    explanation: "Hypotension, jugular venous distension, and collapse are classic signs of cardiac tamponade.",
+    xp: 35
   },
-  // ... add other missions as needed
+  {
+    topic: "cardiology",
+    title: "The Racing Pulse",
+    story: "A 50-year-old patient presents with a heart rate of 180 bpm and narrow QRS complexes on ECG. What is the first-line treatment?",
+    options: { A: "Adenosine", B: "Amiodarone", C: "Beta-blockers" },
+    correct: "A",
+    explanation: "Adenosine is the first-line treatment for supraventricular tachycardia with narrow QRS complexes.",
+    xp: 40
+  },
+  // ... add more challenging missions for other topics...
 ];
 
 const bossChallenges = [
   {
     topic: "cardiology",
-    question: "Which electrolyte imbalance is most likely to cause dangerous cardiac arrhythmias?",
-    options: { A: "Hyperkalemia", B: "Hypokalemia", C: "Hyponatremia" },
+    question: "A 75-year-old male with a history of coronary artery disease presents with sudden onset of severe dyspnea. Examination reveals a holosystolic murmur at the apex radiating to the axilla. What is the most likely cause?",
+    options: { A: "Acute mitral regurgitation", B: "Aortic stenosis", C: "Ventricular septal defect" },
     correct: "A",
-    explanation: "Hyperkalemia can lead to life-threatening arrhythmias.",
-    xp: 30
+    explanation: "Acute mitral regurgitation can occur due to papillary muscle rupture in the setting of myocardial infarction.",
+    xp: 50
   },
   {
     topic: "cardiology",
-    question: "A 70-year-old patient presents with severe chest pain, hypotension, and jugular venous distension. What is the most likely diagnosis?",
-    options: { A: "Cardiac tamponade", B: "Aortic dissection", C: "Pulmonary embolism" },
+    question: "A 60-year-old female presents with syncope and a systolic crescendo-decrescendo murmur at the right upper sternal border. What is the most likely diagnosis?",
+    options: { A: "Aortic stenosis", B: "Hypertrophic cardiomyopathy", C: "Mitral regurgitation" },
     correct: "A",
-    explanation: "The triad of chest pain, hypotension, and jugular venous distension is classic for cardiac tamponade.",
-    xp: 40
+    explanation: "Aortic stenosis presents with a systolic crescendo-decrescendo murmur and can cause syncope.",
+    xp: 45
   },
   {
     topic: "cardiology",
-    question: "A patient with atrial fibrillation is at risk of which serious complication?",
-    options: { A: "Stroke", B: "Myocardial infarction", C: "Heart failure" },
+    question: "A 50-year-old male with a history of hypertension presents with sudden onset of chest pain and unequal blood pressure in both arms. What is the most likely diagnosis?",
+    options: { A: "Aortic dissection", B: "Pulmonary embolism", C: "Myocardial infarction" },
     correct: "A",
-    explanation: "Atrial fibrillation increases the risk of stroke due to thrombus formation in the atria.",
-    xp: 35
+    explanation: "Unequal blood pressure in both arms is a classic finding in aortic dissection.",
+    xp: 50
   },
-  // ... add other boss challenges as needed
+  // ... add more challenging boss challenges for other topics...
 ];
 
 // API Endpoints
 
-// Retrieve a random question by topic
-app.get('/api/question', (req, res) => {
+// Retrieve a random question by topic, excluding already answered questions
+app.get('/api/question', async (req, res) => {
   try {
     const topic = req.query.topic || "cardiology";
-    const filtered = questions.filter(q => q.topic.toLowerCase() === topic.toLowerCase());
-    if (!filtered.length) {
-      return res.status(404).json({ error: "No questions found" });
+    const userId = req.query.userId;
+
+    if (!userId) {
+      return res.status(400).json({ error: "User ID is required" });
     }
+
+    await db.read();
+    const user = db.data.users[userId] || { answered: [], xp: 0 };
+
+    const filtered = questions.filter(
+      q => q.topic.toLowerCase() === topic.toLowerCase() && !user.answered.includes(q.question)
+    );
+
+    if (!filtered.length) {
+      return res.status(404).json({ error: "No new questions available" });
+    }
+
     res.json(filtered[Math.floor(Math.random() * filtered.length)]);
   } catch (error) {
+    console.error("Error fetching question:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 });
