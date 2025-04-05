@@ -10,6 +10,8 @@
       font-family: Arial, sans-serif;
       margin: 20px;
       line-height: 1.6;
+      background: url('/images/background.png') no-repeat center center fixed; /* Ensure the correct path */
+      background-size: cover;
     }
     h1, h2 {
       color: #333;
@@ -55,6 +57,49 @@
     }
     label {
       font-weight: bold;
+    }
+
+    /* Add spinner animation */
+    #loading-spinner {
+      display: none;
+      margin: 20px auto;
+      border: 5px solid #ccc;
+      border-top: 5px solid #76c7c0;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* Enhance leaderboard */
+    #leaderboard {
+      margin-top: 20px;
+      padding: 10px;
+      border: 2px solid #ffd700;
+      border-radius: 5px;
+      background-color: rgba(0, 0, 0, 0.7);
+      color: #ffd700;
+    }
+
+    #leaderboard ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    #leaderboard li {
+      margin: 5px 0;
+      padding: 5px;
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 5px;
     }
   </style>
 </head>
@@ -119,6 +164,22 @@
     <button onclick="sendChat()">Send</button>
   </div>
   
+  <!-- Add spinner -->
+  <div id="loading-spinner"></div>
+
+  <!-- Enhance leaderboard -->
+  <div class="section" id="leaderboard">
+    <h2>Leaderboard</h2>
+    <ul id="leaderboard-list">
+      <!-- Leaderboard entries will be dynamically added here -->
+    </ul>
+  </div>
+
+  <audio id="background-music" loop autoplay>
+    <source src="/audio/background-music.mp3" type="audio/mpeg"> <!-- Ensure the correct path -->
+    Your browser does not support the audio element.
+  </audio>
+
   <script>
     const API_BASE_URL = "https://healers-odyssey-1.onrender.com"; // Replace with your Render backend URL
     const userId = "localUser"; // Replace with dynamic ID in real applications
@@ -366,6 +427,37 @@
         chatWindow.innerHTML += `<p>Chat failed. Please try again.</p>`;
       }
     }
+
+    // Show loading spinner
+    function showLoadingSpinner() {
+      document.getElementById('loading-spinner').style.display = 'block';
+    }
+
+    // Hide loading spinner
+    function hideLoadingSpinner() {
+      document.getElementById('loading-spinner').style.display = 'none';
+    }
+
+    // Fetch leaderboard
+    async function fetchLeaderboard() {
+      showLoadingSpinner();
+      const leaderboardList = document.getElementById('leaderboard-list');
+      leaderboardList.innerHTML = "Loading...";
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/leaderboard`);
+        const data = await res.json();
+        leaderboardList.innerHTML = data.map(player => `<li>${player.name}: ${player.xp} XP</li>`).join('');
+      } catch (err) {
+        leaderboardList.innerHTML = "Failed to load leaderboard.";
+      } finally {
+        hideLoadingSpinner();
+      }
+    }
+
+    // Fetch leaderboard on page load
+    window.onload = () => {
+      fetchLeaderboard();
+    };
   </script>
 </body>
 </html>

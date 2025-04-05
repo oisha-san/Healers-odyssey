@@ -326,8 +326,29 @@ app.post('/api/reset', async (req, res) => {
   }
 });
 
+// Add leaderboard endpoint
+app.get('/api/leaderboard', async (req, res) => {
+  try {
+    await db.read();
+    const users = db.data.users || {};
+    const leaderboard = Object.entries(users)
+      .map(([userId, userData]) => ({ name: userId, xp: userData.xp || 0 }))
+      .sort((a, b) => b.xp - a.xp)
+      .slice(0, 10); // Top 10 players
+    res.json(leaderboard);
+  } catch (error) {
+    console.error('Error fetching leaderboard:', error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 app.get('/', (req, res) => {
   res.send('Server is running!');
+});
+
+// Catch-all route to serve the frontend
+app.get('*', (req, res) => {
+  res.sendFile('/workspaces/Healers-odyssey/public/index.html');
 });
 
 app.listen(PORT, () => {
