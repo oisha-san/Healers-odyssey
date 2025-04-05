@@ -41,97 +41,64 @@ async function initializeDatabase() {
 await ensureDatabaseFile();
 await initializeDatabase();
 
-// Local datasets for questions, missions, and boss challenges
-const questions = [
-  {
-    topic: "cardiology",
-    question: "A 55-year-old male presents with crushing chest pain lasting 30 minutes, radiating to the jaw. ECG shows ST-segment elevation in leads II, III, and aVF. What is the most likely diagnosis?",
-    options: { A: "Inferior myocardial infarction", B: "Pericarditis", C: "Aortic dissection" },
-    correct: "A",
-    explanation: "ST-segment elevation in leads II, III, and aVF is indicative of an inferior myocardial infarction.",
-    xp: 20
-  },
-  {
-    topic: "cardiology",
-    question: "A 70-year-old female with a history of atrial fibrillation presents with sudden onset of left-sided weakness and slurred speech. What is the most likely cause?",
-    options: { A: "Ischemic stroke", B: "Transient ischemic attack", C: "Subarachnoid hemorrhage" },
-    correct: "A",
-    explanation: "Atrial fibrillation increases the risk of ischemic stroke due to embolism formation.",
-    xp: 25
-  },
-  {
-    topic: "cardiology",
-    question: "A 60-year-old male with a history of hypertension presents with tearing chest pain radiating to the back. Chest X-ray shows a widened mediastinum. What is the next best step?",
-    options: { A: "CT angiography", B: "ECG", C: "Echocardiography" },
-    correct: "A",
-    explanation: "CT angiography is the diagnostic test of choice for suspected aortic dissection.",
-    xp: 30
-  },
-  // ... add more challenging questions for other topics...
-];
-
-const missions = [
-  {
-    topic: "cardiology",
-    title: "The Silent Arrhythmia",
-    story: "A 45-year-old patient presents with palpitations and dizziness. ECG reveals an irregularly irregular rhythm with no distinct P waves. What is your diagnosis?",
-    options: { A: "Atrial fibrillation", B: "Ventricular tachycardia", C: "Sinus arrhythmia" },
-    correct: "A",
-    explanation: "An irregularly irregular rhythm with no distinct P waves is characteristic of atrial fibrillation.",
-    xp: 30
-  },
-  {
-    topic: "cardiology",
-    title: "The Collapsing Patient",
-    story: "A 65-year-old male collapses in the emergency room. His blood pressure is 70/40 mmHg, and jugular venous distension is noted. What is the most likely diagnosis?",
-    options: { A: "Cardiac tamponade", B: "Pulmonary embolism", C: "Septic shock" },
-    correct: "A",
-    explanation: "Hypotension, jugular venous distension, and collapse are classic signs of cardiac tamponade.",
-    xp: 35
-  },
-  {
-    topic: "cardiology",
-    title: "The Racing Pulse",
-    story: "A 50-year-old patient presents with a heart rate of 180 bpm and narrow QRS complexes on ECG. What is the first-line treatment?",
-    options: { A: "Adenosine", B: "Amiodarone", C: "Beta-blockers" },
-    correct: "A",
-    explanation: "Adenosine is the first-line treatment for supraventricular tachycardia with narrow QRS complexes.",
-    xp: 40
-  },
-  // ... add more challenging missions for other topics...
-];
-
-const bossChallenges = [
-  {
-    topic: "cardiology",
-    question: "A 75-year-old male with a history of coronary artery disease presents with sudden onset of severe dyspnea. Examination reveals a holosystolic murmur at the apex radiating to the axilla. What is the most likely cause?",
-    options: { A: "Acute mitral regurgitation", B: "Aortic stenosis", C: "Ventricular septal defect" },
-    correct: "A",
-    explanation: "Acute mitral regurgitation can occur due to papillary muscle rupture in the setting of myocardial infarction.",
-    xp: 50
-  },
-  {
-    topic: "cardiology",
-    question: "A 60-year-old female presents with syncope and a systolic crescendo-decrescendo murmur at the right upper sternal border. What is the most likely diagnosis?",
-    options: { A: "Aortic stenosis", B: "Hypertrophic cardiomyopathy", C: "Mitral regurgitation" },
-    correct: "A",
-    explanation: "Aortic stenosis presents with a systolic crescendo-decrescendo murmur and can cause syncope.",
-    xp: 45
-  },
-  {
-    topic: "cardiology",
-    question: "A 50-year-old male with a history of hypertension presents with sudden onset of chest pain and unequal blood pressure in both arms. What is the most likely diagnosis?",
-    options: { A: "Aortic dissection", B: "Pulmonary embolism", C: "Myocardial infarction" },
-    correct: "A",
-    explanation: "Unequal blood pressure in both arms is a classic finding in aortic dissection.",
-    xp: 50
-  },
-  // ... add more challenging boss challenges for other topics...
-];
+const specialties = {
+  cardiology: [
+    {
+      question: "A 55-year-old male presents with crushing chest pain lasting 30 minutes, radiating to the jaw. ECG shows ST-segment elevation in leads II, III, and aVF. What is the most likely diagnosis?",
+      options: { A: "Inferior myocardial infarction", B: "Pericarditis", C: "Aortic dissection" },
+      correct: "A",
+      explanation: "ST-segment elevation in leads II, III, and aVF is indicative of an inferior myocardial infarction.",
+      xp: 20
+    },
+    {
+      question: "A 70-year-old female with a history of atrial fibrillation presents with sudden onset of left-sided weakness and slurred speech. What is the most likely cause?",
+      options: { A: "Ischemic stroke", B: "Transient ischemic attack", C: "Subarachnoid hemorrhage" },
+      correct: "A",
+      explanation: "Atrial fibrillation increases the risk of ischemic stroke due to embolism formation.",
+      xp: 25
+    },
+    // ...add 48 more cardiology questions...
+  ],
+  neurology: [
+    {
+      question: "A 65-year-old male presents with resting tremor, bradykinesia, and rigidity. What is the most likely diagnosis?",
+      options: { A: "Parkinson's disease", B: "Essential tremor", C: "Multiple sclerosis" },
+      correct: "A",
+      explanation: "Resting tremor, bradykinesia, and rigidity are hallmark features of Parkinson's disease.",
+      xp: 20
+    },
+    {
+      question: "A 30-year-old female presents with sudden onset of unilateral vision loss and pain with eye movement. What is the most likely diagnosis?",
+      options: { A: "Optic neuritis", B: "Retinal detachment", C: "Migraine with aura" },
+      correct: "A",
+      explanation: "Optic neuritis is a common presentation of multiple sclerosis and causes unilateral vision loss with pain on eye movement.",
+      xp: 25
+    },
+    // ...add 48 more neurology questions...
+  ],
+  pulmonology: [
+    {
+      question: "A 60-year-old male with a 40-pack-year smoking history presents with chronic cough, sputum production, and dyspnea. What is the most likely diagnosis?",
+      options: { A: "Chronic obstructive pulmonary disease (COPD)", B: "Asthma", C: "Bronchiectasis" },
+      correct: "A",
+      explanation: "Chronic cough, sputum production, and dyspnea in a smoker are classic features of COPD.",
+      xp: 20
+    },
+    {
+      question: "A 35-year-old female presents with sudden onset of pleuritic chest pain and dyspnea. She recently underwent surgery. What is the most likely diagnosis?",
+      options: { A: "Pulmonary embolism", B: "Pneumothorax", C: "Pneumonia" },
+      correct: "A",
+      explanation: "Sudden onset of pleuritic chest pain and dyspnea in a postoperative patient is highly suggestive of pulmonary embolism.",
+      xp: 25
+    },
+    // ...add 48 more pulmonology questions...
+  ],
+  // ...add more specialties like gastroenterology, nephrology, endocrinology, etc...
+};
 
 // API Endpoints
 
-// Retrieve a random question by topic, excluding already answered questions
+// Retrieve a random question by specialty, excluding already answered questions
 app.get('/api/question', async (req, res) => {
   try {
     const topic = req.query.topic || "cardiology";
@@ -144,9 +111,12 @@ app.get('/api/question', async (req, res) => {
     await db.read();
     const user = db.data.users[userId] || { answered: [], xp: 0 };
 
-    const filtered = questions.filter(
-      q => q.topic.toLowerCase() === topic.toLowerCase() && !user.answered.includes(q.question)
-    );
+    const questions = specialties[topic.toLowerCase()];
+    if (!questions) {
+      return res.status(404).json({ error: "Specialty not found" });
+    }
+
+    const filtered = questions.filter(q => !user.answered.includes(q.question));
 
     if (!filtered.length) {
       return res.status(404).json({ error: "No new questions available" });
