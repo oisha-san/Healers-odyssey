@@ -16,7 +16,7 @@ app.use(bodyParser.json());
 app.use(express.static('.'));
 
 // Serve static files from the "public" directory
-app.use(express.static('public'));
+app.use(express.static('public')); // Ensure static files are served from the "public" directory
 
 // Database setup using JSONFile adapter (async)
 const adapter = new JSONFile('/tmp/db.json'); // Use Render's writable directory
