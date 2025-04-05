@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Healer's Odyssey</title>
+  <link rel="stylesheet" href="./styles/main.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <div class="logo">Healer's Odyssey</div>
+    <ul class="nav-links">
+      <li><a href="#xp-section">XP</a></li>
+      <li><a href="#mcq-section">Quests</a></li>
+      <li><a href="#mission-section">Missions</a></li>
+      <li><a href="#boss-section">Boss Battles</a></li>
+      <li><button id="dark-mode-toggle">Dark Mode</button></li>
+    </ul>
+  </nav>
+
+  <!-- Hero Section -->
+  <header class="hero">
+    <h1>Welcome to Healer's Odyssey</h1>
+    <p>Embark on a journey to save the world of medicine!</p>
+    <button onclick="startAdventure()">Start Adventure</button>
+    <p id="adventure-message" style="color: red; display: none;">Adventure mode is not yet implemented.</p>
+  </header>
+
+  <!-- XP Section -->
+  <div class="section" id="xp-section">
+    <h2>XP Progress</h2>
+    <p>Current XP: <span id="current-xp">0</span></p>
+    <p>Level: <span id="current-level">1</span></p>
+    <div class="progress-bar">
+      <div id="xp-progress" class="progress-fill"></div>
+    </div>
+    <p id="prestige-message"></p>
+    <button onclick="resetXP()">Reset Progress (Prestige)</button>
+  </div>
+
+  <!-- Multiple Choice Questions Section -->
+  <div class="section" id="mcq-section">
+    <h2>Quests</h2>
+    <label for="specialty-select">Choose Your Specialty:</label>
+    <select id="specialty-select">
+      <option value="cardiology" selected>Cardiology</option>
+      <option value="neurology">Neurology</option>
+      <option value="pulmonology">Pulmonology</option>
+    </select>
+    <button onclick="fetchQuestion()">Start Quest</button>
+    <div id="mcq-content">
+      <!-- Question will be dynamically inserted here -->
+    </div>
+    <div id="mcq-explanation" style="margin-top: 20px; color: green;">
+      <!-- Explanation will be dynamically inserted here -->
+    </div>
+  </div>
+
+  <!-- Missions Section -->
+  <div class="section" id="mission-section">
+    <h2>Missions</h2>
+    <label for="mission-specialty-select">Choose Your Specialty:</label>
+    <select id="mission-specialty-select">
+      <option value="cardiology" selected>Cardiology</option>
+      <option value="neurology">Neurology</option>
+      <option value="pulmonology">Pulmonology</option>
+    </select>
+    <button onclick="fetchMission()">Start Mission</button>
+    <div id="mission-content"></div>
+    <div id="mission-explanation"></div>
+  </div>
+
+  <!-- Boss Battles Section -->
+  <div class="section" id="boss-section">
+    <h2>Boss Battles</h2>
+    <label for="boss-specialty-select">Choose Your Specialty:</label>
+    <select id="boss-specialty-select">
+      <option value="cardiology" selected>Cardiology</option>
+      <option value="neurology">Neurology</option>
+      <option value="pulmonology">Pulmonology</option>
+    </select>
+    <button onclick="fetchBoss()">Challenge Boss</button>
+    <div id="boss-content"></div>
+    <div id="boss-explanation"></div>
+  </div>
+
+  <!-- Music Player -->
+  <audio id="background-music" controls autoplay loop>
+    <source src="./assets/background-music.mp3" type="audio/mpeg" />
+    Your browser does not support the audio element.
+  </audio>
+
+  <script src="./scripts/main.js"></script>
+  <script>
+    // Ensure startAdventure() is defined
+    function startAdventure() {
+      const message = document.getElementById('adventure-message');
+      message.style.display = 'block';
+      message.innerText = "Adventure mode is not yet implemented.";
+    }
+  </script>
+</body>
+</html>
