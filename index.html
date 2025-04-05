@@ -12,7 +12,7 @@
       font-family: 'MedievalSharp', cursive;
       margin: 0;
       padding: 0;
-      background: url('https://i.imgur.com/8zZ4qkG.jpg') no-repeat center center fixed; /* Updated background */
+      background: url('/images/background.jpg') no-repeat center center fixed; /* Use local image */
       background-size: cover;
       color: #f4f4f4;
     }
@@ -31,6 +31,7 @@
       border-radius: 10px;
       background-color: rgba(0, 0, 0, 0.8);
       box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+      animation: fadeIn 1s ease-in-out;
     }
 
     .progress-bar {
@@ -40,6 +41,7 @@
       border-radius: 10px;
       overflow: hidden;
       margin-top: 5px;
+      box-shadow: 0 0 10px #76c7c0;
     }
 
     .progress-fill {
@@ -59,6 +61,7 @@
       color: #ffd700;
       font-size: 16px;
       text-shadow: 1px 1px 2px #000;
+      animation: pulse 1.5s infinite;
     }
 
     button:hover {
@@ -95,10 +98,46 @@
       border-radius: 5px;
       background-color: rgba(0, 0, 0, 0.7);
     }
+
+    #avatar {
+      display: block;
+      margin: 20px auto;
+      width: 150px;
+      height: 150px;
+      border: 3px solid #ffd700;
+      border-radius: 50%;
+      background: url('/images/avatar.png') no-repeat center center;
+      background-size: cover;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.1);
+      }
+    }
   </style>
 </head>
 <body>
+  <audio id="background-music" loop autoplay>
+    <source src="/audio/background-music.mp3" type="audio/mpeg">
+    Your browser does not support the audio element.
+  </audio>
+
   <h1>Healer's Odyssey</h1>
+  <div id="avatar"></div>
   
   <!-- XP Section -->
   <div class="section" id="xp-section">
@@ -161,6 +200,12 @@
     const userId = "localUser"; // Replace with dynamic ID in real applications
     let currentXP = 0;
 
+    // Play sound effect
+    function playSoundEffect(sound) {
+      const audio = new Audio(`/audio/${sound}.mp3`);
+      audio.play();
+    }
+
     // Fetch user progress on page load
     async function fetchUserProgress() {
       try {
@@ -182,6 +227,7 @@
       document.getElementById('current-xp').innerText = currentXP;
       const progress = (currentXP % 100);
       document.getElementById('xp-progress').style.width = `${progress}%`;
+      playSoundEffect('xp-gain');
     }
 
     async function resetXP() {
@@ -194,6 +240,7 @@
           });
           updateXP(0);
           document.getElementById('prestige-message').innerText = 'Prestige Mode Activated!';
+          playSoundEffect('reset');
         } catch (err) {
           alert("Reset failed. Please try again.");
         }
@@ -228,6 +275,7 @@
           </div>
         `;
         document.getElementById('mcq-explanation').style.display = 'block';
+        playSoundEffect('quest-start');
       } catch (err) {
         container.innerHTML = "Failed to load question. Check console.";
         console.error(err);
@@ -258,9 +306,11 @@
           updateXP(result.totalXP);
           expDiv.style.color = "#76c7c0";
           expDiv.innerHTML = `✅ Correct! ${decodeURIComponent(explanation)}`;
+          playSoundEffect('correct-answer');
         } else {
           expDiv.style.color = "#e57373";
           expDiv.innerHTML = `🚫 Already answered. ${decodeURIComponent(explanation)}`;
+          playSoundEffect('wrong-answer');
         }
       } catch (err) {
         alert("Submission failed. Please try again.");
@@ -296,6 +346,7 @@
           </div>
         `;
         document.getElementById('mission-explanation').style.display = 'block';
+        playSoundEffect('mission-start');
       } catch (err) {
         container.innerHTML = "Failed to load mission. Check console.";
         console.error(err);
@@ -326,9 +377,11 @@
           updateXP(result.totalXP);
           expDiv.style.color = "#76c7c0";
           expDiv.innerHTML = `✅ Success! ${decodeURIComponent(explanation)}`;
+          playSoundEffect('correct-answer');
         } else {
           expDiv.style.color = "#e57373";
           expDiv.innerHTML = `🚫 Already completed. ${decodeURIComponent(explanation)}`;
+          playSoundEffect('wrong-answer');
         }
       } catch (err) {
         alert("Submission failed. Please try again.");
@@ -363,6 +416,7 @@
           </div>
         `;
         document.getElementById('boss-explanation').style.display = 'block';
+        playSoundEffect('boss-start');
       } catch (err) {
         container.innerHTML = "Failed to load boss. Check console.";
         console.error(err);
@@ -393,9 +447,11 @@
           updateXP(result.totalXP);
           expDiv.style.color = "#76c7c0";
           expDiv.innerHTML = `🔥 Boss Defeated! ${decodeURIComponent(explanation)}`;
+          playSoundEffect('boss-defeated');
         } else {
           expDiv.style.color = "#e57373";
           expDiv.innerHTML = `🛡️ Already defeated. ${decodeURIComponent(explanation)}`;
+          playSoundEffect('wrong-answer');
         }
       } catch (err) {
         alert("Submission failed. Please try again.");
