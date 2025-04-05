@@ -16,14 +16,14 @@ app.use(bodyParser.json());
 app.use(express.static('.'));
 
 // Database setup using JSONFile adapter (async)
-const adapter = new JSONFile('db.json');
+const adapter = new JSONFile('/tmp/db.json'); // Use Render's writable directory
 const db = new Low(adapter);
 
 async function ensureDatabaseFile() {
   try {
-    await fs.access('db.json');
+    await fs.access('/tmp/db.json');
   } catch {
-    await fs.writeFile('db.json', JSON.stringify({ users: {} }, null, 2));
+    await fs.writeFile('/tmp/db.json', JSON.stringify({ users: {} }, null, 2));
   }
 }
 
@@ -150,24 +150,6 @@ app.post('/api/answer', async (req, res) => {
     res.json({ awarded: selected === correct ? xp : 0, totalXP: user.xp });
   } catch (error) {
     console.error('Error processing answer:', error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
-
-// Chat endpoint for in-game dialogue or hints
-app.post('/api/chat', (req, res) => {
-  try {
-    const { message } = req.body;
-    let response = "I sense a great journey ahead.";
-    if (message.toLowerCase().includes("challenge")) {
-      response = "Prepare yourself for the next mission – danger and glory await!";
-    } else if (/(lore|story)/i.test(message)) {
-      response = "Long ago, the realms were forged in healing light. Each specialty holds its own secrets.";
-    } else if (message.includes("help")) {
-      response = "Ask me about missions, bosses, or lore!";
-    }
-    res.json({ response });
-  } catch (error) {
     res.status(500).json({ error: "Internal server error" });
   }
 });
