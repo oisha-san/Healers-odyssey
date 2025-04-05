@@ -12,7 +12,7 @@
       font-family: 'MedievalSharp', cursive;
       margin: 0;
       padding: 0;
-      background: url('/images/background.png') no-repeat center center fixed; /* Ensure the correct path to the PNG background */
+      background: url('./images/background.png') no-repeat center center fixed; /* Use relative path */
       background-size: cover;
       color: #f4f4f4;
     }
@@ -106,26 +106,9 @@
       height: 150px;
       border: 3px solid #ffd700;
       border-radius: 50%;
-      background: url('/images/avatar.png') no-repeat center center;
+      background: url('./images/avatar.png') no-repeat center center; /* Use relative path */
       background-size: cover;
       box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
-    }
-
-    #leaderboard {
-      margin-top: 20px;
-      padding: 10px;
-      border: 2px solid #ffd700;
-      border-radius: 5px;
-      background-color: rgba(0, 0, 0, 0.7);
-    }
-
-    #chat-window {
-      border: 2px solid #ffd700;
-      height: 200px;
-      overflow-y: auto;
-      padding: 10px;
-      background-color: rgba(0, 0, 0, 0.7);
-      color: #ffd700;
     }
 
     #loading-spinner {
@@ -169,7 +152,7 @@
 </head>
 <body>
   <audio id="background-music" loop autoplay>
-    <source src="/audio/background-music.mp3" type="audio/mpeg"> <!-- Ensure the correct path to the background music -->
+    <source src="./audio/background-music.mp3" type="audio/mpeg"> <!-- Use relative path -->
     Your browser does not support the audio element.
   </audio>
 
@@ -187,24 +170,6 @@
     <p id="prestige-message"></p>
     <button onclick="resetXP()">Reset Progress (Prestige)</button>
   </div>
-  
-  <!-- Leaderboard Section -->
-  <div class="section" id="leaderboard">
-    <h2>Leaderboard</h2>
-    <ul id="leaderboard-list">
-      <!-- Leaderboard entries will be dynamically added here -->
-    </ul>
-  </div>
-  
-  <!-- Chat Section -->
-  <div class="section" id="chat-section">
-    <h2>Chat with the Oracle</h2>
-    <div id="chat-window"></div>
-    <input type="text" id="chat-input" placeholder="Type your message here" style="width: 80%;" />
-    <button onclick="sendChat()">Send</button>
-  </div>
-
-  <div id="loading-spinner"></div>
   
   <!-- Multiple Choice Questions Section -->
   <div class="section" id="mcq-section">
@@ -257,12 +222,6 @@
     let currentXP = 0;
     let currentLevel = 1;
 
-    // Play sound effect
-    function playSoundEffect(sound) {
-      const audio = new Audio(`/audio/${sound}.mp3`);
-      audio.play();
-    }
-
     // Fetch user progress on page load
     async function fetchUserProgress() {
       try {
@@ -289,7 +248,6 @@
 
       const progress = (currentXP % 100);
       document.getElementById('xp-progress').style.width = `${progress}%`;
-      playSoundEffect('xp-gain');
     }
 
     async function resetXP() {
@@ -302,267 +260,15 @@
           });
           updateXP(0);
           document.getElementById('prestige-message').innerText = 'Prestige Mode Activated!';
-          playSoundEffect('reset');
         } catch (err) {
           alert("Reset failed. Please try again.");
         }
       }
     }
 
-    // Leaderboard
-    async function fetchLeaderboard() {
-      const leaderboardList = document.getElementById('leaderboard-list');
-      leaderboardList.innerHTML = "Loading...";
-      try {
-        const res = await fetch(`${API_BASE_URL}/api/leaderboard`);
-        const data = await res.json();
-        leaderboardList.innerHTML = data.map(player => `<li>${player.name}: ${player.xp} XP</li>`).join('');
-      } catch (err) {
-        leaderboardList.innerHTML = "Failed to load leaderboard.";
-      }
-    }
-
-    // Chat System
-    async function sendChat() {
-      const input = document.getElementById('chat-input');
-      const message = input.value.trim();
-      if (!message) return;
-
-      const chatWindow = document.getElementById('chat-window');
-      chatWindow.innerHTML += `<p><strong>You:</strong> ${message}</p>`;
-      input.value = '';
-
-      try {
-        const res = await fetch(`${API_BASE_URL}/api/chat`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ message })
-        });
-
-        const data = await res.json();
-        const response = data.response || "The Oracle is silent...";
-        chatWindow.innerHTML += `<p><strong>Oracle:</strong> ${response}</p>`;
-        chatWindow.scrollTop = chatWindow.scrollHeight;
-      } catch (err) {
-        chatWindow.innerHTML += `<p>Chat failed. Please try again.</p>`;
-      }
-    }
-
-    // MCQ Functions
-    async function fetchQuestion() {
-      const specialty = document.getElementById('specialty-select').value;
-      const container = document.getElementById('mcq-content');
-      container.innerHTML = "Loading...";
-
-      try {
-        const res = await fetch(`${API_BASE_URL}/api/question?topic=${specialty}&userId=${userId}`);
-        if (!res.ok) {
-          throw new Error(`Failed to fetch question: ${res.statusText}`);
-        }
-        const data = await res.json();
-
-        container.innerHTML = `
-          <div class="question">${data.question}</div>
-          <div class="answers">
-            ${Object.entries(data.options).map(([key, val]) => 
-              `<button onclick="submitAnswer(
-                '${encodeURIComponent(data.question)}',
-                '${key}',
-                '${data.correct}',
-                ${data.xp},
-                '${encodeURIComponent(data.explanation)}',
-                this
-              )">${key}: ${val}</button>`).join('')}
-          </div>
-        `;
-        document.getElementById('mcq-explanation').style.display = 'block';
-        playSoundEffect('quest-start');
-      } catch (err) {
-        container.innerHTML = "Failed to load question. Check console.";
-        console.error(err);
-      }
-    }
-
-    async function submitAnswer(question, selected, correct, xp, explanation, btn) {
-      const buttons = btn.parentElement.querySelectorAll("button");
-      buttons.forEach(b => b.disabled = true);
-
-      try {
-        const res = await fetch(`${API_BASE_URL}/api/answer`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            userId,
-            question: decodeURIComponent(question),
-            selected,
-            correct,
-            xp
-          })
-        });
-
-        const result = await res.json();
-        const expDiv = document.getElementById('mcq-explanation');
-
-        if (result.awarded > 0) {
-          updateXP(result.totalXP);
-          expDiv.style.color = "#76c7c0";
-          expDiv.innerHTML = `✅ Correct! ${decodeURIComponent(explanation)}`;
-          playSoundEffect('correct-answer');
-        } else {
-          expDiv.style.color = "#e57373";
-          expDiv.innerHTML = `🚫 Already answered. ${decodeURIComponent(explanation)}`;
-          playSoundEffect('wrong-answer');
-        }
-      } catch (err) {
-        alert("Submission failed. Please try again.");
-      }
-    }
-
-    // Mission Functions
-    async function fetchMission() {
-      const specialty = document.getElementById('mission-specialty-select').value;
-      const container = document.getElementById('mission-content');
-      container.innerHTML = "Loading mission...";
-
-      try {
-        const res = await fetch(`${API_BASE_URL}/api/mission?topic=${specialty}&userId=${userId}`);
-        if (!res.ok) {
-          throw new Error(`Failed to fetch mission: ${res.statusText}`);
-        }
-        const data = await res.json();
-
-        container.innerHTML = `
-          <div class="question">Mission: ${data.title}</div>
-          <p>${data.story}</p>
-          <div class="answers">
-            ${Object.entries(data.options).map(([key, val]) => 
-              `<button onclick="submitMission(
-                '${encodeURIComponent(data.title)}',
-                '${key}',
-                '${data.correct}',
-                ${data.xp},
-                '${encodeURIComponent(data.explanation)}',
-                this
-              )">${key}: ${val}</button>`).join('')}
-          </div>
-        `;
-        document.getElementById('mission-explanation').style.display = 'block';
-        playSoundEffect('mission-start');
-      } catch (err) {
-        container.innerHTML = "Failed to load mission. Check console.";
-        console.error(err);
-      }
-    }
-
-    async function submitMission(title, selected, correct, xp, explanation, btn) {
-      const buttons = btn.parentElement.querySelectorAll("button");
-      buttons.forEach(b => b.disabled = true);
-
-      try {
-        const res = await fetch(`${API_BASE_URL}/api/answer`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            userId,
-            question: decodeURIComponent(title),
-            selected,
-            correct,
-            xp
-          })
-        });
-
-        const result = await res.json();
-        const expDiv = document.getElementById('mission-explanation');
-
-        if (result.awarded > 0) {
-          updateXP(result.totalXP);
-          expDiv.style.color = "#76c7c0";
-          expDiv.innerHTML = `✅ Success! ${decodeURIComponent(explanation)}`;
-          playSoundEffect('correct-answer');
-        } else {
-          expDiv.style.color = "#e57373";
-          expDiv.innerHTML = `🚫 Already completed. ${decodeURIComponent(explanation)}`;
-          playSoundEffect('wrong-answer');
-        }
-      } catch (err) {
-        alert("Submission failed. Please try again.");
-      }
-    }
-
-    // Boss Battle Functions
-    async function fetchBoss() {
-      const specialty = document.getElementById('boss-specialty-select').value;
-      const container = document.getElementById('boss-content');
-      container.innerHTML = "Loading boss...";
-
-      try {
-        const res = await fetch(`${API_BASE_URL}/api/boss?topic=${specialty}&userId=${userId}`);
-        if (!res.ok) {
-          throw new Error(`Failed to fetch boss: ${res.statusText}`);
-        }
-        const data = await res.json();
-
-        container.innerHTML = `
-          <div class="question">Boss Battle: ${data.question}</div>
-          <div class="answers">
-            ${Object.entries(data.options).map(([key, val]) => 
-              `<button onclick="submitBoss(
-                '${encodeURIComponent(data.question)}',
-                '${key}',
-                '${data.correct}',
-                ${data.xp},
-                '${encodeURIComponent(data.explanation)}',
-                this
-              )">${key}: ${val}</button>`).join('')}
-          </div>
-        `;
-        document.getElementById('boss-explanation').style.display = 'block';
-        playSoundEffect('boss-start');
-      } catch (err) {
-        container.innerHTML = "Failed to load boss. Check console.";
-        console.error(err);
-      }
-    }
-
-    async function submitBoss(question, selected, correct, xp, explanation, btn) {
-      const buttons = btn.parentElement.querySelectorAll("button");
-      buttons.forEach(b => b.disabled = true);
-
-      try {
-        const res = await fetch(`${API_BASE_URL}/api/answer`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            userId,
-            question: decodeURIComponent(question),
-            selected,
-            correct,
-            xp
-          })
-        });
-
-        const result = await res.json();
-        const expDiv = document.getElementById('boss-explanation');
-
-        if (result.awarded > 0) {
-          updateXP(result.totalXP);
-          expDiv.style.color = "#76c7c0";
-          expDiv.innerHTML = `🔥 Boss Defeated! ${decodeURIComponent(explanation)}`;
-          playSoundEffect('boss-defeated');
-        } else {
-          expDiv.style.color = "#e57373";
-          expDiv.innerHTML = `🛡️ Already defeated. ${decodeURIComponent(explanation)}`;
-          playSoundEffect('wrong-answer');
-        }
-      } catch (err) {
-        alert("Submission failed. Please try again.");
-      }
-    }
-
-    // Fetch user progress and leaderboard on page load
+    // Fetch user progress on page load
     window.onload = () => {
       fetchUserProgress();
-      fetchLeaderboard();
     };
   </script>
 </body>
