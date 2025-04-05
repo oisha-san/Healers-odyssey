@@ -60,11 +60,25 @@ async function fetchWorlds() {
 function displayWorlds(worlds) {
   const content = document.getElementById('worlds-content');
   content.innerHTML = worlds.map(world => `
-    <div class="world">
+    <div class="world" onclick="setBackground('${world.background}')">
       <h3>${world.name}</h3>
       <p>${world.description}</p>
     </div>
   `).join('');
+}
+
+function setBackground(image) {
+  document.getElementById('background-overlay').style.backgroundImage = `url('./assets/${image}')`;
+}
+
+async function startAdventure() {
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/adventure?userId=localUser`);
+    const data = await res.json();
+    alert(`Adventure progress: ${data.progress}`);
+  } catch (error) {
+    console.error("Error starting adventure:", error);
+  }
 }
 
 window.onload = () => {
