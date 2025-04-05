@@ -5,24 +5,34 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Healer's Odyssey</title>
   <style>
-    /* Dark theme styling */
+    /* RPG Theme Styling */
+    @import url('https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap');
+
     body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-      line-height: 1.6;
-      background-color: #121212;
-      color: #ffffff;
+      font-family: 'MedievalSharp', cursive;
+      margin: 0;
+      padding: 0;
+      background: url('https://i.imgur.com/3ZQZ3cM.jpg') no-repeat center center fixed;
+      background-size: cover;
+      color: #f4f4f4;
     }
+
     h1, h2 {
-      color: #ffffff;
+      text-align: center;
+      color: #ffd700;
+      text-shadow: 2px 2px 4px #000;
     }
+
     .section {
-      margin-bottom: 30px;
-      padding: 10px;
-      border: 1px solid #333;
-      border-radius: 5px;
-      background-color: #1e1e1e;
+      margin: 20px auto;
+      padding: 20px;
+      max-width: 800px;
+      border: 3px solid #ffd700;
+      border-radius: 10px;
+      background-color: rgba(0, 0, 0, 0.8);
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
     }
+
     .progress-bar {
       width: 100%;
       background-color: #333;
@@ -31,26 +41,59 @@
       overflow: hidden;
       margin-top: 5px;
     }
+
     .progress-fill {
       height: 100%;
       background-color: #76c7c0;
       width: 0%;
       transition: width 0.3s ease;
     }
+
     button {
       margin: 5px;
-      padding: 5px 10px;
-      border: none;
-      border-radius: 3px;
+      padding: 10px 20px;
+      border: 2px solid #ffd700;
+      border-radius: 5px;
       cursor: pointer;
-      background-color: #76c7c0;
-      color: #121212;
+      background-color: #333;
+      color: #ffd700;
+      font-size: 16px;
+      text-shadow: 1px 1px 2px #000;
     }
+
     button:hover {
-      opacity: 0.9;
+      background-color: #444;
+      color: #fff;
     }
+
+    select {
+      padding: 5px;
+      border: 2px solid #ffd700;
+      border-radius: 5px;
+      background-color: #333;
+      color: #ffd700;
+      font-size: 16px;
+    }
+
     label {
       font-weight: bold;
+      color: #ffd700;
+    }
+
+    #mcq-content, #mission-content, #boss-content {
+      margin-top: 10px;
+      padding: 10px;
+      border: 2px solid #ffd700;
+      border-radius: 5px;
+      background-color: rgba(0, 0, 0, 0.7);
+    }
+
+    #mcq-explanation, #mission-explanation, #boss-explanation {
+      margin-top: 10px;
+      padding: 10px;
+      border: 2px solid #76c7c0;
+      border-radius: 5px;
+      background-color: rgba(0, 0, 0, 0.7);
     }
   </style>
 </head>
@@ -59,7 +102,7 @@
   
   <!-- XP Section -->
   <div class="section" id="xp-section">
-    <h2>XP</h2>
+    <h2>XP Progress</h2>
     <p>Current XP: <span id="current-xp">0</span></p>
     <div class="progress-bar">
       <div id="xp-progress" class="progress-fill"></div>
@@ -70,15 +113,15 @@
   
   <!-- Multiple Choice Questions Section -->
   <div class="section" id="mcq-section">
-    <h2>Multiple Choice Questions</h2>
-    <label for="specialty-select">Select Specialty:</label>
+    <h2>Quests</h2>
+    <label for="specialty-select">Choose Your Specialty:</label>
     <select id="specialty-select">
       <option value="cardiology" selected>Cardiology</option>
       <option value="neurology">Neurology</option>
       <option value="pulmonology">Pulmonology</option>
       <!-- Add more specialties as needed -->
     </select>
-    <button onclick="fetchQuestion()">Get Question</button>
+    <button onclick="fetchQuestion()">Start Quest</button>
     <div id="mcq-content"></div>
     <div id="mcq-explanation"></div>
   </div>
@@ -86,14 +129,14 @@
   <!-- Missions Section -->
   <div class="section" id="mission-section">
     <h2>Missions</h2>
-    <label for="mission-specialty-select">Select Specialty:</label>
+    <label for="mission-specialty-select">Choose Your Specialty:</label>
     <select id="mission-specialty-select">
       <option value="cardiology" selected>Cardiology</option>
       <option value="neurology">Neurology</option>
       <option value="pulmonology">Pulmonology</option>
       <!-- Add more specialties as needed -->
     </select>
-    <button onclick="fetchMission()">Get Mission</button>
+    <button onclick="fetchMission()">Start Mission</button>
     <div id="mission-content"></div>
     <div id="mission-explanation"></div>
   </div>
@@ -101,18 +144,18 @@
   <!-- Boss Battles Section -->
   <div class="section" id="boss-section">
     <h2>Boss Battles</h2>
-    <label for="boss-specialty-select">Select Specialty:</label>
+    <label for="boss-specialty-select">Choose Your Specialty:</label>
     <select id="boss-specialty-select">
       <option value="cardiology" selected>Cardiology</option>
       <option value="neurology">Neurology</option>
       <option value="pulmonology">Pulmonology</option>
       <!-- Add more specialties as needed -->
     </select>
-    <button onclick="fetchBoss()">Get Boss</button>
+    <button onclick="fetchBoss()">Challenge Boss</button>
     <div id="boss-content"></div>
     <div id="boss-explanation"></div>
   </div>
-  
+
   <script>
     const API_BASE_URL = "https://healers-odyssey-1.onrender.com"; // Replace with your Render backend URL
     const userId = "localUser"; // Replace with dynamic ID in real applications
