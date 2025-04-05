@@ -164,7 +164,10 @@
       container.innerHTML = "Loading...";
 
       try {
-        const res = await fetch(`${API_BASE_URL}/api/question?topic=${specialty}`);
+        const res = await fetch(`${API_BASE_URL}/api/question?topic=${specialty}&userId=${userId}`);
+        if (!res.ok) {
+          throw new Error(`Failed to fetch question: ${res.statusText}`);
+        }
         const data = await res.json();
 
         container.innerHTML = `

@@ -101,8 +101,12 @@ const specialties = {
 // Retrieve a random question by specialty, excluding already answered questions
 app.get('/api/question', async (req, res) => {
   try {
-    const topic = req.query.topic || "cardiology";
-    const userId = req.query.userId;
+    const topic = req.query.topic; // Ensure topic is provided
+    const userId = req.query.userId; // Ensure userId is provided
+
+    if (!topic) {
+      return res.status(400).json({ error: "Topic is required" });
+    }
 
     if (!userId) {
       return res.status(400).json({ error: "User ID is required" });
