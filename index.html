@@ -112,6 +112,21 @@
     const userId = "localUser"; // Replace with dynamic ID in real applications
     let currentXP = 0;
 
+    // Fetch user progress on page load
+    async function fetchUserProgress() {
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/user?userId=${userId}`);
+        const data = await res.json();
+
+        if (data.xp !== undefined) {
+          currentXP = data.xp;
+          updateXP(currentXP);
+        }
+      } catch (err) {
+        console.error("Failed to fetch user progress:", err);
+      }
+    }
+
     // XP Management
     async function updateXP(newTotalXP) {
       currentXP = newTotalXP;
@@ -328,6 +343,9 @@
         alert("Submission failed. Please try again.");
       }
     }
+
+    // Fetch user progress when the page loads
+    window.onload = fetchUserProgress;
   </script>
 </body>
 </html>

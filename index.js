@@ -173,6 +173,26 @@ app.get('/api/boss', (req, res) => {
   }
 });
 
+// Endpoint to fetch user progress
+app.get('/api/user', async (req, res) => {
+  try {
+    const { userId } = req.query;
+
+    // Validate input
+    if (!userId) {
+      return res.status(400).json({ error: "User ID is required" });
+    }
+
+    await db.read();
+    const user = db.data.users[userId] || { answered: [], xp: 0 };
+
+    res.json({ userId, xp: user.xp, answered: user.answered });
+  } catch (error) {
+    console.error('Error fetching user progress:', error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 // Submit an answer for a question, mission, or boss challenge
 app.post('/api/answer', async (req, res) => {
   try {
@@ -196,7 +216,7 @@ app.post('/api/answer', async (req, res) => {
     }
 
     db.data.users[userId] = user;
-    await db.write();
+    await db.write(); // Save progress to db.json
     res.json({ awarded: selected === correct ? xp : 0, totalXP: user.xp });
   } catch (error) {
     console.error('Error processing answer:', error);
