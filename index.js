@@ -96,6 +96,56 @@ const specialties = {
   // ...add more specialties like gastroenterology, nephrology, endocrinology, etc...
 };
 
+const missions = {
+  cardiology: [
+    {
+      title: "The Silent Arrhythmia",
+      story: "A 45-year-old patient presents with palpitations and dizziness. ECG reveals an irregularly irregular rhythm with no distinct P waves. What is your diagnosis?",
+      options: { A: "Atrial fibrillation", B: "Ventricular tachycardia", C: "Sinus arrhythmia" },
+      correct: "A",
+      explanation: "An irregularly irregular rhythm with no distinct P waves is characteristic of atrial fibrillation.",
+      xp: 30
+    },
+    // ...add more cardiology missions...
+  ],
+  neurology: [
+    {
+      title: "The Collapsing Patient",
+      story: "A 65-year-old male collapses in the emergency room. His blood pressure is 70/40 mmHg, and jugular venous distension is noted. What is the most likely diagnosis?",
+      options: { A: "Cardiac tamponade", B: "Pulmonary embolism", C: "Septic shock" },
+      correct: "A",
+      explanation: "Hypotension, jugular venous distension, and collapse are classic signs of cardiac tamponade.",
+      xp: 35
+    },
+    // ...add more neurology missions...
+  ],
+  // ...add more specialties...
+};
+
+const bossChallenges = {
+  cardiology: [
+    {
+      question: "A 75-year-old male with a history of coronary artery disease presents with sudden onset of severe dyspnea. Examination reveals a holosystolic murmur at the apex radiating to the axilla. What is the most likely cause?",
+      options: { A: "Acute mitral regurgitation", B: "Aortic stenosis", C: "Ventricular septal defect" },
+      correct: "A",
+      explanation: "Acute mitral regurgitation can occur due to papillary muscle rupture in the setting of myocardial infarction.",
+      xp: 50
+    },
+    // ...add more cardiology boss challenges...
+  ],
+  neurology: [
+    {
+      question: "A 60-year-old female presents with syncope and a systolic crescendo-decrescendo murmur at the right upper sternal border. What is the most likely diagnosis?",
+      options: { A: "Aortic stenosis", B: "Hypertrophic cardiomyopathy", C: "Mitral regurgitation" },
+      correct: "A",
+      explanation: "Aortic stenosis presents with a systolic crescendo-decrescendo murmur and can cause syncope.",
+      xp: 45
+    },
+    // ...add more neurology boss challenges...
+  ],
+  // ...add more specialties...
+};
+
 // API Endpoints
 
 // Retrieve a random question by specialty, excluding already answered questions
@@ -133,30 +183,72 @@ app.get('/api/question', async (req, res) => {
   }
 });
 
-// Retrieve a random mission by topic
-app.get('/api/mission', (req, res) => {
+// Retrieve a random mission by topic, excluding already completed missions
+app.get('/api/mission', async (req, res) => {
   try {
-    const topic = req.query.topic || "cardiology";
-    const filtered = missions.filter(m => m.topic.toLowerCase() === topic.toLowerCase());
-    if (!filtered.length) {
-      return res.status(404).json({ error: "No missions found" });
+    const topic = req.query.topic; // Ensure topic is provided
+    const userId = req.query.userId; // Ensure userId is provided
+
+    if (!topic) {
+      return res.status(400).json({ error: "Topic is required" });
     }
+
+    if (!userId) {
+      return res.status(400).json({ error: "User ID is required" });
+    }
+
+    await db.read();
+    const user = db.data.users[userId] || { completedMissions: [], xp: 0 };
+
+    const missionsForTopic = missions[topic.toLowerCase()];
+    if (!missionsForTopic) {
+      return res.status(404).json({ error: "Specialty not found" });
+    }
+
+    const filtered = missionsForTopic.filter(m => !user.completedMissions?.includes(m.title));
+
+    if (!filtered.length) {
+      return res.status(404).json({ error: "No new missions available" });
+    }
+
     res.json(filtered[Math.floor(Math.random() * filtered.length)]);
   } catch (error) {
+    console.error("Error fetching mission:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 });
 
-// Retrieve a random boss challenge by topic
-app.get('/api/boss', (req, res) => {
+// Retrieve a random boss challenge by topic, excluding already defeated bosses
+app.get('/api/boss', async (req, res) => {
   try {
-    const topic = req.query.topic || "cardiology";
-    const filtered = bossChallenges.filter(b => b.topic.toLowerCase() === topic.toLowerCase());
-    if (!filtered.length) {
-      return res.status(404).json({ error: "No bosses found" });
+    const topic = req.query.topic; // Ensure topic is provided
+    const userId = req.query.userId; // Ensure userId is provided
+
+    if (!topic) {
+      return res.status(400).json({ error: "Topic is required" });
     }
+
+    if (!userId) {
+      return res.status(400).json({ error: "User ID is required" });
+    }
+
+    await db.read();
+    const user = db.data.users[userId] || { defeatedBosses: [], xp: 0 };
+
+    const bossesForTopic = bossChallenges[topic.toLowerCase()];
+    if (!bossesForTopic) {
+      return res.status(404).json({ error: "Specialty not found" });
+    }
+
+    const filtered = bossesForTopic.filter(b => !user.defeatedBosses?.includes(b.question));
+
+    if (!filtered.length) {
+      return res.status(404).json({ error: "No new bosses available" });
+    }
+
     res.json(filtered[Math.floor(Math.random() * filtered.length)]);
   } catch (error) {
+    console.error("Error fetching boss challenge:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 });

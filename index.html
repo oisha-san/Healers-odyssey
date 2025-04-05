@@ -231,7 +231,10 @@
       container.innerHTML = "Loading mission...";
 
       try {
-        const res = await fetch(`${API_BASE_URL}/api/mission?topic=${specialty}`);
+        const res = await fetch(`${API_BASE_URL}/api/mission?topic=${specialty}&userId=${userId}`);
+        if (!res.ok) {
+          throw new Error(`Failed to fetch mission: ${res.statusText}`);
+        }
         const data = await res.json();
 
         container.innerHTML = `
@@ -296,7 +299,10 @@
       container.innerHTML = "Loading boss...";
 
       try {
-        const res = await fetch(`${API_BASE_URL}/api/boss?topic=${specialty}`);
+        const res = await fetch(`${API_BASE_URL}/api/boss?topic=${specialty}&userId=${userId}`);
+        if (!res.ok) {
+          throw new Error(`Failed to fetch boss: ${res.statusText}`);
+        }
         const data = await res.json();
 
         container.innerHTML = `
