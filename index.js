@@ -51,6 +51,22 @@ const questions = [
     explanation: "The normal resting heart rate for an adult is between 60 and 100 beats per minute.",
     xp: 10
   },
+  {
+    topic: "cardiology",
+    question: "A 65-year-old male presents with chest pain radiating to the left arm. What is the most likely diagnosis?",
+    options: { A: "Myocardial infarction", B: "Pneumothorax", C: "Gastroesophageal reflux disease" },
+    correct: "A",
+    explanation: "Chest pain radiating to the left arm is a classic symptom of myocardial infarction.",
+    xp: 20
+  },
+  {
+    topic: "cardiology",
+    question: "A patient with a history of hypertension presents with shortness of breath and bilateral leg swelling. What is the most likely cause?",
+    options: { A: "Heart failure", B: "Pulmonary embolism", C: "Asthma" },
+    correct: "A",
+    explanation: "Shortness of breath and bilateral leg swelling are common symptoms of heart failure.",
+    xp: 20
+  },
   // ... add other questions as needed
 ];
 
@@ -64,6 +80,24 @@ const missions = [
     explanation: "An ECG is the essential first step in diagnosing cardiac irregularities.",
     xp: 20
   },
+  {
+    topic: "cardiology",
+    title: "The Silent Killer",
+    story: "A 55-year-old patient with no prior symptoms suddenly collapses. You suspect a cardiac event. What is your immediate action?",
+    options: { A: "Perform CPR", B: "Administer aspirin", C: "Call for an MRI" },
+    correct: "A",
+    explanation: "Immediate CPR is critical in cases of sudden cardiac arrest.",
+    xp: 30
+  },
+  {
+    topic: "cardiology",
+    title: "The Racing Heart",
+    story: "A 40-year-old patient complains of a racing heart and dizziness. What is your first diagnostic step?",
+    options: { A: "Order an ECG", B: "Perform a stress test", C: "Administer beta-blockers" },
+    correct: "A",
+    explanation: "An ECG is the first diagnostic step to evaluate arrhythmias.",
+    xp: 25
+  },
   // ... add other missions as needed
 ];
 
@@ -75,6 +109,22 @@ const bossChallenges = [
     correct: "A",
     explanation: "Hyperkalemia can lead to life-threatening arrhythmias.",
     xp: 30
+  },
+  {
+    topic: "cardiology",
+    question: "A 70-year-old patient presents with severe chest pain, hypotension, and jugular venous distension. What is the most likely diagnosis?",
+    options: { A: "Cardiac tamponade", B: "Aortic dissection", C: "Pulmonary embolism" },
+    correct: "A",
+    explanation: "The triad of chest pain, hypotension, and jugular venous distension is classic for cardiac tamponade.",
+    xp: 40
+  },
+  {
+    topic: "cardiology",
+    question: "A patient with atrial fibrillation is at risk of which serious complication?",
+    options: { A: "Stroke", B: "Myocardial infarction", C: "Heart failure" },
+    correct: "A",
+    explanation: "Atrial fibrillation increases the risk of stroke due to thrombus formation in the atria.",
+    xp: 35
   },
   // ... add other boss challenges as needed
 ];
