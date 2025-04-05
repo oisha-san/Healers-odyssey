@@ -198,7 +198,7 @@
   </div>
 
   <audio id="background-music" loop autoplay>
-    <source src="./assets/audio/background-music.mp3" type="audio/mpeg"> <!-- Updated path -->
+    <source src="./assets/audio/background-music.mp3" type="audio/mpeg"> <!-- Correct path -->
     Your browser does not support the audio element.
   </audio>
 
@@ -276,6 +276,8 @@
           throw new Error(`Failed to fetch question: ${res.statusText}`);
         }
         const data = await res.json();
+
+        console.log("Fetched question:", data);
 
         container.innerHTML = `
           <div class="question">${data.question}</div>

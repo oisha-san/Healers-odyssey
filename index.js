@@ -1,4 +1,3 @@
-// Ensure "type": "module" is set in package.json
 import express from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
@@ -174,6 +173,8 @@ app.get('/api/question', async (req, res) => {
     const topic = req.query.topic;
     const userId = req.query.userId;
 
+    console.log("Received request for topic:", topic, "and userId:", userId);
+
     if (!topic || !userId) {
       return res.status(400).json({ error: "Topic and User ID are required" });
     }
@@ -181,12 +182,16 @@ app.get('/api/question', async (req, res) => {
     await db.read();
     const user = db.data.users[userId] || { answered: [], xp: 0 };
 
+    console.log("User data:", user);
+
     const questions = specialties[topic.toLowerCase()];
     if (!questions) {
       return res.status(404).json({ error: "Specialty not found" });
     }
 
     const filtered = questions.filter(q => !user.answered.includes(q.question));
+    console.log("Filtered questions:", filtered);
+
     if (!filtered.length) {
       return res.status(404).json({ error: "No new questions available" });
     }
@@ -417,7 +422,6 @@ app.post('/api/prestige', async (req, res) => {
 
     await db.read();
     const user = db.data.users[userId] || { xp: 0, level: 1, prestige: 0 };
-
     if (user.level < 100) {
       return res.status(400).json({ error: "Level 100 required to Prestige" });
     }
@@ -426,7 +430,6 @@ app.post('/api/prestige', async (req, res) => {
     user.level = 1;
     user.xp = 0;
     user.title = `Prestige ${user.prestige}`;
-
     db.data.users[userId] = user;
     await db.write();
 
@@ -464,6 +467,7 @@ app.get('/api/worlds', (req, res) => {
     { name: "Surgery", description: "Inspired by Octopath Traveler" },
     { name: "Neurology", description: "Inspired by Sea of Stars" },
   ];
+
   res.json(worlds);
 });
 
@@ -486,11 +490,7 @@ app.get('/api/achievements', async (req, res) => {
   }
 });
 
-app.get('/', (req, res) => {
-  res.send('Server is running!');
-});
-
-// Catch-all route to serve the frontend
+// Serve the frontend
 app.get('*', (req, res) => {
   res.sendFile('/workspaces/Healers-odyssey/public/index.html');
 });
