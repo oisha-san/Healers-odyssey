@@ -45,6 +45,29 @@ function submitAnswer(selected, correct, xp, explanation) {
   }
 }
 
+async function fetchWorlds() {
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/worlds`);
+    if (!res.ok) throw new Error("Failed to fetch worlds");
+    const worlds = await res.json();
+    displayWorlds(worlds);
+  } catch (error) {
+    console.error("Error fetching worlds:", error);
+    document.getElementById('worlds-content').innerText = "Error fetching worlds. Please try again.";
+  }
+}
+
+function displayWorlds(worlds) {
+  const content = document.getElementById('worlds-content');
+  content.innerHTML = worlds.map(world => `
+    <div class="world">
+      <h3>${world.name}</h3>
+      <p>${world.description}</p>
+    </div>
+  `).join('');
+}
+
 window.onload = () => {
   fetchUserProgress();
+  fetchWorlds();
 };

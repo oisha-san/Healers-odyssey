@@ -68,3 +68,15 @@ button {
 button:hover {
   background-color: #0056b3;
 }
+
+#worlds-section {
+  margin-top: 20px;
+}
+
+.world {
+  border: 1px solid #ccc;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+}
