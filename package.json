@@ -13,9 +13,11 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
+    "build": "echo \"Add your build command here\"", // Placeholder for build command
     "deploy": "gh-pages -d public"
   },
   "devDependencies": {
+    "gh-pages": "^6.3.0",
     "nodemon": "^2.0.22"
   },
   "engines": {
