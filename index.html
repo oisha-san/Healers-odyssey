@@ -4,161 +4,28 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Healer's Odyssey</title>
-  <style>
-    /* RPG Theme Styling */
-    @import url('https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap');
-
-    body {
-      font-family: 'MedievalSharp', cursive;
-      margin: 0;
-      padding: 0;
-      background: url('./images/background.png') no-repeat center center fixed; /* Use relative path */
-      background-size: cover;
-      color: #f4f4f4;
-    }
-
-    h1, h2 {
-      text-align: center;
-      color: #ffd700;
-      text-shadow: 2px 2px 4px #000;
-    }
-
-    .section {
-      margin: 20px auto;
-      padding: 20px;
-      max-width: 800px;
-      border: 3px solid #ffd700;
-      border-radius: 10px;
-      background-color: rgba(0, 0, 0, 0.8);
-      box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
-      animation: fadeIn 1s ease-in-out;
-    }
-
-    .progress-bar {
-      width: 100%;
-      background-color: #333;
-      height: 20px;
-      border-radius: 10px;
-      overflow: hidden;
-      margin-top: 5px;
-      box-shadow: 0 0 10px #76c7c0;
-    }
-
-    .progress-fill {
-      height: 100%;
-      background-color: #76c7c0;
-      width: 0%;
-      transition: width 0.3s ease;
-    }
-
-    button {
-      margin: 5px;
-      padding: 10px 20px;
-      border: 2px solid #ffd700;
-      border-radius: 5px;
-      cursor: pointer;
-      background-color: #333;
-      color: #ffd700;
-      font-size: 16px;
-      text-shadow: 1px 1px 2px #000;
-      animation: pulse 1.5s infinite;
-    }
-
-    button:hover {
-      background-color: #444;
-      color: #fff;
-    }
-
-    select {
-      padding: 5px;
-      border: 2px solid #ffd700;
-      border-radius: 5px;
-      background-color: #333;
-      color: #ffd700;
-      font-size: 16px;
-    }
-
-    label {
-      font-weight: bold;
-      color: #ffd700;
-    }
-
-    #mcq-content, #mission-content, #boss-content {
-      margin-top: 10px;
-      padding: 10px;
-      border: 2px solid #ffd700;
-      border-radius: 5px;
-      background-color: rgba(0, 0, 0, 0.7);
-    }
-
-    #mcq-explanation, #mission-explanation, #boss-explanation {
-      margin-top: 10px;
-      padding: 10px;
-      border: 2px solid #76c7c0;
-      border-radius: 5px;
-      background-color: rgba(0, 0, 0, 0.7);
-    }
-
-    #avatar {
-      display: block;
-      margin: 20px auto;
-      width: 150px;
-      height: 150px;
-      border: 3px solid #ffd700;
-      border-radius: 50%;
-      background: url('./images/avatar.png') no-repeat center center; /* Use relative path */
-      background-size: cover;
-      box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
-    }
-
-    #loading-spinner {
-      display: none;
-      margin: 20px auto;
-      border: 5px solid #333;
-      border-top: 5px solid #ffd700;
-      border-radius: 50%;
-      width: 50px;
-      height: 50px;
-      animation: spin 1s linear infinite;
-    }
-
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-      }
-      to {
-        opacity: 1;
-      }
-    }
-
-    @keyframes pulse {
-      0%, 100% {
-        transform: scale(1);
-      }
-      50% {
-        transform: scale(1.1);
-      }
-    }
-
-    @keyframes spin {
-      0% {
-        transform: rotate(0deg);
-      }
-      100% {
-        transform: rotate(360deg);
-      }
-    }
-  </style>
+  <link rel="stylesheet" href="./styles/main.css" />
 </head>
 <body>
-  <audio id="background-music" loop autoplay>
-    <source src="./assets/audio/background-music.mp3" type="audio/mpeg"> <!-- Correct path -->
-    Your browser does not support the audio element.
-  </audio>
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <div class="logo">Healer's Odyssey</div>
+    <ul class="nav-links">
+      <li><a href="#xp-section">XP</a></li>
+      <li><a href="#mcq-section">Quests</a></li>
+      <li><a href="#mission-section">Missions</a></li>
+      <li><a href="#boss-section">Boss Battles</a></li>
+      <li><button id="dark-mode-toggle">Dark Mode</button></li>
+    </ul>
+  </nav>
 
-  <h1>Healer's Odyssey</h1>
-  <div id="avatar"></div>
-  
+  <!-- Hero Section -->
+  <header class="hero">
+    <h1>Welcome to Healer's Odyssey</h1>
+    <p>Embark on a journey to save the world of medicine!</p>
+    <button onclick="startAdventure()">Start Adventure</button>
+  </header>
+
   <!-- XP Section -->
   <div class="section" id="xp-section">
     <h2>XP Progress</h2>
@@ -170,7 +37,7 @@
     <p id="prestige-message"></p>
     <button onclick="resetXP()">Reset Progress (Prestige)</button>
   </div>
-  
+
   <!-- Multiple Choice Questions Section -->
   <div class="section" id="mcq-section">
     <h2>Quests</h2>
@@ -179,13 +46,12 @@
       <option value="cardiology" selected>Cardiology</option>
       <option value="neurology">Neurology</option>
       <option value="pulmonology">Pulmonology</option>
-      <!-- Add more specialties as needed -->
     </select>
     <button onclick="fetchQuestion()">Start Quest</button>
     <div id="mcq-content"></div>
     <div id="mcq-explanation"></div>
   </div>
-  
+
   <!-- Missions Section -->
   <div class="section" id="mission-section">
     <h2>Missions</h2>
@@ -194,13 +60,12 @@
       <option value="cardiology" selected>Cardiology</option>
       <option value="neurology">Neurology</option>
       <option value="pulmonology">Pulmonology</option>
-      <!-- Add more specialties as needed -->
     </select>
     <button onclick="fetchMission()">Start Mission</button>
     <div id="mission-content"></div>
     <div id="mission-explanation"></div>
   </div>
-  
+
   <!-- Boss Battles Section -->
   <div class="section" id="boss-section">
     <h2>Boss Battles</h2>
@@ -209,67 +74,12 @@
       <option value="cardiology" selected>Cardiology</option>
       <option value="neurology">Neurology</option>
       <option value="pulmonology">Pulmonology</option>
-      <!-- Add more specialties as needed -->
     </select>
     <button onclick="fetchBoss()">Challenge Boss</button>
     <div id="boss-content"></div>
     <div id="boss-explanation"></div>
   </div>
 
-  <script>
-    const API_BASE_URL = "https://healers-odyssey-1.onrender.com"; // Replace with your Render backend URL
-    const userId = "localUser"; // Replace with dynamic ID in real applications
-    let currentXP = 0;
-    let currentLevel = 1;
-
-    // Fetch user progress on page load
-    async function fetchUserProgress() {
-      try {
-        const res = await fetch(`${API_BASE_URL}/api/user?userId=${userId}`);
-        const data = await res.json();
-
-        if (data.xp !== undefined) {
-          currentXP = data.xp;
-          updateXP(currentXP);
-        }
-      } catch (err) {
-        console.error("Failed to fetch user progress:", err);
-      }
-    }
-
-    // XP Management
-    async function updateXP(newTotalXP) {
-      currentXP = newTotalXP;
-      document.getElementById('current-xp').innerText = currentXP;
-
-      // Calculate level based on XP
-      currentLevel = Math.floor(currentXP / 100) + 1;
-      document.getElementById('current-level').innerText = currentLevel;
-
-      const progress = (currentXP % 100);
-      document.getElementById('xp-progress').style.width = `${progress}%`;
-    }
-
-    async function resetXP() {
-      if (confirm("Reset all progress? This cannot be undone.")) {
-        try {
-          await fetch(`${API_BASE_URL}/api/reset`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ userId })
-          });
-          updateXP(0);
-          document.getElementById('prestige-message').innerText = 'Prestige Mode Activated!';
-        } catch (err) {
-          alert("Reset failed. Please try again.");
-        }
-      }
-    }
-
-    // Fetch user progress on page load
-    window.onload = () => {
-      fetchUserProgress();
-    };
-  </script>
+  <script src="./scripts/main.js"></script>
 </body>
 </html>
