@@ -10,7 +10,10 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: ['https://oisha-san.github.io'], // Allow GitHub Pages
+  methods: ['GET', 'POST'],
+}));
 app.use(bodyParser.json());
 app.use(express.static('public')); // Serve static files
 
@@ -70,6 +73,28 @@ app.post('/api/answer', async (req, res) => {
   res.json({ awarded: selected === correct ? xp : 0, totalXP: user.xp });
 });
 
+// Worlds endpoint
+app.get('/api/worlds', (req, res) => {
+  const worlds = [
+    { name: "Internal Medicine", description: "Inspired by Final Fantasy", background: "internal-medicine.jpg" },
+    { name: "Pediatrics", description: "Inspired by Dragon Quest XI", background: "pediatrics.jpg" },
+    { name: "Surgery", description: "Inspired by Octopath Traveler", background: "surgery.jpg" },
+    { name: "Neurology", description: "Inspired by Sea of Stars", background: "neurology.jpg" },
+  ];
+  res.json(worlds);
+});
+
+// Adventure mode endpoint
+app.get('/api/adventure', async (req, res) => {
+  const { userId } = req.query;
+  if (!userId) return res.status(400).json({ error: "User ID is required" });
+
+  await db.read();
+  const user = db.data.users[userId] || { adventureProgress: 0 };
+  res.json({ progress: user.adventureProgress });
+});
+
+// Serve frontend
 app.get('*', (req, res) => res.sendFile('/workspaces/Healers-odyssey/public/index.html'));
 
 // Start the server

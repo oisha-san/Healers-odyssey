@@ -10,6 +10,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
+  <div id="background-overlay"></div> <!-- Dynamic background -->
+
   <!-- Navigation Bar -->
   <nav class="navbar">
     <div class="logo">Healer's Odyssey</div>
@@ -86,6 +88,14 @@
     <button onclick="fetchBoss()">Challenge Boss</button>
     <div id="boss-content"></div>
     <div id="boss-explanation"></div>
+  </div>
+
+  <!-- Worlds Section -->
+  <div class="section" id="worlds-section">
+    <h2>Worlds</h2>
+    <div id="worlds-content">
+      <!-- Worlds will be dynamically inserted here -->
+    </div>
   </div>
 
   <!-- Music Player -->
