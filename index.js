@@ -5,7 +5,7 @@ import cors from 'cors';
 import { Low } from 'lowdb';
 import { JSONFile } from 'lowdb/node';
 import fs from 'fs/promises';
-import bcrypt from 'bcrypt'; // For password hashing
+import argon2 from 'argon2'; // Replace bcrypt with argon2
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -367,7 +367,7 @@ app.post('/api/signup', async (req, res) => {
       return res.status(400).json({ error: "Username already exists." });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await argon2.hash(password); // Replace bcrypt.hash with argon2.hash
     users[username] = { password: hashedPassword, xp: 0, answered: [], completedMissions: [], defeatedBosses: [] };
     db.data.users = users;
     await db.write();
@@ -393,7 +393,8 @@ app.post('/api/login', async (req, res) => {
     const users = db.data.users || {};
     const user = users[username];
 
-    if (!user || !(await bcrypt.compare(password, user.password))) {
+    // Replace bcrypt.compare with argon2.verify
+    if (!user || !(await argon2.verify(user.password, password))) {
       return res.status(401).json({ error: "Invalid username or password." });
     }
 
