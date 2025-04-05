@@ -53,3 +53,9 @@ async function submitAnswer(selected, correct, xp, explanation) {
 window.onload = () => {
   fetchUserProgress();
 };
+
+"scripts": {
+  "start": "node index.js",
+  "dev": "nodemon index.js",
+  "deploy": "gh-pages -d public"
+}
