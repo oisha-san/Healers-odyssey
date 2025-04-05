@@ -9,7 +9,7 @@
       font-family: Arial, sans-serif;
       margin: 20px;
       line-height: 1.6;
-      background: url('./images/background.png') no-repeat center center fixed; /* Use relative path */
+      background: url('./images/background.png') no-repeat center center fixed; /* Use relative path for GitHub Pages */
       background-size: cover;
     }
     h1, h2 {
@@ -257,6 +257,75 @@
         }
       } catch (err) {
         alert("Submission failed. Please try again.");
+      }
+    }
+
+    // Fetch a mission
+    async function fetchMission() {
+      const specialty = document.getElementById('mission-specialty-select').value;
+      const container = document.getElementById('mission-content');
+      container.innerHTML = "Loading mission...";
+
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/mission?topic=${specialty}&userId=${userId}`);
+        if (!res.ok) {
+          throw new Error(`Failed to fetch mission: ${res.statusText}`);
+        }
+        const data = await res.json();
+
+        container.innerHTML = `
+          <div class="question">Mission: ${data.title}</div>
+          <p>${data.story}</p>
+          <div class="answers">
+            ${Object.entries(data.options).map(([key, val]) => 
+              `<button onclick="submitMission(
+                '${encodeURIComponent(data.title)}',
+                '${key}',
+                '${data.correct}',
+                ${data.xp},
+                '${encodeURIComponent(data.explanation)}',
+                this
+              )">${key}: ${val}</button>`).join('')}
+          </div>
+        `;
+        document.getElementById('mission-explanation').style.display = 'block';
+      } catch (err) {
+        container.innerHTML = "Failed to load mission. Check console.";
+        console.error(err);
+      }
+    }
+
+    // Fetch a boss challenge
+    async function fetchBoss() {
+      const specialty = document.getElementById('boss-specialty-select').value;
+      const container = document.getElementById('boss-content');
+      container.innerHTML = "Loading boss...";
+
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/boss?topic=${specialty}&userId=${userId}`);
+        if (!res.ok) {
+          throw new Error(`Failed to fetch boss: ${res.statusText}`);
+        }
+        const data = await res.json();
+
+        container.innerHTML = `
+          <div class="question">Boss Battle: ${data.question}</div>
+          <div class="answers">
+            ${Object.entries(data.options).map(([key, val]) => 
+              `<button onclick="submitBoss(
+                '${encodeURIComponent(data.question)}',
+                '${key}',
+                '${data.correct}',
+                ${data.xp},
+                '${encodeURIComponent(data.explanation)}',
+                this
+              )">${key}: ${val}</button>`).join('')}
+          </div>
+        `;
+        document.getElementById('boss-explanation').style.display = 'block';
+      } catch (err) {
+        container.innerHTML = "Failed to load boss. Check console.";
+        console.error(err);
       }
     }
   </script>
