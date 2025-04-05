@@ -436,6 +436,55 @@ app.post('/api/prestige', async (req, res) => {
   }
 });
 
+// Adventure Mode endpoint
+app.get('/api/adventure', async (req, res) => {
+  try {
+    const { userId } = req.query;
+
+    if (!userId) {
+      return res.status(400).json({ error: "User ID is required" });
+    }
+
+    await db.read();
+    const user = db.data.users[userId] || { adventureProgress: 0 };
+
+    res.json({ progress: user.adventureProgress });
+  } catch (error) {
+    console.error("Error fetching adventure progress:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// World Map endpoint
+app.get('/api/worlds', (req, res) => {
+  const worlds = [
+    { name: "Internal Medicine", description: "Inspired by Final Fantasy" },
+    { name: "Pediatrics", description: "Inspired by Dragon Quest XI" },
+    { name: "Surgery", description: "Inspired by Octopath Traveler" },
+    { name: "Neurology", description: "Inspired by Sea of Stars" },
+  ];
+  res.json(worlds);
+});
+
+// Achievements endpoint
+app.get('/api/achievements', async (req, res) => {
+  try {
+    const { userId } = req.query;
+
+    if (!userId) {
+      return res.status(400).json({ error: "User ID is required" });
+    }
+
+    await db.read();
+    const user = db.data.users[userId] || { achievements: [] };
+
+    res.json({ achievements: user.achievements });
+  } catch (error) {
+    console.error("Error fetching achievements:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 app.get('/', (req, res) => {
   res.send('Server is running!');
 });

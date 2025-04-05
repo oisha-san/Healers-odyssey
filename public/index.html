@@ -5,50 +5,89 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Healer's Odyssey</title>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap');
+
     body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-      line-height: 1.6;
-      background: url('./images/background.png') no-repeat center center fixed; /* Use relative path for GitHub Pages */ Pages */
+      font-family: 'MedievalSharp', cursive;
+      margin: 0;
+      padding: 0;
+      background: url('./images/background.png') no-repeat center center fixed;
       background-size: cover;
+      color: #f4f4f4;
     }
+
     h1, h2 {
-      color: #333;
+      text-align: center;
+      color: #ffd700;
+      text-shadow: 2px 2px 4px #000;
     }
+
     .section {
-      margin-bottom: 30px;
-      padding: 10px;
-      border: 1px solid #ddd;
-      border-radius: 5px;
-    }
-    .progress-bar {
-      width: 100%;
-      background-color: #ccc;
-      height: 20px;
+      margin: 20px auto;
+      padding: 20px;
+      max-width: 800px;
+      border: 3px solid #ffd700;
       border-radius: 10px;
-      overflow: hidden;
-      margin-top: 5px;
+      background-color: rgba(0, 0, 0, 0.8);
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
     }
-    .progress-fill {
-      height: 100%;
-      background-color: #76c7c0;
-      width: 0%;
-      transition: width 0.3s ease;
-    }
+
     button {
       margin: 5px;
-      padding: 5px 10px;
-      border: none;
-      border-radius: 3px;
+      padding: 10px 20px;
+      border: 2px solid #ffd700;
+      border-radius: 5px;
       cursor: pointer;
-      background-color: #76c7c0;
-      color: white;
+      background-color: #333;
+      color: #ffd700;
+      font-size: 16px;
+      text-shadow: 1px 1px 2px #000;
+      animation: pulse 1.5s infinite;
     }
+
     button:hover {
-      opacity: 0.9;
+      background-color: #444;
+      color: #fff;
     }
-    label {
-      font-weight: bold;
+
+    #world-map {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 20px auto;
+      max-width: 800px;
+    }
+
+    .world {
+      margin: 10px;
+      padding: 20px;
+      border: 2px solid #ffd700;
+      border-radius: 10px;
+      background-color: rgba(0, 0, 0, 0.8);
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+
+    .world:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 15px #ffd700;
+    }
+
+    .achievement {
+      display: inline-block;
+      margin: 10px;
+      padding: 10px;
+      border: 2px solid #ffd700;
+      border-radius: 10px;
+      background-color: rgba(0, 0, 0, 0.8);
+      text-align: center;
+      color: #ffd700;
+    }
+
+    .achievement img {
+      width: 50px;
+      height: 50px;
     }
 
     /* Login/Signup Form Styling */
@@ -92,7 +131,38 @@
 </head>
 <body>
   <h1>Healer's Odyssey</h1>
-  
+
+  <!-- World Map -->
+  <div id="world-map" class="section">
+    <h2>World Map</h2>
+    <div class="world" onclick="enterWorld('Internal Medicine')">Internal Medicine</div>
+    <div class="world" onclick="enterWorld('Pediatrics')">Pediatrics</div>
+    <div class="world" onclick="enterWorld('Surgery')">Surgery</div>
+    <div class="world" onclick="enterWorld('Neurology')">Neurology</div>
+  </div>
+
+  <!-- Adventure Mode -->
+  <div id="adventure-mode" class="section">
+    <h2>Adventure Mode</h2>
+    <p>Embark on a journey as Luminis, the healer, and save the world of medicine!</p>
+    <button onclick="startAdventure()">Start Adventure</button>
+  </div>
+
+  <!-- Customization -->
+  <div id="customization" class="section">
+    <h2>Customization</h2>
+    <p>Unlock profile icons, skins, and themes as you progress!</p>
+    <div class="achievement">
+      <img src="./images/icon1.png" alt="Achievement 1">
+      <p>Achievement 1</p>
+    </div>
+    <div class="achievement">
+      <img src="./images/icon2.png" alt="Achievement 2">
+      <p>Achievement 2</p>
+    </div>
+    <!-- Add more achievements -->
+  </div>
+
   <!-- Authentication Section -->
   <div id="auth-section">
     <h2>Login or Sign Up</h2>
@@ -327,6 +397,16 @@
         container.innerHTML = "Failed to load boss. Check console.";
         console.error(err);
       }
+    }
+
+    function enterWorld(world) {
+      alert(`Entering the world of ${world}!`);
+      // Logic to load the selected world
+    }
+
+    function startAdventure() {
+      alert("Adventure Mode Started!");
+      // Logic to start the adventure
     }
   </script>
 </body>
