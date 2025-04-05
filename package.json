@@ -10,13 +10,13 @@
     "lowdb": "^5.1.0"
   },
   "scripts": {
-    "start": "node index.js",
+    "start": "node index.js", // Ensure this script starts your server
     "dev": "nodemon index.js"
   },
   "devDependencies": {
     "nodemon": "^2.0.22"
   },
   "engines": {
-    "node": ">=20 <21"
+    "node": ">=20 <21" // Ensure this matches the version in .node-version
   }
 }

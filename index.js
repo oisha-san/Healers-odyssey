@@ -20,7 +20,7 @@ app.use(express.static('.'));
 app.use(express.static('public')); // Ensure static files are served from the "public" directory
 
 // Database setup using JSONFile adapter (async)
-const adapter = new JSONFile('/tmp/db.json'); // Use Render's writable directory
+const adapter = new JSONFile('/tmp/db.json'); // Ensure this path is writable on Render
 const db = new Low(adapter);
 
 async function ensureDatabaseFile() {
