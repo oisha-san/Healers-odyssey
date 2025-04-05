@@ -192,6 +192,73 @@
         message.innerText = "An error occurred. Please try again.";
       }
     }
+
+    const userId = "localUser"; // Replace with dynamic ID in real applications
+
+    async function fetchQuestion() {
+      const specialty = document.getElementById('specialty-select').value;
+      const container = document.getElementById('mcq-content');
+      container.innerHTML = "Loading...";
+
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/question?topic=${specialty}&userId=${userId}`);
+        if (!res.ok) {
+          throw new Error(`Failed to fetch question: ${res.statusText}`);
+        }
+        const data = await res.json();
+
+        container.innerHTML = `
+          <div class="question">${data.question}</div>
+          <div class="answers">
+            ${Object.entries(data.options).map(([key, val]) => 
+              `<button onclick="submitAnswer(
+                '${encodeURIComponent(data.question)}',
+                '${key}',
+                '${data.correct}',
+                ${data.xp},
+                '${encodeURIComponent(data.explanation)}',
+                this
+              )">${key}: ${val}</button>`).join('')}
+          </div>
+        `;
+        document.getElementById('mcq-explanation').style.display = 'block';
+      } catch (err) {
+        container.innerHTML = "Failed to load question. Check console.";
+        console.error(err);
+      }
+    }
+
+    async function submitAnswer(question, selected, correct, xp, explanation, btn) {
+      const buttons = btn.parentElement.querySelectorAll("button");
+      buttons.forEach(b => b.disabled = true);
+
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/answer`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userId,
+            question: decodeURIComponent(question),
+            selected,
+            correct,
+            xp
+          })
+        });
+
+        const result = await res.json();
+        const expDiv = document.getElementById('mcq-explanation');
+
+        if (result.awarded > 0) {
+          expDiv.style.color = "#76c7c0";
+          expDiv.innerHTML = `✅ Correct! ${decodeURIComponent(explanation)}`;
+        } else {
+          expDiv.style.color = "#e57373";
+          expDiv.innerHTML = `🚫 Already answered. ${decodeURIComponent(explanation)}`;
+        }
+      } catch (err) {
+        alert("Submission failed. Please try again.");
+      }
+    }
   </script>
 </body>
 </html>

@@ -150,6 +150,22 @@ const bossChallenges = {
   // ...add more specialties...
 };
 
+// Helper function to randomize answers
+function randomizeAnswers(question) {
+  const options = Object.entries(question.options);
+  const shuffled = options.sort(() => Math.random() - 0.5); // Shuffle options
+  const randomizedOptions = Object.fromEntries(shuffled);
+
+  // Find the new key for the correct answer
+  const correctKey = shuffled.find(([key, value]) => value === question.options[question.correct])[0];
+
+  return {
+    ...question,
+    options: randomizedOptions,
+    correct: correctKey // Update the correct key
+  };
+}
+
 // API Endpoints
 
 // Retrieve a random question by specialty, excluding already answered questions
@@ -180,7 +196,10 @@ app.get('/api/question', async (req, res) => {
       return res.status(404).json({ error: "No new questions available" });
     }
 
-    res.json(filtered[Math.floor(Math.random() * filtered.length)]);
+    const randomQuestion = filtered[Math.floor(Math.random() * filtered.length)];
+    const randomizedQuestion = randomizeAnswers(randomQuestion); // Randomize answers
+
+    res.json(randomizedQuestion);
   } catch (error) {
     console.error("Error fetching question:", error);
     res.status(500).json({ error: "Internal server error" });
