@@ -5,24 +5,27 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Healer's Odyssey</title>
   <style>
-    /* Basic styling for layout and progress */
+    /* Dark theme styling */
     body {
       font-family: Arial, sans-serif;
       margin: 20px;
       line-height: 1.6;
+      background-color: #121212;
+      color: #ffffff;
     }
     h1, h2 {
-      color: #333;
+      color: #ffffff;
     }
     .section {
       margin-bottom: 30px;
       padding: 10px;
-      border: 1px solid #ddd;
+      border: 1px solid #333;
       border-radius: 5px;
+      background-color: #1e1e1e;
     }
     .progress-bar {
       width: 100%;
-      background-color: #ccc;
+      background-color: #333;
       height: 20px;
       border-radius: 10px;
       overflow: hidden;
@@ -41,336 +44,290 @@
       border-radius: 3px;
       cursor: pointer;
       background-color: #76c7c0;
-      color: white;
+      color: #121212;
     }
     button:hover {
       opacity: 0.9;
-    }
-    #chat-window {
-      border: 1px solid #ccc;
-      height: 200px;
-      overflow-y: auto;
-      padding: 10px;
-      background-color: #f9f9f9;
     }
     label {
       font-weight: bold;
     }
   </style>
-</head> rel="stylesheet" href="styles.css"> <!-- Ensure the path is correct -->
-<body>ipt src="script.js"></script> <!-- Ensure the path is correct -->
+</head>
+<body>
   <h1>Healer's Odyssey</h1>
-  ody>
-  <!-- XP Section -->y</h1>
+  
+  <!-- XP Section -->
   <div class="section" id="xp-section">
-    <h2>XP</h2>on -->
+    <h2>XP</h2>
     <p>Current XP: <span id="current-xp">0</span></p>
     <div class="progress-bar">
       <div id="xp-progress" class="progress-fill"></div>
-    </div>lass="progress-bar">
-    <p id="prestige-message"></p>="progress-fill"></div>
+    </div>
+    <p id="prestige-message"></p>
     <button onclick="resetXP()">Reset Progress (Prestige)</button>
-  </div>d="prestige-message"></p>
-    <button onclick="resetXP()">Reset Progress (Prestige)</button>
+  </div>
+  
   <!-- Multiple Choice Questions Section -->
   <div class="section" id="mcq-section">
-    <h2>Multiple Choice Questions</h2>on -->
+    <h2>Multiple Choice Questions</h2>
     <label for="specialty-select">Select Specialty:</label>
-    <select id="specialty-select">/h2>
+    <select id="specialty-select">
       <option value="cardiology" selected>Cardiology</option>
       <!-- Add more specialties as needed -->
-    </select> value="cardiology" selected>Cardiology</option>
+    </select>
     <button onclick="fetchQuestion()">Get Question</button>
     <div id="mcq-content"></div>
-    <div id="mcq-explanation"></div>">Get Question</button>
-  </div> id="mcq-content"></div>
     <div id="mcq-explanation"></div>
+  </div>
+  
   <!-- Missions Section -->
   <div class="section" id="mission-section">
-    <h2>Missions</h2>on -->
+    <h2>Missions</h2>
     <label for="mission-specialty-select">Select Specialty:</label>
     <select id="mission-specialty-select">
-      <option value="cardiology" selected>Cardiology</option>label>
+      <option value="cardiology" selected>Cardiology</option>
       <!-- Add more specialties as needed -->
-    </select> value="cardiology" selected>Cardiology</option>
+    </select>
     <button onclick="fetchMission()">Get Mission</button>
     <div id="mission-content"></div>
-    <div id="mission-explanation"></div> Mission</button>
-  </div> id="mission-content"></div>
     <div id="mission-explanation"></div>
+  </div>
+  
   <!-- Boss Battles Section -->
   <div class="section" id="boss-section">
-    <h2>Boss Battles</h2>on -->
+    <h2>Boss Battles</h2>
     <label for="boss-specialty-select">Select Specialty:</label>
     <select id="boss-specialty-select">
-      <option value="cardiology" selected>Cardiology</option>el>
+      <option value="cardiology" selected>Cardiology</option>
       <!-- Add more specialties as needed -->
-    </select> value="cardiology" selected>Cardiology</option>
+    </select>
     <button onclick="fetchBoss()">Get Boss</button>
     <div id="boss-content"></div>
-    <div id="boss-explanation"></div> Boss</button>
-  </div> id="boss-content"></div>
     <div id="boss-explanation"></div>
-  <!-- Chat Section -->
-  <div class="section" id="chat-section">
-    <h2>Chat with the Oracle</h2>
-    <div id="chat-window"></div>section">
-    <input type="text" id="chat-input" placeholder="Type your message here" style="width: 80%;" />
-    <button onclick="sendChat()">Send</button>
-  </div>ut type="text" id="chat-input" placeholder="Type your message here" style="width: 80%;" />
-    <button onclick="sendChat()">Send</button>
+  </div>
+  
   <script>
     const API_BASE_URL = "https://healers-odyssey-1.onrender.com"; // Replace with your Render backend URL
     const userId = "localUser"; // Replace with dynamic ID in real applications
-    let currentXP = 0; = "https://healers-odyssey-1.onrender.com"; // Replace with your Render backend URL
-    const userId = "localUser"; // Replace with dynamic ID in real applications
-    // XP Management0;
+    let currentXP = 0;
+
+    // XP Management
     async function updateXP(newTotalXP) {
       currentXP = newTotalXP;
       document.getElementById('current-xp').innerText = currentXP;
       const progress = (currentXP % 100);
       document.getElementById('xp-progress').style.width = `${progress}%`;
-    } const progress = (currentXP % 100);
-      document.getElementById('xp-progress').style.width = `${progress}%`;
+    }
+
     async function resetXP() {
       if (confirm("Reset all progress? This cannot be undone.")) {
-        try {ction resetXP() {
-          await fetch(`${API_BASE_URL}/api/reset`, {e undone.")) {
+        try {
+          await fetch(`${API_BASE_URL}/api/reset`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ userId })
-          });eaders: { 'Content-Type': 'application/json' },
-          updateXP(0);.stringify({ userId })
+          });
+          updateXP(0);
           document.getElementById('prestige-message').innerText = 'Prestige Mode Activated!';
         } catch (err) {
-          alert("Reset failed. Please try again.");').innerText = 'Prestige Mode Activated!';
-        } catch (err) {
-      }   alert("Reset failed. Please try again.");
-    }   }
+          alert("Reset failed. Please try again.");
+        }
       }
+    }
+
     // MCQ Functions
     async function fetchQuestion() {
       const specialty = document.getElementById('specialty-select').value;
       const container = document.getElementById('mcq-content');
-      container.innerHTML = "Loading...";ntById('specialty-select').value;
-      const container = document.getElementById('mcq-content');
-      try {iner.innerHTML = "Loading...";
+      container.innerHTML = "Loading...";
+
+      try {
         const res = await fetch(`${API_BASE_URL}/api/question?topic=${specialty}`);
         const data = await res.json();
-        const res = await fetch(`${API_BASE_URL}/api/question?topic=${specialty}`);
-        container.innerHTML = `json();
+
+        container.innerHTML = `
           <div class="question">${data.question}</div>
           <div class="answers">
             ${Object.entries(data.options).map(([key, val]) => 
               `<button onclick="submitAnswer(
-                '${encodeURIComponent(data.question)}',al]) => 
-                '${key}',click="submitAnswer(
-                '${data.correct}',ent(data.question)}',
+                '${encodeURIComponent(data.question)}',
+                '${key}',
+                '${data.correct}',
                 ${data.xp},
                 '${encodeURIComponent(data.explanation)}',
-                thista.xp},
-              )">${key}: ${val}</button>`).join('')}on)}',
-          </div>this
-        `;    )">${key}: ${val}</button>`).join('')}
+                this
+              )">${key}: ${val}</button>`).join('')}
+          </div>
+        `;
         document.getElementById('mcq-explanation').style.display = 'block';
       } catch (err) {
-        container.innerHTML = "Failed to load question. Check console.";k';
+        container.innerHTML = "Failed to load question. Check console.";
         console.error(err);
-      } container.innerHTML = "Failed to load question. Check console.";
-    }   console.error(err);
       }
+    }
+
     async function submitAnswer(question, selected, correct, xp, explanation, btn) {
       const buttons = btn.parentElement.querySelectorAll("button");
-      buttons.forEach(b => b.disabled = true);cted, correct, xp, explanation, btn) {
-      const buttons = btn.parentElement.querySelectorAll("button");
-      try {ns.forEach(b => b.disabled = true);
+      buttons.forEach(b => b.disabled = true);
+
+      try {
         const res = await fetch(`${API_BASE_URL}/api/answer`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },r`, {
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            userId,{ 'Content-Type': 'application/json' },
+            userId,
             question: decodeURIComponent(question),
             selected,
-            correct,: decodeURIComponent(question),
-            xplected,
-          })correct,
-        }); xp
+            correct,
+            xp
           })
+        });
+
         const result = await res.json();
         const expDiv = document.getElementById('mcq-explanation');
-        const result = await res.json();
-        if (result.awarded > 0) {etElementById('mcq-explanation');
+
+        if (result.awarded > 0) {
           updateXP(result.totalXP);
           expDiv.style.color = "#76c7c0";
           expDiv.innerHTML = `✅ Correct! ${decodeURIComponent(explanation)}`;
-        } else {.style.color = "#76c7c0";
-          expDiv.style.color = "#e57373";${decodeURIComponent(explanation)}`;
+        } else {
+          expDiv.style.color = "#e57373";
           expDiv.innerHTML = `🚫 Already answered. ${decodeURIComponent(explanation)}`;
-        } expDiv.style.color = "#e57373";
-      } catch (err) {rHTML = `🚫 Already answered. ${decodeURIComponent(explanation)}`;
-        alert("Submission failed. Please try again.");
+        }
       } catch (err) {
-    }   alert("Submission failed. Please try again.");
+        alert("Submission failed. Please try again.");
       }
+    }
+
     // Mission Functions
     async function fetchMission() {
       const specialty = document.getElementById('mission-specialty-select').value;
       const container = document.getElementById('mission-content');
-      container.innerHTML = "Loading mission...";mission-specialty-select').value;
-      const container = document.getElementById('mission-content');
-      try {iner.innerHTML = "Loading mission...";
+      container.innerHTML = "Loading mission...";
+
+      try {
         const res = await fetch(`${API_BASE_URL}/api/mission?topic=${specialty}`);
         const data = await res.json();
-        const res = await fetch(`${API_BASE_URL}/api/mission?topic=${specialty}`);
-        container.innerHTML = `json();
+
+        container.innerHTML = `
           <div class="question">Mission: ${data.title}</div>
-          <p>${data.story}</p>`
-          <div class="answers">>Mission: ${data.title}</div>
+          <p>${data.story}</p>
+          <div class="answers">
             ${Object.entries(data.options).map(([key, val]) => 
               `<button onclick="submitMission(
-                '${encodeURIComponent(data.title)}',, val]) => 
-                '${key}',click="submitMission(
-                '${data.correct}',ent(data.title)}',
+                '${encodeURIComponent(data.title)}',
+                '${key}',
+                '${data.correct}',
                 ${data.xp},
                 '${encodeURIComponent(data.explanation)}',
-                thista.xp},
-              )">${key}: ${val}</button>`).join('')}on)}',
-          </div>this
-        `;    )">${key}: ${val}</button>`).join('')}
+                this
+              )">${key}: ${val}</button>`).join('')}
+          </div>
+        `;
         document.getElementById('mission-explanation').style.display = 'block';
       } catch (err) {
-        container.innerHTML = "Failed to load mission. Check console.";'block';
+        container.innerHTML = "Failed to load mission. Check console.";
         console.error(err);
-      } container.innerHTML = "Failed to load mission. Check console.";
-    }   console.error(err);
       }
+    }
+
     async function submitMission(title, selected, correct, xp, explanation, btn) {
       const buttons = btn.parentElement.querySelectorAll("button");
-      buttons.forEach(b => b.disabled = true);ed, correct, xp, explanation, btn) {
-      const buttons = btn.parentElement.querySelectorAll("button");
-      try {ns.forEach(b => b.disabled = true);
+      buttons.forEach(b => b.disabled = true);
+
+      try {
         const res = await fetch(`${API_BASE_URL}/api/answer`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },r`, {
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            userId,{ 'Content-Type': 'application/json' },
+            userId,
             question: decodeURIComponent(title),
             selected,
-            correct,: decodeURIComponent(title),
-            xplected,
-          })correct,
-        }); xp
+            correct,
+            xp
           })
+        });
+
         const result = await res.json();
         const expDiv = document.getElementById('mission-explanation');
-        const result = await res.json();
-        if (result.awarded > 0) {etElementById('mission-explanation');
+
+        if (result.awarded > 0) {
           updateXP(result.totalXP);
           expDiv.style.color = "#76c7c0";
           expDiv.innerHTML = `✅ Success! ${decodeURIComponent(explanation)}`;
-        } else {.style.color = "#76c7c0";
-          expDiv.style.color = "#e57373";${decodeURIComponent(explanation)}`;
+        } else {
+          expDiv.style.color = "#e57373";
           expDiv.innerHTML = `🚫 Already completed. ${decodeURIComponent(explanation)}`;
-        } expDiv.style.color = "#e57373";
-      } catch (err) {rHTML = `🚫 Already completed. ${decodeURIComponent(explanation)}`;
-        alert("Submission failed. Please try again.");
+        }
       } catch (err) {
-    }   alert("Submission failed. Please try again.");
+        alert("Submission failed. Please try again.");
       }
+    }
+
     // Boss Battle Functions
     async function fetchBoss() {
       const specialty = document.getElementById('boss-specialty-select').value;
       const container = document.getElementById('boss-content');
-      container.innerHTML = "Loading boss...";d('boss-specialty-select').value;
-      const container = document.getElementById('boss-content');
-      try {iner.innerHTML = "Loading boss...";
+      container.innerHTML = "Loading boss...";
+
+      try {
         const res = await fetch(`${API_BASE_URL}/api/boss?topic=${specialty}`);
         const data = await res.json();
-        const res = await fetch(`${API_BASE_URL}/api/boss?topic=${specialty}`);
-        container.innerHTML = `json();
+
+        container.innerHTML = `
           <div class="question">Boss Battle: ${data.question}</div>
           <div class="answers">
-            ${Object.entries(data.options).map(([key, val]) => div>
+            ${Object.entries(data.options).map(([key, val]) => 
               `<button onclick="submitBoss(
-                '${encodeURIComponent(data.question)}',al]) => 
-                '${key}',click="submitBoss(
-                '${data.correct}',ent(data.question)}',
+                '${encodeURIComponent(data.question)}',
+                '${key}',
+                '${data.correct}',
                 ${data.xp},
                 '${encodeURIComponent(data.explanation)}',
-                thista.xp},
-              )">${key}: ${val}</button>`).join('')}on)}',
-          </div>this
-        `;    )">${key}: ${val}</button>`).join('')}
+                this
+              )">${key}: ${val}</button>`).join('')}
+          </div>
+        `;
         document.getElementById('boss-explanation').style.display = 'block';
       } catch (err) {
-        container.innerHTML = "Failed to load boss. Check console.";'block';
+        container.innerHTML = "Failed to load boss. Check console.";
         console.error(err);
-      } container.innerHTML = "Failed to load boss. Check console.";
-    }   console.error(err);
       }
+    }
+
     async function submitBoss(question, selected, correct, xp, explanation, btn) {
       const buttons = btn.parentElement.querySelectorAll("button");
-      buttons.forEach(b => b.disabled = true);ed, correct, xp, explanation, btn) {
-      const buttons = btn.parentElement.querySelectorAll("button");
-      try {ns.forEach(b => b.disabled = true);
+      buttons.forEach(b => b.disabled = true);
+
+      try {
         const res = await fetch(`${API_BASE_URL}/api/answer`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },r`, {
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            userId,{ 'Content-Type': 'application/json' },
+            userId,
             question: decodeURIComponent(question),
             selected,
-            correct,: decodeURIComponent(question),
-            xplected,
-          })correct,
-        }); xp
+            correct,
+            xp
           })
+        });
+
         const result = await res.json();
         const expDiv = document.getElementById('boss-explanation');
-        const result = await res.json();
-        if (result.awarded > 0) {etElementById('boss-explanation');
+
+        if (result.awarded > 0) {
           updateXP(result.totalXP);
           expDiv.style.color = "#76c7c0";
           expDiv.innerHTML = `🔥 Boss Defeated! ${decodeURIComponent(explanation)}`;
-        } else {.style.color = "#76c7c0";
-          expDiv.style.color = "#e57373";eated! ${decodeURIComponent(explanation)}`;
+        } else {
+          expDiv.style.color = "#e57373";
           expDiv.innerHTML = `🛡️ Already defeated. ${decodeURIComponent(explanation)}`;
-        } expDiv.style.color = "#e57373";
-      } catch (err) {rHTML = `🛡️ Already defeated. ${decodeURIComponent(explanation)}`;
+        }
+      } catch (err) {
         alert("Submission failed. Please try again.");
-      } catch (err) {
-    }   alert("Submission failed. Please try again.");
       }
-    // Chat System
-    async function sendChat() {
-      const input = document.getElementById('chat-input');
-      const message = input.value.trim();
-      if (!message) return;t.getElementById('chat-input');
-      const message = input.value.trim();
-      const chatWindow = document.getElementById('chat-window');
-      chatWindow.innerHTML += `<p><strong>You:</strong> ${message}</p>`;
-      input.value = '';= document.getElementById('chat-window');
-      chatWindow.innerHTML += `<p><strong>You:</strong> ${message}</p>`;
-      try {.value = '';
-        const res = await fetch(`${API_BASE_URL}/api/chat`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },, {
-          body: JSON.stringify({ message })
-        });eaders: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ message })
-        const data = await res.json();
-        const response = data.response || "The Oracle is silent...";
-        chatWindow.innerHTML += `<p><strong>Oracle:</strong> ${response}</p>`;
-        chatWindow.scrollTop = chatWindow.scrollHeight;s silent...";
-      } catch (err) {nerHTML += `<p><strong>Oracle:</strong> ${response}</p>`;
-        chatWindow.innerHTML += `<p>Chat failed. Please try again.</p>`;
-      } catch (err) {
-    }   chatWindow.innerHTML += `<p>Chat failed. Please try again.</p>`;
+    }
   </script>
-  <script>
-    const API_BASE_URL = "https://healers-odyssey-1.onrender.com"; // Render backend URL
-  </script>
-</body>st API_BASE_URL = "https://healers-odyssey-1.onrender.com"; // Render backend URL
-</html>ipt>
 </body>
 </html>
