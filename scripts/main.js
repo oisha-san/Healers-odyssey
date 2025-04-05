@@ -1,6 +1,5 @@
-const API_BASE_URL = "http://localhost:3000"; // Update to production URL when deployed
+const API_BASE_URL = "https://healers-odyssey-1.onrender.com"; // Render backend URL
 
-// Fetch user progress
 async function fetchUserProgress() {
   try {
     const res = await fetch(`${API_BASE_URL}/api/user?userId=localUser`);
@@ -12,7 +11,6 @@ async function fetchUserProgress() {
   }
 }
 
-// Fetch a question
 async function fetchQuestion() {
   const specialty = document.getElementById('specialty-select').value;
   try {
@@ -26,7 +24,6 @@ async function fetchQuestion() {
   }
 }
 
-// Display the question and answers
 function displayQuestion(question) {
   const content = document.getElementById('mcq-content');
   content.innerHTML = `
@@ -39,8 +36,7 @@ function displayQuestion(question) {
   `;
 }
 
-// Submit an answer
-async function submitAnswer(selected, correct, xp, explanation) {
+function submitAnswer(selected, correct, xp, explanation) {
   const explanationDiv = document.getElementById('mcq-explanation');
   if (selected === correct) {
     explanationDiv.innerHTML = `Correct! You earned ${xp} XP.<br>${explanation}`;
@@ -49,13 +45,6 @@ async function submitAnswer(selected, correct, xp, explanation) {
   }
 }
 
-// Initialize
 window.onload = () => {
   fetchUserProgress();
 };
-
-"scripts": {
-  "start": "node index.js",
-  "dev": "nodemon index.js",
-  "deploy": "gh-pages -d public"
-}
