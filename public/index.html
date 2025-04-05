@@ -44,52 +44,6 @@
     <button onclick="resetXP()">Reset Progress (Prestige)</button>
   </div>
 
-  <!-- Multiple Choice Questions Section -->
-  <div class="section" id="mcq-section">
-    <h2>Quests</h2>
-    <label for="specialty-select">Choose Your Specialty:</label>
-    <select id="specialty-select">
-      <option value="cardiology" selected>Cardiology</option>
-      <option value="neurology">Neurology</option>
-      <option value="pulmonology">Pulmonology</option>
-    </select>
-    <button onclick="fetchQuestion()">Start Quest</button>
-    <div id="mcq-content">
-      <!-- Question will be dynamically inserted here -->
-    </div>
-    <div id="mcq-explanation" style="margin-top: 20px; color: green;">
-      <!-- Explanation will be dynamically inserted here -->
-    </div>
-  </div>
-
-  <!-- Missions Section -->
-  <div class="section" id="mission-section">
-    <h2>Missions</h2>
-    <label for="mission-specialty-select">Choose Your Specialty:</label>
-    <select id="mission-specialty-select">
-      <option value="cardiology" selected>Cardiology</option>
-      <option value="neurology">Neurology</option>
-      <option value="pulmonology">Pulmonology</option>
-    </select>
-    <button onclick="fetchMission()">Start Mission</button>
-    <div id="mission-content"></div>
-    <div id="mission-explanation"></div>
-  </div>
-
-  <!-- Boss Battles Section -->
-  <div class="section" id="boss-section">
-    <h2>Boss Battles</h2>
-    <label for="boss-specialty-select">Choose Your Specialty:</label>
-    <select id="boss-specialty-select">
-      <option value="cardiology" selected>Cardiology</option>
-      <option value="neurology">Neurology</option>
-      <option value="pulmonology">Pulmonology</option>
-    </select>
-    <button onclick="fetchBoss()">Challenge Boss</button>
-    <div id="boss-content"></div>
-    <div id="boss-explanation"></div>
-  </div>
-
   <!-- Worlds Section -->
   <div class="section" id="worlds-section">
     <h2>Worlds</h2>
@@ -105,13 +59,5 @@
   </audio>
 
   <script src="./scripts/main.js"></script>
-  <script>
-    // Ensure startAdventure() is defined
-    function startAdventure() {
-      const message = document.getElementById('adventure-message');
-      message.style.display = 'block';
-      message.innerText = "Adventure mode is not yet implemented.";
-    }
-  </script>
 </body>
 </html>

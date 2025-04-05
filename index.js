@@ -10,10 +10,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware
-app.use(cors({
-  origin: ['https://oisha-san.github.io'], // Allow GitHub Pages
-  methods: ['GET', 'POST'],
-}));
+app.use(cors()); // Allow all origins for simplicity
 app.use(bodyParser.json());
 app.use(express.static('public')); // Serve static files
 
@@ -73,7 +70,6 @@ app.post('/api/answer', async (req, res) => {
   res.json({ awarded: selected === correct ? xp : 0, totalXP: user.xp });
 });
 
-// Worlds endpoint
 app.get('/api/worlds', (req, res) => {
   const worlds = [
     { name: "Internal Medicine", description: "Inspired by Final Fantasy", background: "internal-medicine.jpg" },
@@ -84,7 +80,6 @@ app.get('/api/worlds', (req, res) => {
   res.json(worlds);
 });
 
-// Adventure mode endpoint
 app.get('/api/adventure', async (req, res) => {
   const { userId } = req.query;
   if (!userId) return res.status(400).json({ error: "User ID is required" });
