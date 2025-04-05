@@ -173,8 +173,6 @@ app.get('/api/question', async (req, res) => {
     const topic = req.query.topic;
     const userId = req.query.userId;
 
-    console.log("Received request for topic:", topic, "and userId:", userId);
-
     if (!topic || !userId) {
       return res.status(400).json({ error: "Topic and User ID are required" });
     }
@@ -182,24 +180,18 @@ app.get('/api/question', async (req, res) => {
     await db.read();
     const user = db.data.users[userId] || { answered: [], xp: 0 };
 
-    console.log("User data:", user);
-
     const questions = specialties[topic.toLowerCase()];
     if (!questions) {
       return res.status(404).json({ error: "Specialty not found" });
     }
 
     const filtered = questions.filter(q => !user.answered.includes(q.question));
-    console.log("Filtered questions:", filtered);
-
     if (!filtered.length) {
       return res.status(404).json({ error: "No new questions available" });
     }
 
     const randomQuestion = filtered[Math.floor(Math.random() * filtered.length)];
-    const randomizedQuestion = randomizeAnswers(randomQuestion);
-
-    res.json(randomizedQuestion);
+    res.json(randomQuestion);
   } catch (error) {
     console.error("Error fetching question:", error);
     res.status(500).json({ error: "Internal server error" });
