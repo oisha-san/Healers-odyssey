@@ -101,11 +101,59 @@
       background-color: rgba(255, 255, 255, 0.1);
       border-radius: 5px;
     }
+
+    /* Login/Signup Form Styling */
+    #auth-section {
+      margin: 20px auto;
+      padding: 20px;
+      max-width: 400px;
+      border: 2px solid #ffd700;
+      border-radius: 10px;
+      background-color: rgba(0, 0, 0, 0.8);
+      color: #ffd700;
+      text-align: center;
+    }
+
+    #auth-section input {
+      width: 90%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 2px solid #ffd700;
+      border-radius: 5px;
+      background-color: #333;
+      color: #ffd700;
+    }
+
+    #auth-section button {
+      width: 95%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 2px solid #ffd700;
+      border-radius: 5px;
+      background-color: #333;
+      color: #ffd700;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    #auth-section button:hover {
+      background-color: #444;
+    }
   </style>
 </head>
 <body>
   <h1>Healer's Odyssey</h1>
   
+  <!-- Authentication Section -->
+  <div id="auth-section">
+    <h2>Login or Sign Up</h2>
+    <input type="text" id="username" placeholder="Enter your username" />
+    <input type="password" id="password" placeholder="Enter your password" />
+    <button onclick="login()">Login</button>
+    <button onclick="signup()">Sign Up</button>
+    <p id="auth-message"></p>
+  </div>
+
   <!-- XP Section -->
   <div class="section" id="xp-section">
     <h2>XP</h2>
@@ -184,6 +232,7 @@
     const API_BASE_URL = "https://healers-odyssey-1.onrender.com"; // Replace with your Render backend URL
     const userId = "localUser"; // Replace with dynamic ID in real applications
     let currentXP = 0;
+    let currentUser = null;
 
     // XP Management
     async function updateXP(newTotalXP) {
@@ -458,6 +507,65 @@
     window.onload = () => {
       fetchLeaderboard();
     };
+
+    async function login() {
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value.trim();
+      const message = document.getElementById('auth-message');
+
+      if (!username || !password) {
+        message.innerText = "Please enter both username and password.";
+        return;
+      }
+
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+
+        const data = await res.json();
+        if (res.ok) {
+          currentUser = data.username;
+          message.innerText = `Welcome back, ${currentUser}!`;
+          document.getElementById('auth-section').style.display = 'none';
+          fetchUserProgress();
+        } else {
+          message.innerText = data.error || "Login failed.";
+        }
+      } catch (err) {
+        message.innerText = "An error occurred. Please try again.";
+      }
+    }
+
+    async function signup() {
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value.trim();
+      const message = document.getElementById('auth-message');
+
+      if (!username || !password) {
+        message.innerText = "Please enter both username and password.";
+        return;
+      }
+
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/signup`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+
+        const data = await res.json();
+        if (res.ok) {
+          message.innerText = "Signup successful! Please log in.";
+        } else {
+          message.innerText = data.error || "Signup failed.";
+        }
+      } catch (err) {
+        message.innerText = "An error occurred. Please try again.";
+      }
+    }
   </script>
 </body>
 </html>

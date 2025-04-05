@@ -5,6 +5,7 @@ import cors from 'cors';
 import { Low } from 'lowdb';
 import { JSONFile } from 'lowdb/node';
 import fs from 'fs/promises';
+import bcrypt from 'bcrypt'; // For password hashing
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -339,6 +340,58 @@ app.get('/api/leaderboard', async (req, res) => {
   } catch (error) {
     console.error('Error fetching leaderboard:', error);
     res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// User Registration
+app.post('/api/signup', async (req, res) => {
+  try {
+    const { username, password } = req.body;
+
+    if (!username || !password) {
+      return res.status(400).json({ error: "Username and password are required." });
+    }
+
+    await db.read();
+    const users = db.data.users || {};
+
+    if (users[username]) {
+      return res.status(400).json({ error: "Username already exists." });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    users[username] = { password: hashedPassword, xp: 0, answered: [], completedMissions: [], defeatedBosses: [] };
+    db.data.users = users;
+    await db.write();
+
+    res.status(201).json({ message: "User registered successfully." });
+  } catch (error) {
+    console.error("Error during signup:", error);
+    res.status(500).json({ error: "Internal server error." });
+  }
+});
+
+// User Login
+app.post('/api/login', async (req, res) => {
+  try {
+    const { username, password } = req.body;
+
+    if (!username || !password) {
+      return res.status(400).json({ error: "Username and password are required." });
+    }
+
+    await db.read();
+    const users = db.data.users || {};
+    const user = users[username];
+
+    if (!user || !(await bcrypt.compare(password, user.password))) {
+      return res.status(401).json({ error: "Invalid username or password." });
+    }
+
+    res.json({ username });
+  } catch (error) {
+    console.error("Error during login:", error);
+    res.status(500).json({ error: "Internal server error." });
   }
 });
 
