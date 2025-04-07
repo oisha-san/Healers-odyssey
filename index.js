@@ -1,11 +1,6 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
-import { Low } from 'lowdb';
-import { JSONFile } from 'lowdb/node';
-import fs from 'fs/promises';
-import path from 'path';
-import { Configuration, OpenAIApi } from 'openai';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -14,28 +9,6 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static('public')); // Serve static files
-
-// Database setup
-const dbPath = process.env.NODE_ENV === 'production' ? '/tmp/db.json' : './db.json';
-const adapter = new JSONFile(dbPath);
-const db = new Low(adapter);
-
-async function ensureDatabaseFile() {
-  try {
-    await fs.access(dbPath);
-  } catch {
-    await fs.writeFile(dbPath, JSON.stringify({ users: {} }, null, 2));
-  }
-}
-
-async function initializeDatabase() {
-  await ensureDatabaseFile();
-  await db.read();
-  db.data = db.data || { users: {} };
-  await db.write();
-}
-
-await initializeDatabase();
 
 // Worlds data
 const worlds = [
@@ -77,7 +50,6 @@ const missions = {
       xp: 20,
     },
   ],
-  // ...other worlds...
 };
 
 const bosses = {
@@ -91,7 +63,6 @@ const bosses = {
       damage: 20,
     },
   ],
-  // ...other worlds...
 };
 
 // API Endpoints
@@ -116,7 +87,7 @@ app.get('/api/bosses', (req, res) => {
 });
 
 // Serve frontend
-app.get('*', (req, res) => res.sendFile('/workspaces/Healers-odyssey/public/index.html'));
+app.get('*', (req, res) => res.sendFile(__dirname + '/public/index.html'));
 
 // Start the server
 app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));

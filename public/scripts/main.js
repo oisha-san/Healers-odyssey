@@ -1,4 +1,4 @@
-const API_BASE_URL = "https://healers-odyssey.onrender.com"; // Update with your Render URL when deployed
+const API_BASE_URL = "http://localhost:3000"; // Update with your Render URL when deployed
 
 let currentWorld = null;
 
