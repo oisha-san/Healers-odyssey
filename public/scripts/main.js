@@ -1,4 +1,4 @@
-const API_BASE_URL = "http://localhost:3000"; // Update with your Render URL when deployed
+const API_BASE_URL = "https://healers-odyssey.onrender.com"; // Update with your Render URL when deployed
 
 let currentWorld = null;
 
@@ -144,6 +144,15 @@ async function showBossBattles() {
     `).join('');
   } catch (error) {
     console.error("Error loading boss battles:", error);
+  }
+}
+
+// Submit an answer
+function submitAnswer(selected, correct, explanation, reward) {
+  if (selected === correct) {
+    alert(`Correct! You earned ${reward} points.\nExplanation: ${explanation}`);
+  } else {
+    alert(`Incorrect. The correct answer is ${correct}.\nExplanation: ${explanation}`);
   }
 }
 
