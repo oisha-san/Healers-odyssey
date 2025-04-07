@@ -4,13 +4,13 @@ import cors from 'cors';
 import { Low } from 'lowdb';
 import { JSONFile } from 'lowdb/node';
 import fs from 'fs/promises';
-import { specialties } from './data/specialties.js';
+import path from 'path';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware
-app.use(cors()); // Allow all origins for simplicity
+app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static('public')); // Serve static files
 
@@ -36,6 +36,19 @@ async function initializeDatabase() {
 
 await initializeDatabase();
 
+// Load questions from JSON file
+const questionsPath = path.resolve('./data/questions.json');
+let questionsData = {};
+async function loadQuestions() {
+  try {
+    const data = await fs.readFile(questionsPath, 'utf-8');
+    questionsData = JSON.parse(data);
+  } catch (error) {
+    console.error("Error loading questions:", error);
+  }
+}
+await loadQuestions();
+
 // API Endpoints
 app.get('/api/question', async (req, res) => {
   const { topic, userId } = req.query;
@@ -44,7 +57,7 @@ app.get('/api/question', async (req, res) => {
   try {
     await db.read();
     const user = db.data.users[userId] || { answered: [], xp: 0 };
-    const questions = specialties[topic.toLowerCase()];
+    const questions = questionsData[topic.toLowerCase()];
     if (!questions) return res.status(404).json({ error: "Specialty not found" });
 
     const filtered = questions.filter(q => !user.answered.includes(q.question));
