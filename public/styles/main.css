@@ -1,5 +1,5 @@
 body {
-  font-family: Arial, sans-serif;
+  font-family: 'Roboto', sans-serif;
   margin: 0;
   padding: 0;
   background-color: #f4f4f4;
@@ -88,12 +88,25 @@ button:hover {
 .world {
   border: 1px solid #ccc;
   padding: 10px;
-  margin-bottom: 10px;
+  margin: 10px;
   border-radius: 5px;
-  background-color: #f9f9f9;
+  background-color: #fff;
   cursor: pointer;
 }
 
 .world:hover {
   background-color: #e0e0e0;
+}
+
+#app {
+  text-align: center;
+  padding: 20px;
+}
+
+.mission, .boss {
+  border: 1px solid #ccc;
+  padding: 10px;
+  margin: 10px;
+  border-radius: 5px;
+  background-color: #fff;
 }

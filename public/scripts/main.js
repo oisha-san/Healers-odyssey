@@ -1,4 +1,6 @@
-const API_BASE_URL = "https://healers-odyssey.onrender.com"; // Render backend URL
+const API_BASE_URL = "http://localhost:3000"; // Update with your Render URL when deployed
+
+let currentWorld = null;
 
 async function fetchUserProgress() {
   try {
@@ -28,6 +30,27 @@ async function fetchQuestion() {
   }
 }
 
+// Fetch a dynamically generated question
+async function generateQuestion() {
+  const specialty = document.getElementById('specialty-select').value;
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/generate-question`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ topic: specialty }),
+    });
+    if (!res.ok) {
+      const errorData = await res.json();
+      throw new Error(errorData.error || "Failed to generate question");
+    }
+    const question = await res.json();
+    displayQuestion(question);
+  } catch (error) {
+    console.error("Error generating question:", error);
+    document.getElementById('mcq-content').innerText = error.message || "Error generating question. Please try again.";
+  }
+}
+
 // Display the question and answers
 function displayQuestion(question) {
   const content = document.getElementById('mcq-content');
@@ -52,104 +75,85 @@ function submitAnswer(selected, correct, xp, explanation) {
 }
 
 // Fetch and display worlds
-async function fetchWorlds() {
+async function loadWorlds() {
   try {
     const res = await fetch(`${API_BASE_URL}/api/worlds`);
-    if (!res.ok) throw new Error("Failed to fetch worlds");
     const worlds = await res.json();
-    displayWorlds(worlds);
+    const container = document.getElementById('worlds-container');
+    container.innerHTML = worlds.map(world => `
+      <div class="world" onclick="enterWorld('${world.id}', '${world.name}', '${world.description}', '${world.theme}')">
+        <h3>${world.name}</h3>
+        <p>${world.description}</p>
+      </div>
+    `).join('');
   } catch (error) {
-    console.error("Error fetching worlds:", error);
-    document.getElementById('worlds-content').innerText = "Error fetching worlds. Please try again.";
+    console.error("Error loading worlds:", error);
   }
 }
 
-function displayWorlds(worlds) {
-  const content = document.getElementById('worlds-content');
-  content.innerHTML = worlds.map(world => `
-    <div class="world" onclick="setBackground('${world.background}')">
-      <h3>${world.name}</h3>
-      <p>${world.description}</p>
-    </div>
-  `).join('');
+// Enter a world and change the theme
+function enterWorld(id, name, description, theme) {
+  currentWorld = id;
+  document.getElementById('main-menu').style.display = 'none';
+  document.getElementById('world-view').style.display = 'block';
+  document.getElementById('world-title').innerText = name;
+  document.getElementById('world-description').innerText = description;
+  document.getElementById('theme-stylesheet').href = `./styles/${theme}`;
 }
 
-function setBackground(image) {
-  document.getElementById('background-overlay').style.backgroundImage = `url('./assets/${image}')`;
-}
-
-// Fetch and display missions
-async function fetchMission() {
-  const specialty = document.getElementById('mission-specialty-select').value;
+// Show missions
+async function showMissions() {
   try {
-    const res = await fetch(`${API_BASE_URL}/api/mission?topic=${specialty}&userId=localUser`);
-    if (!res.ok) {
-      const errorData = await res.json();
-      throw new Error(errorData.error || "Failed to fetch mission");
-    }
-    const mission = await res.json();
-    displayMission(mission);
+    const res = await fetch(`${API_BASE_URL}/api/missions?worldId=${currentWorld}`);
+    const missions = await res.json();
+    const container = document.getElementById('missions-container');
+    container.style.display = 'block';
+    container.innerHTML = missions.map(mission => `
+      <div class="mission">
+        <h4>${mission.title}</h4>
+        <p>${mission.question}</p>
+        <ul>
+          ${Object.entries(mission.options).map(([key, value]) => `
+            <li><button onclick="submitAnswer('${key}', '${mission.correct}', '${mission.explanation}', ${mission.xp})">${key}: ${value}</button></li>
+          `).join('')}
+        </ul>
+      </div>
+    `).join('');
   } catch (error) {
-    console.error("Error fetching mission:", error);
-    document.getElementById('mission-content').innerText = error.message || "Error fetching mission. Please try again.";
+    console.error("Error loading missions:", error);
   }
 }
 
-function displayMission(mission) {
-  const content = document.getElementById('mission-content');
-  content.innerHTML = `
-    <h3>${mission.title}</h3>
-    <p>${mission.story}</p>
-    <ul>
-      ${Object.entries(mission.options)
-        .map(([key, value]) => `<li><button onclick="submitAnswer('${key}', '${mission.correct}', ${mission.xp}, '${mission.explanation}')">${key}: ${value}</button></li>`)
-        .join('')}
-    </ul>
-  `;
-}
-
-// Fetch and display boss battles
-async function fetchBoss() {
-  const specialty = document.getElementById('boss-specialty-select').value;
+// Show boss battles
+async function showBossBattles() {
   try {
-    const res = await fetch(`${API_BASE_URL}/api/boss?topic=${specialty}&userId=localUser`);
-    if (!res.ok) {
-      const errorData = await res.json();
-      throw new Error(errorData.error || "Failed to fetch boss challenge");
-    }
-    const boss = await res.json();
-    displayBoss(boss);
+    const res = await fetch(`${API_BASE_URL}/api/bosses?worldId=${currentWorld}`);
+    const bosses = await res.json();
+    const container = document.getElementById('bosses-container');
+    container.style.display = 'block';
+    container.innerHTML = bosses.map(boss => `
+      <div class="boss">
+        <h4>${boss.bossName}</h4>
+        <p>${boss.question}</p>
+        <ul>
+          ${Object.entries(boss.options).map(([key, value]) => `
+            <li><button onclick="submitAnswer('${key}', '${boss.correct}', '${boss.explanation}', ${boss.damage})">${key}: ${value}</button></li>
+          `).join('')}
+        </ul>
+      </div>
+    `).join('');
   } catch (error) {
-    console.error("Error fetching boss challenge:", error);
-    document.getElementById('boss-content').innerText = error.message || "Error fetching boss challenge. Please try again.";
+    console.error("Error loading boss battles:", error);
   }
 }
 
-function displayBoss(boss) {
-  const content = document.getElementById('boss-content');
-  content.innerHTML = `
-    <p><strong>Boss Challenge:</strong> ${boss.question}</p>
-    <ul>
-      ${Object.entries(boss.options)
-        .map(([key, value]) => `<li><button onclick="submitAnswer('${key}', '${boss.correct}', ${boss.xp}, '${boss.explanation}')">${key}: ${value}</button></li>`)
-        .join('')}
-    </ul>
-  `;
-}
-
-// Start adventure mode
-async function startAdventure() {
-  try {
-    const res = await fetch(`${API_BASE_URL}/api/adventure?userId=localUser`);
-    const data = await res.json();
-    alert(`Adventure progress: ${data.progress}`);
-  } catch (error) {
-    console.error("Error starting adventure:", error);
-  }
+// Go back to the main menu
+function goBackToMainMenu() {
+  document.getElementById('main-menu').style.display = 'block';
+  document.getElementById('world-view').style.display = 'none';
+  document.getElementById('missions-container').style.display = 'none';
+  document.getElementById('bosses-container').style.display = 'none';
 }
 
 // Initialize
-window.onload = () => {
-  fetchUserProgress();
-  fetchWorlds();
-};
+window.onload = loadWorlds;
