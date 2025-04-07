@@ -51,6 +51,7 @@ function submitAnswer(selected, correct, xp, explanation) {
   }
 }
 
+// Fetch and display worlds
 async function fetchWorlds() {
   try {
     const res = await fetch(`${API_BASE_URL}/api/worlds`);
@@ -77,17 +78,7 @@ function setBackground(image) {
   document.getElementById('background-overlay').style.backgroundImage = `url('./assets/${image}')`;
 }
 
-async function startAdventure() {
-  try {
-    const res = await fetch(`${API_BASE_URL}/api/adventure?userId=localUser`);
-    const data = await res.json();
-    alert(`Adventure progress: ${data.progress}`);
-  } catch (error) {
-    console.error("Error starting adventure:", error);
-  }
-}
-
-// Fetch a mission
+// Fetch and display missions
 async function fetchMission() {
   const specialty = document.getElementById('mission-specialty-select').value;
   try {
@@ -104,7 +95,6 @@ async function fetchMission() {
   }
 }
 
-// Display the mission
 function displayMission(mission) {
   const content = document.getElementById('mission-content');
   content.innerHTML = `
@@ -118,7 +108,7 @@ function displayMission(mission) {
   `;
 }
 
-// Fetch a boss challenge
+// Fetch and display boss battles
 async function fetchBoss() {
   const specialty = document.getElementById('boss-specialty-select').value;
   try {
@@ -135,7 +125,6 @@ async function fetchBoss() {
   }
 }
 
-// Display the boss challenge
 function displayBoss(boss) {
   const content = document.getElementById('boss-content');
   content.innerHTML = `
@@ -146,6 +135,17 @@ function displayBoss(boss) {
         .join('')}
     </ul>
   `;
+}
+
+// Start adventure mode
+async function startAdventure() {
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/adventure?userId=localUser`);
+    const data = await res.json();
+    alert(`Adventure progress: ${data.progress}`);
+  } catch (error) {
+    console.error("Error starting adventure:", error);
+  }
 }
 
 // Initialize
