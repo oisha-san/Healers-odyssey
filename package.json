@@ -9,14 +9,14 @@
     "url": "https://github.com/oisha-san/Healers-odyssey.git"
   },
   "dependencies": {
-    "express": "^4.18.2",,
+    "express": "^4.18.2",
     "cors": "^2.8.5",
     "lowdb": "^5.1.0"
   },
   "scripts": {
-    "start": "node index.js","start": "node index.js",
-    "dev": "nodemon index.js"demon index.js",
-  },blic"
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
   "license": "MIT",
   "private": true
-}"gh-pages": "^6.3.0",
+}
