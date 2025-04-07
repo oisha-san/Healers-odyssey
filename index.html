@@ -10,6 +10,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
+  <div id="background-overlay"></div> <!-- Dynamic background -->
+
   <!-- Navigation Bar -->
   <nav class="navbar">
     <div class="logo">Healer's Odyssey</div>
@@ -52,8 +54,12 @@
       <option value="pulmonology">Pulmonology</option>
     </select>
     <button onclick="fetchQuestion()">Start Quest</button>
-    <div id="mcq-content"></div>
-    <div id="mcq-explanation"></div>
+    <div id="mcq-content">
+      <!-- Question will be dynamically inserted here -->
+    </div>
+    <div id="mcq-explanation" style="margin-top: 20px; color: green;">
+      <!-- Explanation will be dynamically inserted here -->
+    </div>
   </div>
 
   <!-- Missions Section -->
@@ -83,6 +89,20 @@
     <div id="boss-content"></div>
     <div id="boss-explanation"></div>
   </div>
+
+  <!-- Worlds Section -->
+  <div class="section" id="worlds-section">
+    <h2>Worlds</h2>
+    <div id="worlds-content">
+      <!-- Worlds will be dynamically inserted here -->
+    </div>
+  </div>
+
+  <!-- Music Player -->
+  <audio id="background-music" controls autoplay loop>
+    <source src="./assets/background-music.mp3" type="audio/mpeg" />
+    Your browser does not support the audio element.
+  </audio>
 
   <script src="./scripts/main.js"></script>
   <script>
