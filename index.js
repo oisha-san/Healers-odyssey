@@ -154,6 +154,27 @@ app.post('/api/save-progress', (req, res) => {
   });
 });
 
+// Endpoint to fetch user progress
+app.get('/api/user-progress', (req, res) => {
+  const { username } = req.query;
+
+  if (!username) {
+    return res.status(400).json({ message: 'Username is required.' });
+  }
+
+  db.findOne({ username }, (err, user) => {
+    if (err) {
+      return res.status(500).json({ message: 'Database error.' });
+    }
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found.' });
+    }
+
+    res.status(200).json({ user });
+  });
+});
+
 // Serve frontend
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));

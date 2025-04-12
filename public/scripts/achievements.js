@@ -59,7 +59,36 @@ function renderAchievements() {
   });
 }
 
+// Fetch user progress from the new endpoint
+async function fetchUserProgress() {
+  try {
+    const username = localStorage.getItem('username');
+    if (!username) {
+      console.error('No username found in localStorage.');
+      return;
+    }
+
+    const response = await fetch(`/api/user-progress?username=${username}`);
+
+    if (response.ok) {
+      const data = await response.json();
+      xp = data.user.xp;
+      questionsCompleted = data.user.questionsCompleted;
+      specialties.forEach((specialty) => {
+        specialty.tasks.forEach((task) => {
+          task.completed = data.user[specialty.name]?.[task.id] || false;
+        });
+      });
+      renderAchievements();
+    } else {
+      console.error('Failed to fetch user progress:', await response.text());
+    }
+  } catch (error) {
+    console.error('Error fetching user progress:', error);
+  }
+}
+
 // Initialize the achievements page
 window.onload = () => {
-  renderAchievements();
+  fetchUserProgress();
 };
