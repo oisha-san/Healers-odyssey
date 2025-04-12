@@ -36,20 +36,21 @@ let level = 1;
 let quizzesCompleted = 0;
 
 const achievements = [
-  { xp: 50, name: "Novice Healer", icon: "🏅" },
-  { xp: 100, name: "Intermediate Healer", icon: "🥈" },
-  { xp: 200, name: "Advanced Healer", icon: "🥇" },
-  { xp: 500, name: "Master Healer", icon: "🏆" },
-  { xp: 1000, name: "Legendary Healer", icon: "🌟" },
-  { xp: 2000, name: "Immortal Healer", icon: "🔥" },
+  { xp: 100, name: "Novice Healer", icon: "🏅" },
+  { xp: 300, name: "Intermediate Healer", icon: "🥈" },
+  { xp: 600, name: "Advanced Healer", icon: "🥇" },
+  { xp: 1000, name: "Master Healer", icon: "🏆" },
+  { xp: 2000, name: "Legendary Healer", icon: "🌟" },
+  { xp: 5000, name: "Immortal Healer", icon: "🔥" },
   { specialty: "Hematology", name: "Hematology Specialist", icon: "🩸" },
   { specialty: "Cardiology", name: "Cardiology Specialist", icon: "❤️" },
   { specialty: "Neurology", name: "Neurology Specialist", icon: "🧠" },
   { specialty: "Pulmonology", name: "Pulmonology Specialist", icon: "🌬️" },
-  { quizzes: 10, name: "Quiz Novice", icon: "📘" },
-  { quizzes: 25, name: "Quiz Enthusiast", icon: "📗" },
-  { quizzes: 50, name: "Quiz Master", icon: "📙" },
-  { quizzes: 100, name: "Quiz Legend", icon: "📚" },
+  { quizzes: 20, name: "Quiz Novice", icon: "📘" },
+  { quizzes: 50, name: "Quiz Enthusiast", icon: "📗" },
+  { quizzes: 100, name: "Quiz Master", icon: "📙" },
+  { quizzes: 200, name: "Quiz Legend", icon: "📚" },
+  { quizzes: 500, name: "Quiz Grandmaster", icon: "🏅" },
 ];
 
 const specialties = [
@@ -97,7 +98,7 @@ function updateProgress() {
   document.getElementById("current-level").innerText = level;
 
   const progressBar = document.getElementById("xp-progress");
-  const xpForNextLevel = level * 100;
+  const xpForNextLevel = level * 200; // Increased XP requirement per level
   const progressPercentage = (xp / xpForNextLevel) * 100;
   progressBar.style.width = `${Math.min(progressPercentage, 100)}%`;
 
@@ -151,7 +152,7 @@ function logTask() {
   const questionsCompleted = parseInt(taskInput.value, 10);
 
   if (!isNaN(questionsCompleted) && questionsCompleted > 0) {
-    const xpGained = questionsCompleted * 10; // 10 XP per question
+    const xpGained = questionsCompleted * 5; // Reduced XP per question to make it harder
     xp += xpGained;
     updateProgress();
     checkAchievements();
@@ -165,7 +166,7 @@ function logTask() {
 // Log a quiz and add XP
 function logQuiz() {
   quizzesCompleted++;
-  xp += 50; // 50 XP per quiz
+  xp += 100; // Increased XP per quiz
   updateProgress();
   checkAchievements();
   alert(`You completed a quiz! Total quizzes completed: ${quizzesCompleted}`);
@@ -194,7 +195,7 @@ function renderSpecialties() {
       taskItem.querySelector("input").addEventListener("change", (e) => {
         task.completed = e.target.checked;
         if (task.completed) {
-          xp += 20; // 20 XP per completed task
+          xp += 50; // Increased XP per completed task
           updateProgress();
           checkAchievements();
         }
