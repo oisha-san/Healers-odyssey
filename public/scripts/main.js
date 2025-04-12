@@ -31,5 +31,66 @@ function enterWorld(id, name, description) {
   alert(`Entering the world: ${name}\nDescription: ${description}`);
 }
 
+let xp = 0;
+let level = 1;
+const achievements = [
+  { xp: 50, name: "Novice Healer" },
+  { xp: 100, name: "Intermediate Healer" },
+  { xp: 200, name: "Advanced Healer" },
+  { xp: 500, name: "Master Healer" },
+];
+
+// Update XP and level display
+function updateProgress() {
+  document.getElementById("current-xp").innerText = xp;
+  document.getElementById("current-level").innerText = level;
+
+  const progressBar = document.getElementById("xp-progress");
+  const xpForNextLevel = level * 100;
+  const progressPercentage = (xp / xpForNextLevel) * 100;
+  progressBar.style.width = `${Math.min(progressPercentage, 100)}%`;
+
+  if (xp >= xpForNextLevel) {
+    level++;
+    xp -= xpForNextLevel;
+    updateProgress();
+  }
+}
+
+// Check for new achievements
+function checkAchievements() {
+  const achievementList = document.getElementById("achievement-list");
+  achievementList.innerHTML = "";
+
+  achievements.forEach((achievement) => {
+    if (xp >= achievement.xp) {
+      const li = document.createElement("li");
+      li.innerText = achievement.name;
+      achievementList.appendChild(li);
+    }
+  });
+}
+
+// Log a task and add XP
+function logTask() {
+  const taskInput = document.getElementById("task-input");
+  const questionsCompleted = parseInt(taskInput.value, 10);
+
+  if (!isNaN(questionsCompleted) && questionsCompleted > 0) {
+    const xpGained = questionsCompleted * 10; // 10 XP per question
+    xp += xpGained;
+    updateProgress();
+    checkAchievements();
+    taskInput.value = "";
+    alert(`You gained ${xpGained} XP!`);
+  } else {
+    alert("Please enter a valid number of questions.");
+  }
+}
+
 // Initialize the app
-window.onload = loadWorlds;
+window.onload = () => {
+  loadWorlds();
+  updateProgress();
+  checkAchievements();
+};

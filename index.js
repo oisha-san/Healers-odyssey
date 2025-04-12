@@ -1,8 +1,4 @@
 import express from 'express';
-import bodyParser from 'body-parser';
-import cors from 'cors';
-import { Low } from 'lowdb';
-import { JSONFile } from 'lowdb/node';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -13,41 +9,12 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Middleware
-app.use(cors());
-app.use(bodyParser.json());
-app.use(express.static(path.join(__dirname, 'public'))); // Serve static files
-
-// Database setup
-const adapter = new JSONFile(path.join(__dirname, 'db.json'));
-const db = new Low(adapter);
-
-async function initializeDatabase() {
-  try {
-    await db.read();
-    db.data = db.data || { users: {} };
-    await db.write();
-  } catch (error) {
-    console.error('Error initializing database:', error);
-  }
-}
-
-await initializeDatabase();
-
-// API Endpoints
-app.get('/api/worlds', (req, res) => {
-  const worlds = [
-    { id: "internal-medicine", name: "Internal Medicine", description: "Inspired by Final Fantasy" },
-    { id: "pediatrics", name: "Pediatrics", description: "Inspired by Dragon Quest XI" },
-    { id: "surgery", name: "Surgery", description: "Inspired by Octopath Traveler" },
-    { id: "neurology", name: "Neurology", description: "Inspired by Sea of Stars" },
-  ];
-  res.json(worlds);
-});
+// Serve static files
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Serve frontend
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html')); // Serve the correct frontend file
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 // Start the server

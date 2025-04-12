@@ -4,34 +4,37 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Healer's Odyssey</title>
-  <link id="theme-stylesheet" rel="stylesheet" href="./styles/main.css" />
+  <link rel="stylesheet" href="./styles/main.css" />
 </head>
 <body>
   <div id="app">
-    <!-- Main Menu -->
-    <div id="main-menu">
-      <h1>Welcome to Healer's Odyssey</h1>
-      <p>Select a world to begin your journey:</p>
-      <div id="worlds-container">
-        <!-- Worlds will be dynamically inserted here -->
-      </div>
-    </div>
-
-    <!-- World View -->
-    <div id="world-view" style="display: none;">
-      <h1 id="world-title"></h1>
-      <p id="world-description"></p>
-      <button onclick="showMissions()">Missions</button>
-      <button onclick="showBossBattles()">Boss Battles</button>
-      <button onclick="goBackToMainMenu()">Back to Worlds</button>
-      <div id="missions-container" style="display: none;"></div>
-      <div id="bosses-container" style="display: none;"></div>
-    </div>
+    <header>
+      <h1>Healer's Odyssey</h1>
+      <p>Track your progress and unlock achievements!</p>
+    </header>
+    <main>
+      <section id="xp-section">
+        <h2>XP Progress</h2>
+        <p>Current XP: <span id="current-xp">0</span></p>
+        <p>Level: <span id="current-level">1</span></p>
+        <div class="progress-bar">
+          <div id="xp-progress" class="progress-fill"></div>
+        </div>
+      </section>
+      <section id="achievement-section">
+        <h2>Achievements</h2>
+        <ul id="achievement-list">
+          <!-- Achievements will be dynamically inserted here -->
+        </ul>
+      </section>
+      <section id="task-section">
+        <h2>Log a Task</h2>
+        <p>Enter the number of questions completed:</p>
+        <input type="number" id="task-input" placeholder="e.g., 10" />
+        <button onclick="logTask()">Log Task</button>
+      </section>
+    </main>
   </div>
-
-  <script>
-    const API_BASE_URL = ""; // Use relative URLs for GitHub Pages and Render
-  </script>
   <script src="./scripts/main.js"></script>
 </body>
 </html>
