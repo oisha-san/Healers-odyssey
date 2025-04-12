@@ -140,6 +140,18 @@ export const specialties = [
   },
 ];
 
+// Debugging: Log specialties data during initialization
+console.log('Specialties at initialization:', specialties);
+
+// Temporary: Display specialties data on the page for debugging
+const debugContainer = document.createElement('div');
+debugContainer.id = 'debug-specialties';
+debugContainer.style.border = '1px solid red';
+debugContainer.style.padding = '10px';
+debugContainer.style.margin = '10px';
+debugContainer.innerHTML = `<pre>${JSON.stringify(specialties, null, 2)}</pre>`;
+document.body.appendChild(debugContainer);
+
 // After defining specialties, automatically add disease-specific achievements
 specialties.forEach((specialty) => {
   specialty.tasks.forEach((task) => {
@@ -282,6 +294,7 @@ export function getTotalXPFromCompletedTasks() {
 
 // Render the specialties and their tasks
 export function renderSpecialties() {
+  console.log('Rendering specialties:', specialties);
   const container = document.getElementById("specialty-container");
   container.innerHTML = ""; // Clear existing content
 

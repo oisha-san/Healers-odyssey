@@ -40,6 +40,15 @@ const db = new Datastore({ filename: dbPath, autoload: true });
 // Handle potential data corruption gracefully
 db.persistence.setAutocompactionInterval(5000); // Enable auto-compaction to prevent corruption
 
+// Clean up unnecessary entries during database initialization
+db.remove({}, { multi: true }, (err) => {
+  if (err) {
+    console.error('Error cleaning up database:', err);
+  } else {
+    console.log('Database cleaned up successfully.');
+  }
+});
+
 // Reinitialize database if corrupt
 db.loadDatabase((err) => {
   if (err) {
@@ -66,6 +75,8 @@ db.find({}, (err, docs) => {
   }
 });
 
+// Refactor database logic to handle users as separate documents
+
 // Sign-up route
 app.post('/api/signup', (req, res) => {
   const { username, password } = req.body;
@@ -74,18 +85,17 @@ app.post('/api/signup', (req, res) => {
     return res.status(400).json({ message: 'Username and password are required.' });
   }
 
-  db.find({ users: { $exists: true } }, (err, docs) => {
+  db.findOne({ username }, (err, user) => {
     if (err) {
       return res.status(500).json({ message: 'Database error.' });
     }
 
-    const users = docs[0]?.users || {};
-    if (users[username]) {
+    if (user) {
       return res.status(400).json({ message: 'Username already exists.' });
     }
 
-    users[username] = { password, xp: 0, level: 1, questionsCompleted: 0 };
-    db.update({}, { $set: { users } }, {}, (err) => {
+    const newUser = { username, password, xp: 0, level: 1, questionsCompleted: 0 };
+    db.insert(newUser, (err) => {
       if (err) {
         return res.status(500).json({ message: 'Database error.' });
       }
@@ -102,18 +112,16 @@ app.post('/api/login', (req, res) => {
     return res.status(400).json({ message: 'Username and password are required.' });
   }
 
-  db.find({ users: { $exists: true } }, (err, docs) => {
+  db.findOne({ username }, (err, user) => {
     if (err) {
       return res.status(500).json({ message: 'Database error.' });
     }
 
-    const users = docs[0]?.users || {};
-    const user = users[username];
     if (!user || user.password !== password) {
       return res.status(401).json({ message: 'Invalid username or password.' });
     }
 
-    res.status(200).json({ message: 'Login successful.', user: { username, ...user } });
+    res.status(200).json({ message: 'Login successful.', user });
   });
 });
 
@@ -125,19 +133,17 @@ app.post('/api/save-progress', (req, res) => {
     return res.status(400).json({ message: 'Username and progress data are required.' });
   }
 
-  db.find({ users: { $exists: true } }, (err, docs) => {
+  db.findOne({ username }, (err, user) => {
     if (err) {
       return res.status(500).json({ message: 'Database error.' });
     }
 
-    const users = docs[0]?.users || {};
-    const user = users[username];
     if (!user) {
       return res.status(404).json({ message: 'User not found.' });
     }
 
-    users[username] = { ...user, ...progress };
-    db.update({}, { $set: { users } }, {}, (err) => {
+    const updatedUser = { ...user, ...progress };
+    db.update({ username }, updatedUser, {}, (err) => {
       if (err) {
         return res.status(500).json({ message: 'Database error.' });
       }
