@@ -1,4 +1,4 @@
-import { achievements, xp, questionsCompleted, getTotalXPFromCompletedTasks } from './main.js';
+import { achievements, xp, questionsCompleted, specialties, getTotalXPFromCompletedTasks } from './main.js';
 
 function renderAchievements() {
   const unlockedList = document.getElementById("unlocked-achievements");

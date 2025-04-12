@@ -3,7 +3,7 @@ export let level = 1;
 export let questionsCompleted = 0;
 
 // Expanded achievements with descriptions
-const achievements = [
+export const achievements = [
   // XP Achievements
   { xp: 100, name: "Novice Healer", icon: "🏅", description: "Earn 100 XP to unlock this achievement." },
   { xp: 300, name: "Intermediate Healer", icon: "🥈", description: "Earn 300 XP to unlock this achievement." },
@@ -24,7 +24,7 @@ const achievements = [
 ];
 
 // Comprehensive specialties and their diseases
-const specialties = [
+export const specialties = [
   {
     name: "Hematology",
     tasks: [
@@ -207,6 +207,24 @@ function showLevelUpAnimation() {
   }, 3000);
 }
 
+// Log task completions and add XP
+export function logTask() {
+  const taskInput = document.getElementById("task-input");
+  const questions = parseInt(taskInput.value, 10);
+
+  if (!isNaN(questions) && questions > 0) {
+    const xpGained = questions * 5; // Reduced XP per question to increase challenge
+    xp += xpGained;
+    questionsCompleted += questions; // Increment questions completed
+    updateProgress();
+    checkAchievements();
+    taskInput.value = "";
+    alert(`You gained ${xpGained} XP and completed ${questions} questions!`);
+  } else {
+    alert("Please enter a valid number of questions.");
+  }
+}
+
 // Check for new achievements and display them
 function checkAchievements() {
   const unlockedList = document.getElementById("unlocked-achievements");
@@ -279,7 +297,7 @@ export function getTotalXPFromCompletedTasks() {
 }
 
 // Render the specialties and their tasks
-function renderSpecialties() {
+export function renderSpecialties() {
   const container = document.getElementById("specialty-container");
   container.innerHTML = "";
 
@@ -317,6 +335,5 @@ function renderSpecialties() {
 // Initialize the app on window load
 window.onload = () => {
   updateProgress();
-  checkAchievements();
   renderSpecialties();
 };
