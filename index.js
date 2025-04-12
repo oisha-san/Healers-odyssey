@@ -1,10 +1,12 @@
 import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { Low } from 'lowdb';
-import { JSONFile } from 'lowdb/node'; // Correct import for JSONFile adapter
 import bodyParser from 'body-parser';
 import cors from 'cors';
+import fs from 'fs'; // Import fs module
+
+// Updated to use nedb for database management
+import Datastore from 'nedb';
 
 // Fix for __dirname in ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -18,13 +20,51 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Database setup
-const db = new Low(new JSONFile(path.join(__dirname, 'db.json')));
-await db.read();
-if (!db.data) {
-  db.data = { users: {} }; // Initialize default structure for the database
-  await db.write(); // Write default data if the database was empty
+// Ensure db.json is created dynamically if missing
+const dbPath = path.join(__dirname, 'db.json');
+if (!fs.existsSync(dbPath)) {
+  fs.writeFileSync(dbPath, JSON.stringify({ users: {} }, null, 2));
 }
+
+// Debugging: Log db.json path and contents
+console.log('Database Path:', dbPath);
+if (fs.existsSync(dbPath)) {
+  console.log('Database Contents:', fs.readFileSync(dbPath, 'utf-8'));
+} else {
+  console.log('Database file does not exist.');
+}
+
+// Updated to use nedb for database management
+const db = new Datastore({ filename: dbPath, autoload: true });
+
+// Handle potential data corruption gracefully
+db.persistence.setAutocompactionInterval(5000); // Enable auto-compaction to prevent corruption
+
+// Reinitialize database if corrupt
+db.loadDatabase((err) => {
+  if (err) {
+    console.error('Database corruption detected. Reinitializing database.');
+    db.remove({}, { multi: true }, () => {
+      db.insert({ users: {} }, (err) => {
+        if (err) console.error('Error reinitializing database:', err);
+      });
+    });
+  }
+});
+
+// Ensure db is initialized with default data
+db.find({}, (err, docs) => {
+  if (err) {
+    console.error('Error loading database:', err);
+    return;
+  }
+
+  if (docs.length === 0) {
+    db.insert({ users: {} }, (err) => {
+      if (err) console.error('Error initializing database:', err);
+    });
+  }
+});
 
 // Sign-up route
 app.post('/api/signup', (req, res) => {
@@ -34,13 +74,24 @@ app.post('/api/signup', (req, res) => {
     return res.status(400).json({ message: 'Username and password are required.' });
   }
 
-  if (db.data.users[username]) {
-    return res.status(400).json({ message: 'Username already exists.' });
-  }
+  db.find({ users: { $exists: true } }, (err, docs) => {
+    if (err) {
+      return res.status(500).json({ message: 'Database error.' });
+    }
 
-  db.data.users[username] = { password, xp: 0, level: 1, questionsCompleted: 0 };
-  db.write();
-  res.status(201).json({ message: 'User registered successfully.' });
+    const users = docs[0]?.users || {};
+    if (users[username]) {
+      return res.status(400).json({ message: 'Username already exists.' });
+    }
+
+    users[username] = { password, xp: 0, level: 1, questionsCompleted: 0 };
+    db.update({}, { $set: { users } }, {}, (err) => {
+      if (err) {
+        return res.status(500).json({ message: 'Database error.' });
+      }
+      res.status(201).json({ message: 'User registered successfully.' });
+    });
+  });
 });
 
 // Login route
@@ -51,12 +102,19 @@ app.post('/api/login', (req, res) => {
     return res.status(400).json({ message: 'Username and password are required.' });
   }
 
-  const user = db.data.users[username];
-  if (!user || user.password !== password) {
-    return res.status(401).json({ message: 'Invalid username or password.' });
-  }
+  db.find({ users: { $exists: true } }, (err, docs) => {
+    if (err) {
+      return res.status(500).json({ message: 'Database error.' });
+    }
 
-  res.status(200).json({ message: 'Login successful.', user: { username, ...user } });
+    const users = docs[0]?.users || {};
+    const user = users[username];
+    if (!user || user.password !== password) {
+      return res.status(401).json({ message: 'Invalid username or password.' });
+    }
+
+    res.status(200).json({ message: 'Login successful.', user: { username, ...user } });
+  });
 });
 
 // Save progress route
@@ -67,14 +125,25 @@ app.post('/api/save-progress', (req, res) => {
     return res.status(400).json({ message: 'Username and progress data are required.' });
   }
 
-  const user = db.data.users[username];
-  if (!user) {
-    return res.status(404).json({ message: 'User not found.' });
-  }
+  db.find({ users: { $exists: true } }, (err, docs) => {
+    if (err) {
+      return res.status(500).json({ message: 'Database error.' });
+    }
 
-  db.data.users[username] = { ...user, ...progress };
-  db.write();
-  res.status(200).json({ message: 'Progress saved successfully.' });
+    const users = docs[0]?.users || {};
+    const user = users[username];
+    if (!user) {
+      return res.status(404).json({ message: 'User not found.' });
+    }
+
+    users[username] = { ...user, ...progress };
+    db.update({}, { $set: { users } }, {}, (err) => {
+      if (err) {
+        return res.status(500).json({ message: 'Database error.' });
+      }
+      res.status(200).json({ message: 'Progress saved successfully.' });
+    });
+  });
 });
 
 // Serve frontend
