@@ -3,7 +3,6 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import { Low } from 'lowdb';
 import { JSONFile } from 'lowdb/node';
-import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -17,10 +16,10 @@ const PORT = process.env.PORT || 3000;
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());
-app.use(express.static('public')); // Serve static files
+app.use(express.static(path.join(__dirname, 'public'))); // Serve static files
 
 // Database setup
-const adapter = new JSONFile('./db.json');
+const adapter = new JSONFile(path.join(__dirname, 'db.json'));
 const db = new Low(adapter);
 
 async function initializeDatabase() {
@@ -48,7 +47,7 @@ app.get('/api/worlds', (req, res) => {
 
 // Serve frontend
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html')); // Use path.join for cross-platform compatibility
+  res.sendFile(path.join(__dirname, 'public', 'index.html')); // Serve the correct frontend file
 });
 
 // Start the server
