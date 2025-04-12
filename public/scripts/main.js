@@ -337,6 +337,16 @@ window.onload = () => {
 // Authentication functions
 let currentUser = null;
 
+// Update UI after successful login
+function updateUIAfterLogin(user) {
+  document.getElementById('auth-section').style.display = 'none';
+  document.getElementById('xp-section').style.display = 'block';
+  document.getElementById('task-section').style.display = 'block';
+  document.getElementById('specialty-section').style.display = 'block';
+  document.getElementById('achievements-link').style.display = 'block';
+  document.getElementById('auth-message').innerText = `Welcome, ${user.username}!`;
+}
+
 // Sign-up function
 async function signUp() {
   const username = document.getElementById('username').value;
@@ -378,6 +388,7 @@ async function logIn() {
     if (response.ok) {
       currentUser = data.user;
       loadUserProgress();
+      updateUIAfterLogin(currentUser);
     }
   } catch (error) {
     console.error('Error logging in:', error);
