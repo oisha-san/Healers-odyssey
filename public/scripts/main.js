@@ -1,6 +1,6 @@
-let xp = 0;
-let level = 1;
-let questionsCompleted = 0;
+export let xp = 0;
+export let level = 1;
+export let questionsCompleted = 0;
 
 // Expanded achievements with descriptions
 const achievements = [
@@ -23,7 +23,7 @@ const achievements = [
   // Domain achievements for each specialty will be added after defining specialties
 ];
 
-// Expanded specialties and their diseases
+// Comprehensive specialties and their diseases
 const specialties = [
   {
     name: "Hematology",
@@ -38,6 +38,8 @@ const specialties = [
       { id: "lymphoma", name: "Lymphoma", completed: false },
       { id: "myelodysplastic-syndrome", name: "Myelodysplastic Syndrome", completed: false },
       { id: "hemolytic-uremic-syndrome", name: "Hemolytic Uremic Syndrome", completed: false },
+      { id: "aplastic-anemia", name: "Aplastic Anemia", completed: false },
+      { id: "dvt", name: "Deep Vein Thrombosis", completed: false },
     ],
   },
   {
@@ -53,6 +55,8 @@ const specialties = [
       { id: "coronary-artery-disease", name: "Coronary Artery Disease", completed: false },
       { id: "valvular-heart-disease", name: "Valvular Heart Disease", completed: false },
       { id: "peripheral-artery-disease", name: "Peripheral Artery Disease", completed: false },
+      { id: "congenital-heart-disease", name: "Congenital Heart Disease", completed: false },
+      { id: "pericarditis", name: "Pericarditis", completed: false },
     ],
   },
   {
@@ -68,6 +72,8 @@ const specialties = [
       { id: "huntington", name: "Huntington's Disease", completed: false },
       { id: "neuropathy", name: "Neuropathy", completed: false },
       { id: "brain-tumor", name: "Brain Tumor", completed: false },
+      { id: "guillain-barre", name: "Guillain-Barre Syndrome", completed: false },
+      { id: "trigeminal-neuralgia", name: "Trigeminal Neuralgia", completed: false },
     ],
   },
   {
@@ -83,6 +89,7 @@ const specialties = [
       { id: "cystic-fibrosis", name: "Cystic Fibrosis", completed: false },
       { id: "interstitial-lung-disease", name: "Interstitial Lung Disease", completed: false },
       { id: "sleep-apnea", name: "Sleep Apnea", completed: false },
+      { id: "sarcoidosis", name: "Sarcoidosis", completed: false },
     ],
   },
   {
@@ -98,6 +105,7 @@ const specialties = [
       { id: "ibs", name: "Irritable Bowel Syndrome", completed: false },
       { id: "celiac", name: "Celiac Disease", completed: false },
       { id: "gallstones", name: "Gallstones", completed: false },
+      { id: "diverticulitis", name: "Diverticulitis", completed: false },
     ],
   },
   {
@@ -113,6 +121,7 @@ const specialties = [
       { id: "acromegaly", name: "Acromegaly", completed: false },
       { id: "pheochromocytoma", name: "Pheochromocytoma", completed: false },
       { id: "hyperparathyroidism", name: "Hyperparathyroidism", completed: false },
+      { id: "diabetes-insipidus", name: "Diabetes Insipidus", completed: false },
     ],
   },
   {
@@ -127,6 +136,7 @@ const specialties = [
       { id: "polycystic-kidney-disease", name: "Polycystic Kidney Disease", completed: false },
       { id: "renal-vascular-disease", name: "Renal Vascular Disease", completed: false },
       { id: "renal-tubular-acidosis", name: "Renal Tubular Acidosis", completed: false },
+      { id: "hydronephrosis", name: "Hydronephrosis", completed: false },
     ],
   },
   {
@@ -141,6 +151,7 @@ const specialties = [
       { id: "scleroderma", name: "Scleroderma", completed: false },
       { id: "polymyositis", name: "Polymyositis", completed: false },
       { id: "dermatomyositis", name: "Dermatomyositis", completed: false },
+      { id: "fibromyalgia", name: "Fibromyalgia", completed: false },
     ],
   },
 ];
@@ -257,7 +268,7 @@ function checkAchievements() {
 }
 
 // Helper function to calculate total XP earned from completed tasks (each task awards 50 XP)
-function getTotalXPFromCompletedTasks() {
+export function getTotalXPFromCompletedTasks() {
   let total = 0;
   specialties.forEach((specialty) => {
     specialty.tasks.forEach((task) => {
