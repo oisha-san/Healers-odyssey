@@ -61,7 +61,7 @@ db.loadDatabase((err) => {
   }
 });
 
-// Ensure db is initialized with default data
+// Ensure db is initialized with default data without overwriting existing users
 db.find({}, (err, docs) => {
   if (err) {
     console.error('Error loading database:', err);
@@ -72,6 +72,8 @@ db.find({}, (err, docs) => {
     db.insert({ users: {} }, (err) => {
       if (err) console.error('Error initializing database:', err);
     });
+  } else {
+    console.log('Database already initialized with existing data.');
   }
 });
 

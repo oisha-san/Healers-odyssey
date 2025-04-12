@@ -337,7 +337,7 @@ window.onload = () => {
 // Authentication functions
 let currentUser = null;
 
-// Update UI after successful login
+// Ensure specialties and achievements are dynamically updated after login
 function updateUIAfterLogin(user) {
   document.getElementById('auth-section').style.display = 'none';
   document.getElementById('xp-section').style.display = 'block';
@@ -345,9 +345,11 @@ function updateUIAfterLogin(user) {
   document.getElementById('specialty-section').style.display = 'block';
   document.getElementById('achievements-link').style.display = 'block';
   document.getElementById('auth-message').innerText = `Welcome, ${user.username}!`;
+  renderSpecialties();
+  checkAchievements();
 }
 
-// Sign-up function
+// Modify signUp function to provide better feedback
 async function signUp() {
   const username = document.getElementById('username').value;
   const password = document.getElementById('password').value;
@@ -370,7 +372,7 @@ async function signUp() {
   }
 }
 
-// Login function
+// Modify logIn function to update UI dynamically
 async function logIn() {
   const username = document.getElementById('username').value;
   const password = document.getElementById('password').value;
