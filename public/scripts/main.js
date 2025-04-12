@@ -337,3 +337,87 @@ window.onload = () => {
   updateProgress();
   renderSpecialties();
 };
+
+// Authentication functions
+let currentUser = null;
+
+// Sign-up function
+async function signUp() {
+  const username = document.getElementById('username').value;
+  const password = document.getElementById('password').value;
+
+  try {
+    const response = await fetch('/api/signup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password }),
+    });
+
+    const data = await response.json();
+    document.getElementById('auth-message').innerText = data.message;
+
+    if (response.ok) {
+      logIn(); // Automatically log in after sign-up
+    }
+  } catch (error) {
+    console.error('Error signing up:', error);
+  }
+}
+
+// Login function
+async function logIn() {
+  const username = document.getElementById('username').value;
+  const password = document.getElementById('password').value;
+
+  try {
+    const response = await fetch('/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password }),
+    });
+
+    const data = await response.json();
+    document.getElementById('auth-message').innerText = data.message;
+
+    if (response.ok) {
+      currentUser = data.user;
+      loadUserProgress();
+    }
+  } catch (error) {
+    console.error('Error logging in:', error);
+  }
+}
+
+// Load user progress
+function loadUserProgress() {
+  if (currentUser) {
+    xp = currentUser.xp;
+    level = currentUser.level;
+    questionsCompleted = currentUser.questionsCompleted;
+    updateProgress();
+    renderSpecialties();
+    document.getElementById('auth-section').style.display = 'none';
+  }
+}
+
+// Save user progress
+async function saveUserProgress() {
+  if (currentUser) {
+    currentUser.xp = xp;
+    currentUser.level = level;
+    currentUser.questionsCompleted = questionsCompleted;
+
+    try {
+      await fetch('/api/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: currentUser.username, password: currentUser.password }),
+      });
+    } catch (error) {
+      console.error('Error saving progress:', error);
+    }
+  }
+}
+
+// Call saveUserProgress whenever progress changes
+window.addEventListener('beforeunload', saveUserProgress);
