@@ -33,6 +33,8 @@ function enterWorld(id, name, description) {
 
 let xp = 0;
 let level = 1;
+let quizzesCompleted = 0;
+
 const achievements = [
   { xp: 50, name: "Novice Healer", icon: "🏅" },
   { xp: 100, name: "Intermediate Healer", icon: "🥈" },
@@ -40,6 +42,14 @@ const achievements = [
   { xp: 500, name: "Master Healer", icon: "🏆" },
   { xp: 1000, name: "Legendary Healer", icon: "🌟" },
   { xp: 2000, name: "Immortal Healer", icon: "🔥" },
+  { specialty: "Hematology", name: "Hematology Specialist", icon: "🩸" },
+  { specialty: "Cardiology", name: "Cardiology Specialist", icon: "❤️" },
+  { specialty: "Neurology", name: "Neurology Specialist", icon: "🧠" },
+  { specialty: "Pulmonology", name: "Pulmonology Specialist", icon: "🌬️" },
+  { quizzes: 10, name: "Quiz Novice", icon: "📘" },
+  { quizzes: 25, name: "Quiz Enthusiast", icon: "📗" },
+  { quizzes: 50, name: "Quiz Master", icon: "📙" },
+  { quizzes: 100, name: "Quiz Legend", icon: "📚" },
 ];
 
 const specialties = [
@@ -116,7 +126,18 @@ function checkAchievements() {
   achievementList.innerHTML = "";
 
   achievements.forEach((achievement) => {
-    if (xp >= achievement.xp) {
+    if (achievement.xp && xp >= achievement.xp) {
+      const li = document.createElement("li");
+      li.innerHTML = `${achievement.icon} ${achievement.name}`;
+      achievementList.appendChild(li);
+    } else if (achievement.specialty) {
+      const specialty = specialties.find((s) => s.name === achievement.specialty);
+      if (specialty && specialty.tasks.every((task) => task.completed)) {
+        const li = document.createElement("li");
+        li.innerHTML = `${achievement.icon} ${achievement.name}`;
+        achievementList.appendChild(li);
+      }
+    } else if (achievement.quizzes && quizzesCompleted >= achievement.quizzes) {
       const li = document.createElement("li");
       li.innerHTML = `${achievement.icon} ${achievement.name}`;
       achievementList.appendChild(li);
@@ -139,6 +160,15 @@ function logTask() {
   } else {
     alert("Please enter a valid number of questions.");
   }
+}
+
+// Log a quiz and add XP
+function logQuiz() {
+  quizzesCompleted++;
+  xp += 50; // 50 XP per quiz
+  updateProgress();
+  checkAchievements();
+  alert(`You completed a quiz! Total quizzes completed: ${quizzesCompleted}`);
 }
 
 // Render specialties and tasks
