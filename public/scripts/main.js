@@ -1,4 +1,4 @@
-const API_BASE_URL = ""; // Use relative URLs for Render
+const API_BASE_URL = ""; // Use relative URLs for Render and GitHub Pages
 
 // Fetch and display worlds
 async function loadWorlds() {
