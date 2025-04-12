@@ -1,58 +1,29 @@
-const API_BASE_URL = ""; // Use relative URLs for Render and GitHub Pages
-
-// Fetch and display worlds
-async function loadWorlds() {
-  try {
-    const response = await fetch(`${API_BASE_URL}/api/worlds`);
-    if (!response.ok) {
-      throw new Error(`Failed to fetch worlds: ${response.statusText}`);
-    }
-    const worlds = await response.json();
-    const container = document.getElementById("worlds-container");
-    container.innerHTML = worlds
-      .map(
-        (world) => `
-        <div class="world" onclick="enterWorld('${world.id}', '${world.name}', '${world.description}')">
-          <h3>${world.name}</h3>
-          <p>${world.description}</p>
-        </div>
-      `
-      )
-      .join("");
-  } catch (error) {
-    console.error("Error loading worlds:", error);
-    const container = document.getElementById("worlds-container");
-    container.innerHTML = `<p style="color: red;">Failed to load worlds. Please try again later.</p>`;
-  }
-}
-
-// Enter a world
-function enterWorld(id, name, description) {
-  alert(`Entering the world: ${name}\nDescription: ${description}`);
-}
-
 let xp = 0;
 let level = 1;
-let quizzesCompleted = 0;
+let questionsCompleted = 0;
 
+// Expanded achievements with descriptions
 const achievements = [
-  { xp: 100, name: "Novice Healer", icon: "🏅" },
-  { xp: 300, name: "Intermediate Healer", icon: "🥈" },
-  { xp: 600, name: "Advanced Healer", icon: "🥇" },
-  { xp: 1000, name: "Master Healer", icon: "🏆" },
-  { xp: 2000, name: "Legendary Healer", icon: "🌟" },
-  { xp: 5000, name: "Immortal Healer", icon: "🔥" },
-  { specialty: "Hematology", name: "Hematology Specialist", icon: "🩸" },
-  { specialty: "Cardiology", name: "Cardiology Specialist", icon: "❤️" },
-  { specialty: "Neurology", name: "Neurology Specialist", icon: "🧠" },
-  { specialty: "Pulmonology", name: "Pulmonology Specialist", icon: "🌬️" },
-  { quizzes: 20, name: "Quiz Novice", icon: "📘" },
-  { quizzes: 50, name: "Quiz Enthusiast", icon: "📗" },
-  { quizzes: 100, name: "Quiz Master", icon: "📙" },
-  { quizzes: 200, name: "Quiz Legend", icon: "📚" },
-  { quizzes: 500, name: "Quiz Grandmaster", icon: "🏅" },
+  // XP Achievements
+  { xp: 100, name: "Novice Healer", icon: "🏅", description: "Earn 100 XP to unlock this achievement." },
+  { xp: 300, name: "Intermediate Healer", icon: "🥈", description: "Earn 300 XP to unlock this achievement." },
+  { xp: 600, name: "Advanced Healer", icon: "🥇", description: "Earn 600 XP to unlock this achievement." },
+  { xp: 1000, name: "Master Healer", icon: "🏆", description: "Earn 1000 XP to unlock this achievement." },
+  { xp: 2000, name: "Legendary Healer", icon: "🌟", description: "Earn 2000 XP to unlock this achievement." },
+  { xp: 5000, name: "Immortal Healer", icon: "🔥", description: "Earn 5000 XP to unlock this achievement." },
+  // Question Completion Achievements
+  { questions: 50, name: "Question Novice", icon: "📘", description: "Complete 50 questions to unlock this achievement." },
+  { questions: 100, name: "Question Enthusiast", icon: "📗", description: "Complete 100 questions to unlock this achievement." },
+  { questions: 250, name: "Question Master", icon: "📙", description: "Complete 250 questions to unlock this achievement." },
+  { questions: 500, name: "Question Legend", icon: "📚", description: "Complete 500 questions to unlock this achievement." },
+  { questions: 1000, name: "Question Grandmaster", icon: "🏅", description: "Complete 1000 questions to unlock this achievement." },
+  { questions: 2000, name: "Question Conqueror", icon: "👑", description: "Complete 2000 questions to unlock this achievement." },
+  // Specialty Completion Achievements
+  { overall: true, name: "Omniscient Healer", icon: "👑", description: "Complete all tasks in all specialties to unlock this achievement." },
+  // Domain achievements for each specialty will be added after defining specialties
 ];
 
+// Expanded disease lists for each specialty
 const specialties = [
   {
     name: "Hematology",
@@ -61,15 +32,28 @@ const specialties = [
       { id: "leukemia", name: "Leukemia", completed: false },
       { id: "hemophilia", name: "Hemophilia", completed: false },
       { id: "thalassemia", name: "Thalassemia", completed: false },
+      { id: "iron-deficiency", name: "Iron Deficiency", completed: false },
+      { id: "sickle-cell", name: "Sickle Cell Disease", completed: false },
+      { id: "polycythemia-vera", name: "Polycythemia Vera", completed: false },
+      { id: "lymphoma", name: "Lymphoma", completed: false },
+      { id: "myelodysplastic-syndrome", name: "Myelodysplastic Syndrome", completed: false },
+      { id: "hemolytic-uremic-syndrome", name: "Hemolytic Uremic Syndrome", completed: false }
     ],
   },
   {
     name: "Cardiology",
     tasks: [
       { id: "hypertension", name: "Hypertension", completed: false },
-      { id: "myocardial-infarction", name: "Myocardial Infarction", completed: false },
+      { id: "mi", name: "Myocardial Infarction", completed: false },
       { id: "arrhythmia", name: "Arrhythmia", completed: false },
       { id: "heart-failure", name: "Heart Failure", completed: false },
+      { id: "atrial-fibrillation", name: "Atrial Fibrillation", completed: false },
+      { id: "endocarditis", name: "Endocarditis", completed: false },
+      { id: "cardiomyopathy", name: "Cardiomyopathy", completed: false },
+      { id: "coronary-artery-disease", name: "Coronary Artery Disease", completed: false },
+      { id: "valvular-heart-disease", name: "Valvular Heart Disease", completed: false },
+      { id: "peripheral-artery-disease", name: "Peripheral Artery Disease", completed: false },
+      { id: "congenital-heart-disease", name: "Congenital Heart Disease", completed: false }
     ],
   },
   {
@@ -79,6 +63,13 @@ const specialties = [
       { id: "epilepsy", name: "Epilepsy", completed: false },
       { id: "parkinson", name: "Parkinson's Disease", completed: false },
       { id: "migraine", name: "Migraine", completed: false },
+      { id: "multiple-sclerosis", name: "Multiple Sclerosis", completed: false },
+      { id: "alzheimer", name: "Alzheimer's Disease", completed: false },
+      { id: "als", name: "Amyotrophic Lateral Sclerosis", completed: false },
+      { id: "huntington", name: "Huntington's Disease", completed: false },
+      { id: "neuropathy", name: "Neuropathy", completed: false },
+      { id: "brain-tumor", name: "Brain Tumor", completed: false },
+      { id: "guillain-barre", name: "Guillain-Barre Syndrome", completed: false }
     ],
   },
   {
@@ -87,10 +78,39 @@ const specialties = [
       { id: "asthma", name: "Asthma", completed: false },
       { id: "copd", name: "COPD", completed: false },
       { id: "pneumonia", name: "Pneumonia", completed: false },
-      { id: "tuberculosis", name: "Tuberculosis", completed: false },
+      { id: "tb", name: "Tuberculosis", completed: false },
+      { id: "bronchitis", name: "Bronchitis", completed: false },
+      { id: "lung-cancer", name: "Lung Cancer", completed: false },
+      { id: "pulmonary-embolism", name: "Pulmonary Embolism", completed: false },
+      { id: "cystic-fibrosis", name: "Cystic Fibrosis", completed: false },
+      { id: "interstitial-lung-disease", name: "Interstitial Lung Disease", completed: false },
+      { id: "sleep-apnea", name: "Sleep Apnea", completed: false },
+      { id: "pulmonary-hypertension", name: "Pulmonary Hypertension", completed: false }
     ],
   },
 ];
+
+// After defining specialties, automatically add disease-specific achievements
+specialties.forEach((specialty) => {
+  specialty.tasks.forEach((task) => {
+    achievements.push({
+      diseaseId: task.id,
+      name: `Conquered ${task.name}`,
+      icon: "✅",
+      description: `Complete the task "${task.name}" to unlock this achievement.`,
+    });
+  });
+});
+
+// Add specialty completion achievements (Domain Conqueror) for each specialty
+specialties.forEach((specialty) => {
+  achievements.push({
+    specialty: specialty.name,
+    name: `Domain Conqueror: ${specialty.name}`,
+    icon: "🏅",
+    description: `Complete all tasks in the ${specialty.name} specialty to unlock this achievement.`,
+  });
+});
 
 // Update XP and level display
 function updateProgress() {
@@ -121,58 +141,91 @@ function showLevelUpAnimation() {
   }, 3000);
 }
 
-// Check for new achievements
+// Check for new achievements and display them
 function checkAchievements() {
   const achievementList = document.getElementById("achievement-list");
   achievementList.innerHTML = "";
 
   achievements.forEach((achievement) => {
-    if (achievement.xp && xp >= achievement.xp) {
-      const li = document.createElement("li");
-      li.innerHTML = `${achievement.icon} ${achievement.name}`;
-      achievementList.appendChild(li);
-    } else if (achievement.specialty) {
+    let achieved = false;
+
+    // XP achievements check (including XP from tasks)
+    if (achievement.xp && xp + getTotalXPFromCompletedTasks() >= achievement.xp) {
+      achieved = true;
+    }
+    // Question completion achievements
+    else if (achievement.questions && questionsCompleted >= achievement.questions) {
+      achieved = true;
+    }
+    // Disease-specific achievements
+    else if (achievement.diseaseId) {
+      specialties.forEach((specialty) => {
+        const disease = specialty.tasks.find((t) => t.id === achievement.diseaseId);
+        if (disease && disease.completed) {
+          achieved = true;
+        }
+      });
+    }
+    // Domain achievements for completed specialties
+    else if (achievement.specialty) {
       const specialty = specialties.find((s) => s.name === achievement.specialty);
       if (specialty && specialty.tasks.every((task) => task.completed)) {
-        const li = document.createElement("li");
-        li.innerHTML = `${achievement.icon} ${achievement.name}`;
-        achievementList.appendChild(li);
+        achieved = true;
       }
-    } else if (achievement.quizzes && quizzesCompleted >= achievement.quizzes) {
+    }
+    // Overall achievement when all specialties are completed
+    else if (achievement.overall) {
+      const allCompleted = specialties.every((specialty) =>
+        specialty.tasks.every((task) => task.completed)
+      );
+      if (allCompleted) {
+        achieved = true;
+      }
+    }
+
+    if (achieved) {
       const li = document.createElement("li");
-      li.innerHTML = `${achievement.icon} ${achievement.name}`;
+      li.innerHTML = `
+        <div>
+          <span>${achievement.icon} ${achievement.name}</span>
+          <p class="achievement-description">${achievement.description}</p>
+        </div>
+      `;
       achievementList.appendChild(li);
     }
   });
 }
 
-// Log a task and add XP
+// Helper function to calculate total XP earned from completed tasks (each task awards 50 XP)
+function getTotalXPFromCompletedTasks() {
+  let total = 0;
+  specialties.forEach((specialty) => {
+    specialty.tasks.forEach((task) => {
+      if (task.completed) total += 50;
+    });
+  });
+  return total;
+}
+
+// Log task completions and add XP
 function logTask() {
   const taskInput = document.getElementById("task-input");
-  const questionsCompleted = parseInt(taskInput.value, 10);
+  const questions = parseInt(taskInput.value, 10);
 
-  if (!isNaN(questionsCompleted) && questionsCompleted > 0) {
-    const xpGained = questionsCompleted * 5; // Reduced XP per question to make it harder
+  if (!isNaN(questions) && questions > 0) {
+    const xpGained = questions * 5; // Reduced XP per question to increase challenge
     xp += xpGained;
+    questionsCompleted += questions; // Increment questions completed
     updateProgress();
     checkAchievements();
     taskInput.value = "";
-    alert(`You gained ${xpGained} XP!`);
+    alert(`You gained ${xpGained} XP and completed ${questions} questions!`);
   } else {
     alert("Please enter a valid number of questions.");
   }
 }
 
-// Log a quiz and add XP
-function logQuiz() {
-  quizzesCompleted++;
-  xp += 100; // Increased XP per quiz
-  updateProgress();
-  checkAchievements();
-  alert(`You completed a quiz! Total quizzes completed: ${quizzesCompleted}`);
-}
-
-// Render specialties and tasks
+// Render the specialties and their tasks
 function renderSpecialties() {
   const container = document.getElementById("specialty-container");
   container.innerHTML = "";
@@ -195,7 +248,7 @@ function renderSpecialties() {
       taskItem.querySelector("input").addEventListener("change", (e) => {
         task.completed = e.target.checked;
         if (task.completed) {
-          xp += 50; // Increased XP per completed task
+          xp += 50; // XP for each completed task
           updateProgress();
           checkAchievements();
         }
@@ -208,9 +261,8 @@ function renderSpecialties() {
   });
 }
 
-// Initialize the app
+// Initialize the app on window load
 window.onload = () => {
-  loadWorlds();
   updateProgress();
   checkAchievements();
   renderSpecialties();
