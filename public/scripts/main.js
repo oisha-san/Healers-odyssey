@@ -354,6 +354,8 @@ async function signUp() {
   const username = document.getElementById('username').value;
   const password = document.getElementById('password').value;
 
+  console.log('Sign-Up Request:', { username, password });
+
   try {
     const response = await fetch('/api/signup', {
       method: 'POST',
@@ -362,6 +364,7 @@ async function signUp() {
     });
 
     const data = await response.json();
+    console.log('Sign-Up Response:', data);
     document.getElementById('auth-message').innerText = data.message;
 
     if (response.ok) {
@@ -377,6 +380,8 @@ async function logIn() {
   const username = document.getElementById('username').value;
   const password = document.getElementById('password').value;
 
+  console.log('Login Request:', { username, password });
+
   try {
     const response = await fetch('/api/login', {
       method: 'POST',
@@ -385,6 +390,7 @@ async function logIn() {
     });
 
     const data = await response.json();
+    console.log('Login Response:', data);
     document.getElementById('auth-message').innerText = data.message;
 
     if (response.ok) {
