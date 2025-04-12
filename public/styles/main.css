@@ -1,8 +1,9 @@
+/* General styles */
 body {
   font-family: 'Roboto', sans-serif;
   margin: 0;
   padding: 0;
-  background-color: #f4f4f4;
+  background-color: #f4f4f9;
   color: #333;
 }
 
@@ -66,7 +67,7 @@ main {
 }
 
 section {
-  margin: 2rem 0;
+  margin-bottom: 20px;
 }
 
 header {
@@ -78,6 +79,15 @@ header {
 
 header.level-up {
   animation: level-up 1s ease-in-out;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 2em;
+}
+
+header p {
+  margin: 5px 0;
 }
 
 @keyframes level-up {
@@ -93,6 +103,11 @@ header.level-up {
     transform: scale(1);
     color: gold;
   }
+}
+
+h2 {
+  color: #007bff;
+  margin-bottom: 10px;
 }
 
 button {
@@ -144,11 +159,11 @@ button:hover {
   background-color: #ddd;
   border-radius: 5px;
   overflow: hidden;
-  margin: 10px 0;
+  height: 20px;
 }
 
 .progress-fill {
-  height: 20px;
+  height: 100%;
   background-color: #007bff;
   width: 0;
   transition: width 0.3s ease;
@@ -175,11 +190,24 @@ input {
 }
 
 .specialty {
-  margin: 20px 0;
+  margin-bottom: 20px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  background-color: #fff;
 }
 
 .specialty h3 {
-  margin-bottom: 10px;
+  margin: 0 0 10px;
+}
+
+.specialty ul {
+  list-style: none;
+  padding: 0;
+}
+
+.specialty li {
+  margin-bottom: 5px;
 }
 
 input[type="checkbox"] {
@@ -229,4 +257,63 @@ input[type="checkbox"] {
 .achievement-description {
   font-size: 0.9em;
   color: #666;
+}
+
+#auth-section {
+  margin-top: 20px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  background-color: #fff;
+}
+
+#auth-section input {
+  margin: 5px 0;
+  padding: 8px;
+  width: calc(100% - 20px);
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+#auth-section button {
+  margin: 5px 5px 0 0;
+  padding: 8px 15px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+#auth-section button:hover {
+  background-color: #0056b3;
+}
+
+#specialty-section {
+  margin-top: 20px;
+}
+
+.specialty {
+  margin-bottom: 20px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  background-color: #fff;
+}
+
+.specialty h3 {
+  margin: 0 0 10px;
+}
+
+.specialty ul {
+  list-style: none;
+  padding: 0;
+}
+
+.specialty li {
+  margin-bottom: 5px;
+}
+
+input[type="checkbox"] {
+  margin-right: 10px;
 }

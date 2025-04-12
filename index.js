@@ -1,7 +1,8 @@
 import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { Low, JSONFile } from 'lowdb';
+import { Low } from 'lowdb';
+import { JSONFile } from 'lowdb/node'; // Correct import for JSONFile adapter
 import bodyParser from 'body-parser';
 import cors from 'cors';
 
@@ -53,6 +54,24 @@ app.post('/api/login', (req, res) => {
   }
 
   res.status(200).json({ message: 'Login successful.', user: { username, ...user } });
+});
+
+// Save progress route
+app.post('/api/save-progress', (req, res) => {
+  const { username, progress } = req.body;
+
+  if (!username || !progress) {
+    return res.status(400).json({ message: 'Username and progress data are required.' });
+  }
+
+  const user = db.data.users[username];
+  if (!user) {
+    return res.status(404).json({ message: 'User not found.' });
+  }
+
+  db.data.users[username] = { ...user, ...progress };
+  db.write();
+  res.status(200).json({ message: 'Progress saved successfully.' });
 });
 
 // Serve frontend

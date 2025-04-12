@@ -23,7 +23,7 @@ export const achievements = [
   // Domain achievements for each specialty will be added after defining specialties
 ];
 
-// Comprehensive specialties and their diseases
+// Expanded specialties and their diseases
 export const specialties = [
   {
     name: "Hematology",
@@ -32,14 +32,6 @@ export const specialties = [
       { id: "leukemia", name: "Leukemia", completed: false },
       { id: "hemophilia", name: "Hemophilia", completed: false },
       { id: "thalassemia", name: "Thalassemia", completed: false },
-      { id: "iron-deficiency", name: "Iron Deficiency", completed: false },
-      { id: "sickle-cell", name: "Sickle Cell Disease", completed: false },
-      { id: "polycythemia-vera", name: "Polycythemia Vera", completed: false },
-      { id: "lymphoma", name: "Lymphoma", completed: false },
-      { id: "myelodysplastic-syndrome", name: "Myelodysplastic Syndrome", completed: false },
-      { id: "hemolytic-uremic-syndrome", name: "Hemolytic Uremic Syndrome", completed: false },
-      { id: "aplastic-anemia", name: "Aplastic Anemia", completed: false },
-      { id: "dvt", name: "Deep Vein Thrombosis", completed: false },
     ],
   },
   {
@@ -49,14 +41,6 @@ export const specialties = [
       { id: "mi", name: "Myocardial Infarction", completed: false },
       { id: "arrhythmia", name: "Arrhythmia", completed: false },
       { id: "heart-failure", name: "Heart Failure", completed: false },
-      { id: "atrial-fibrillation", name: "Atrial Fibrillation", completed: false },
-      { id: "endocarditis", name: "Endocarditis", completed: false },
-      { id: "cardiomyopathy", name: "Cardiomyopathy", completed: false },
-      { id: "coronary-artery-disease", name: "Coronary Artery Disease", completed: false },
-      { id: "valvular-heart-disease", name: "Valvular Heart Disease", completed: false },
-      { id: "peripheral-artery-disease", name: "Peripheral Artery Disease", completed: false },
-      { id: "congenital-heart-disease", name: "Congenital Heart Disease", completed: false },
-      { id: "pericarditis", name: "Pericarditis", completed: false },
     ],
   },
   {
@@ -184,7 +168,7 @@ function updateProgress() {
   document.getElementById("current-level").innerText = level;
 
   const progressBar = document.getElementById("xp-progress");
-  const xpForNextLevel = level * 200; // Increased XP requirement per level
+  const xpForNextLevel = level * 200;
   const progressPercentage = (xp / xpForNextLevel) * 100;
   progressBar.style.width = `${Math.min(progressPercentage, 100)}%`;
 
@@ -299,7 +283,7 @@ export function getTotalXPFromCompletedTasks() {
 // Render the specialties and their tasks
 export function renderSpecialties() {
   const container = document.getElementById("specialty-container");
-  container.innerHTML = "";
+  container.innerHTML = ""; // Clear existing content
 
   specialties.forEach((specialty) => {
     const specialtyDiv = document.createElement("div");
@@ -321,7 +305,6 @@ export function renderSpecialties() {
         if (task.completed) {
           xp += 50; // XP for each completed task
           updateProgress();
-          checkAchievements();
         }
       });
       taskList.appendChild(taskItem);
@@ -408,10 +391,10 @@ async function saveUserProgress() {
     currentUser.questionsCompleted = questionsCompleted;
 
     try {
-      await fetch('/api/signup', {
+      await fetch('/api/save-progress', { // Use a dedicated endpoint
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: currentUser.username, password: currentUser.password }),
+        body: JSON.stringify({ username: currentUser.username, progress: currentUser }),
       });
     } catch (error) {
       console.error('Error saving progress:', error);
