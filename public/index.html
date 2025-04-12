@@ -10,7 +10,7 @@
   <div id="app">
     <header>
       <h1>Healer's Odyssey</h1>
-      <p>Track your progress and unlock achievements!</p>
+      <p>Track your progress, unlock achievements, and complete tasks!</p>
     </header>
     <main>
       <section id="xp-section">
@@ -32,6 +32,12 @@
         <p>Enter the number of questions completed:</p>
         <input type="number" id="task-input" placeholder="e.g., 10" />
         <button onclick="logTask()">Log Task</button>
+      </section>
+      <section id="specialty-section">
+        <h2>Specialties</h2>
+        <div id="specialty-container">
+          <!-- Specialties and tasks will be dynamically inserted here -->
+        </div>
       </section>
     </main>
   </div>

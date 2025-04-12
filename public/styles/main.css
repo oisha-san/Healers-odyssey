@@ -154,3 +154,15 @@ input {
   border: 1px solid #ddd;
   border-radius: 5px;
 }
+
+.specialty {
+  margin: 20px 0;
+}
+
+.specialty h3 {
+  margin-bottom: 10px;
+}
+
+input[type="checkbox"] {
+  margin-right: 10px;
+}

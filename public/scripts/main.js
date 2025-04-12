@@ -34,10 +34,29 @@ function enterWorld(id, name, description) {
 let xp = 0;
 let level = 1;
 const achievements = [
-  { xp: 50, name: "Novice Healer" },
-  { xp: 100, name: "Intermediate Healer" },
-  { xp: 200, name: "Advanced Healer" },
-  { xp: 500, name: "Master Healer" },
+  { xp: 50, name: "Novice Healer", icon: "🏅" },
+  { xp: 100, name: "Intermediate Healer", icon: "🥈" },
+  { xp: 200, name: "Advanced Healer", icon: "🥇" },
+  { xp: 500, name: "Master Healer", icon: "🏆" },
+];
+
+const specialties = [
+  {
+    name: "Hematology",
+    tasks: [
+      { id: "anemia", name: "Anemia", completed: false },
+      { id: "leukemia", name: "Leukemia", completed: false },
+      { id: "hemophilia", name: "Hemophilia", completed: false },
+    ],
+  },
+  {
+    name: "Cardiology",
+    tasks: [
+      { id: "hypertension", name: "Hypertension", completed: false },
+      { id: "myocardial-infarction", name: "Myocardial Infarction", completed: false },
+      { id: "arrhythmia", name: "Arrhythmia", completed: false },
+    ],
+  },
 ];
 
 // Update XP and level display
@@ -65,7 +84,7 @@ function checkAchievements() {
   achievements.forEach((achievement) => {
     if (xp >= achievement.xp) {
       const li = document.createElement("li");
-      li.innerText = achievement.name;
+      li.innerHTML = `${achievement.icon} ${achievement.name}`;
       achievementList.appendChild(li);
     }
   });
@@ -88,9 +107,46 @@ function logTask() {
   }
 }
 
+// Render specialties and tasks
+function renderSpecialties() {
+  const container = document.getElementById("specialty-container");
+  container.innerHTML = "";
+
+  specialties.forEach((specialty) => {
+    const specialtyDiv = document.createElement("div");
+    specialtyDiv.className = "specialty";
+
+    const specialtyTitle = document.createElement("h3");
+    specialtyTitle.innerText = specialty.name;
+    specialtyDiv.appendChild(specialtyTitle);
+
+    const taskList = document.createElement("ul");
+    specialty.tasks.forEach((task) => {
+      const taskItem = document.createElement("li");
+      taskItem.innerHTML = `
+        <input type="checkbox" id="${task.id}" ${task.completed ? "checked" : ""} />
+        <label for="${task.id}">${task.name}</label>
+      `;
+      taskItem.querySelector("input").addEventListener("change", (e) => {
+        task.completed = e.target.checked;
+        if (task.completed) {
+          xp += 20; // 20 XP per completed task
+          updateProgress();
+          checkAchievements();
+        }
+      });
+      taskList.appendChild(taskItem);
+    });
+
+    specialtyDiv.appendChild(taskList);
+    container.appendChild(specialtyDiv);
+  });
+}
+
 // Initialize the app
 window.onload = () => {
   loadWorlds();
   updateProgress();
   checkAchievements();
+  renderSpecialties();
 };
