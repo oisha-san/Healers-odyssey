@@ -4,6 +4,12 @@ import cors from 'cors';
 import { Low } from 'lowdb';
 import { JSONFile } from 'lowdb/node';
 import fs from 'fs/promises';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+// Fix for __dirname in ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -42,7 +48,7 @@ app.get('/api/worlds', (req, res) => {
 
 // Serve frontend
 app.get('*', (req, res) => {
-  res.sendFile(__dirname + '/public/index.html'); // Serve the correct frontend file
+  res.sendFile(path.join(__dirname, 'public', 'index.html')); // Use path.join for cross-platform compatibility
 });
 
 // Start the server
