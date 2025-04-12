@@ -38,6 +38,8 @@ const achievements = [
   { xp: 100, name: "Intermediate Healer", icon: "🥈" },
   { xp: 200, name: "Advanced Healer", icon: "🥇" },
   { xp: 500, name: "Master Healer", icon: "🏆" },
+  { xp: 1000, name: "Legendary Healer", icon: "🌟" },
+  { xp: 2000, name: "Immortal Healer", icon: "🔥" },
 ];
 
 const specialties = [
@@ -47,6 +49,7 @@ const specialties = [
       { id: "anemia", name: "Anemia", completed: false },
       { id: "leukemia", name: "Leukemia", completed: false },
       { id: "hemophilia", name: "Hemophilia", completed: false },
+      { id: "thalassemia", name: "Thalassemia", completed: false },
     ],
   },
   {
@@ -55,6 +58,25 @@ const specialties = [
       { id: "hypertension", name: "Hypertension", completed: false },
       { id: "myocardial-infarction", name: "Myocardial Infarction", completed: false },
       { id: "arrhythmia", name: "Arrhythmia", completed: false },
+      { id: "heart-failure", name: "Heart Failure", completed: false },
+    ],
+  },
+  {
+    name: "Neurology",
+    tasks: [
+      { id: "stroke", name: "Stroke", completed: false },
+      { id: "epilepsy", name: "Epilepsy", completed: false },
+      { id: "parkinson", name: "Parkinson's Disease", completed: false },
+      { id: "migraine", name: "Migraine", completed: false },
+    ],
+  },
+  {
+    name: "Pulmonology",
+    tasks: [
+      { id: "asthma", name: "Asthma", completed: false },
+      { id: "copd", name: "COPD", completed: false },
+      { id: "pneumonia", name: "Pneumonia", completed: false },
+      { id: "tuberculosis", name: "Tuberculosis", completed: false },
     ],
   },
 ];
@@ -72,8 +94,20 @@ function updateProgress() {
   if (xp >= xpForNextLevel) {
     level++;
     xp -= xpForNextLevel;
+    showLevelUpAnimation();
     updateProgress();
   }
+}
+
+// Show level-up animation
+function showLevelUpAnimation() {
+  const header = document.querySelector("header h1");
+  header.innerText = `Level Up! You are now Level ${level}! 🎉`;
+  header.classList.add("level-up");
+  setTimeout(() => {
+    header.innerText = "Healer's Odyssey";
+    header.classList.remove("level-up");
+  }, 3000);
 }
 
 // Check for new achievements

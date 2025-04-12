@@ -76,6 +76,25 @@ header {
   color: white;
 }
 
+header.level-up {
+  animation: level-up 1s ease-in-out;
+}
+
+@keyframes level-up {
+  0% {
+    transform: scale(1);
+    color: gold;
+  }
+  50% {
+    transform: scale(1.2);
+    color: orange;
+  }
+  100% {
+    transform: scale(1);
+    color: gold;
+  }
+}
+
 button {
   padding: 10px 20px;
   background-color: #007bff;
