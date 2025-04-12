@@ -21,7 +21,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Database setup
 const db = new Low(new JSONFile(path.join(__dirname, 'db.json')));
 await db.read();
-db.data ||= { users: {} };
+db.data ||= { users: {} }; // Ensure default structure for the database
+await db.write(); // Write default data if the database was empty
 
 // Sign-up route
 app.post('/api/signup', (req, res) => {
