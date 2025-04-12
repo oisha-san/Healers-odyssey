@@ -198,3 +198,35 @@ input[type="checkbox"] {
 #quiz-section {
   margin-top: 20px;
 }
+
+#achievement-container {
+  margin-top: 20px;
+}
+
+#achievement-container h3 {
+  margin-bottom: 10px;
+}
+
+#unlocked-achievements,
+#locked-achievements {
+  list-style-type: none;
+  padding: 0;
+}
+
+#unlocked-achievements li,
+#locked-achievements li {
+  background-color: #f9f9f9;
+  margin: 5px 0;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+#locked-achievements li {
+  opacity: 0.5;
+}
+
+.achievement-description {
+  font-size: 0.9em;
+  color: #666;
+}

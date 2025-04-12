@@ -23,7 +23,7 @@ const achievements = [
   // Domain achievements for each specialty will be added after defining specialties
 ];
 
-// Expanded disease lists for each specialty
+// Expanded specialties and their diseases
 const specialties = [
   {
     name: "Hematology",
@@ -37,7 +37,7 @@ const specialties = [
       { id: "polycythemia-vera", name: "Polycythemia Vera", completed: false },
       { id: "lymphoma", name: "Lymphoma", completed: false },
       { id: "myelodysplastic-syndrome", name: "Myelodysplastic Syndrome", completed: false },
-      { id: "hemolytic-uremic-syndrome", name: "Hemolytic Uremic Syndrome", completed: false }
+      { id: "hemolytic-uremic-syndrome", name: "Hemolytic Uremic Syndrome", completed: false },
     ],
   },
   {
@@ -53,7 +53,6 @@ const specialties = [
       { id: "coronary-artery-disease", name: "Coronary Artery Disease", completed: false },
       { id: "valvular-heart-disease", name: "Valvular Heart Disease", completed: false },
       { id: "peripheral-artery-disease", name: "Peripheral Artery Disease", completed: false },
-      { id: "congenital-heart-disease", name: "Congenital Heart Disease", completed: false }
     ],
   },
   {
@@ -69,7 +68,6 @@ const specialties = [
       { id: "huntington", name: "Huntington's Disease", completed: false },
       { id: "neuropathy", name: "Neuropathy", completed: false },
       { id: "brain-tumor", name: "Brain Tumor", completed: false },
-      { id: "guillain-barre", name: "Guillain-Barre Syndrome", completed: false }
     ],
   },
   {
@@ -85,7 +83,64 @@ const specialties = [
       { id: "cystic-fibrosis", name: "Cystic Fibrosis", completed: false },
       { id: "interstitial-lung-disease", name: "Interstitial Lung Disease", completed: false },
       { id: "sleep-apnea", name: "Sleep Apnea", completed: false },
-      { id: "pulmonary-hypertension", name: "Pulmonary Hypertension", completed: false }
+    ],
+  },
+  {
+    name: "Gastroenterology",
+    tasks: [
+      { id: "gerd", name: "GERD", completed: false },
+      { id: "peptic-ulcer", name: "Peptic Ulcer Disease", completed: false },
+      { id: "crohns", name: "Crohn's Disease", completed: false },
+      { id: "ulcerative-colitis", name: "Ulcerative Colitis", completed: false },
+      { id: "hepatitis", name: "Hepatitis", completed: false },
+      { id: "cirrhosis", name: "Cirrhosis", completed: false },
+      { id: "pancreatitis", name: "Pancreatitis", completed: false },
+      { id: "ibs", name: "Irritable Bowel Syndrome", completed: false },
+      { id: "celiac", name: "Celiac Disease", completed: false },
+      { id: "gallstones", name: "Gallstones", completed: false },
+    ],
+  },
+  {
+    name: "Endocrinology",
+    tasks: [
+      { id: "diabetes", name: "Diabetes Mellitus", completed: false },
+      { id: "hypothyroidism", name: "Hypothyroidism", completed: false },
+      { id: "hyperthyroidism", name: "Hyperthyroidism", completed: false },
+      { id: "cushings", name: "Cushing's Syndrome", completed: false },
+      { id: "addisons", name: "Addison's Disease", completed: false },
+      { id: "pcos", name: "Polycystic Ovary Syndrome", completed: false },
+      { id: "osteoporosis", name: "Osteoporosis", completed: false },
+      { id: "acromegaly", name: "Acromegaly", completed: false },
+      { id: "pheochromocytoma", name: "Pheochromocytoma", completed: false },
+      { id: "hyperparathyroidism", name: "Hyperparathyroidism", completed: false },
+    ],
+  },
+  {
+    name: "Nephrology",
+    tasks: [
+      { id: "ckd", name: "Chronic Kidney Disease", completed: false },
+      { id: "nephrotic-syndrome", name: "Nephrotic Syndrome", completed: false },
+      { id: "nephritic-syndrome", name: "Nephritic Syndrome", completed: false },
+      { id: "acute-kidney-injury", name: "Acute Kidney Injury", completed: false },
+      { id: "renal-stones", name: "Renal Stones", completed: false },
+      { id: "glomerulonephritis", name: "Glomerulonephritis", completed: false },
+      { id: "polycystic-kidney-disease", name: "Polycystic Kidney Disease", completed: false },
+      { id: "renal-vascular-disease", name: "Renal Vascular Disease", completed: false },
+      { id: "renal-tubular-acidosis", name: "Renal Tubular Acidosis", completed: false },
+    ],
+  },
+  {
+    name: "Rheumatology",
+    tasks: [
+      { id: "rheumatoid-arthritis", name: "Rheumatoid Arthritis", completed: false },
+      { id: "lupus", name: "Systemic Lupus Erythematosus", completed: false },
+      { id: "gout", name: "Gout", completed: false },
+      { id: "ankylosing-spondylitis", name: "Ankylosing Spondylitis", completed: false },
+      { id: "sjogrens", name: "Sjogren's Syndrome", completed: false },
+      { id: "vasculitis", name: "Vasculitis", completed: false },
+      { id: "scleroderma", name: "Scleroderma", completed: false },
+      { id: "polymyositis", name: "Polymyositis", completed: false },
+      { id: "dermatomyositis", name: "Dermatomyositis", completed: false },
     ],
   },
 ];
@@ -143,8 +198,10 @@ function showLevelUpAnimation() {
 
 // Check for new achievements and display them
 function checkAchievements() {
-  const achievementList = document.getElementById("achievement-list");
-  achievementList.innerHTML = "";
+  const unlockedList = document.getElementById("unlocked-achievements");
+  const lockedList = document.getElementById("locked-achievements");
+  unlockedList.innerHTML = "";
+  lockedList.innerHTML = "";
 
   achievements.forEach((achievement) => {
     let achieved = false;
@@ -183,15 +240,18 @@ function checkAchievements() {
       }
     }
 
+    const li = document.createElement("li");
+    li.innerHTML = `
+      <div>
+        <span>${achievement.icon} ${achievement.name}</span>
+        <p class="achievement-description">${achievement.description}</p>
+      </div>
+    `;
+
     if (achieved) {
-      const li = document.createElement("li");
-      li.innerHTML = `
-        <div>
-          <span>${achievement.icon} ${achievement.name}</span>
-          <p class="achievement-description">${achievement.description}</p>
-        </div>
-      `;
-      achievementList.appendChild(li);
+      unlockedList.appendChild(li);
+    } else {
+      lockedList.appendChild(li);
     }
   });
 }
@@ -205,24 +265,6 @@ function getTotalXPFromCompletedTasks() {
     });
   });
   return total;
-}
-
-// Log task completions and add XP
-function logTask() {
-  const taskInput = document.getElementById("task-input");
-  const questions = parseInt(taskInput.value, 10);
-
-  if (!isNaN(questions) && questions > 0) {
-    const xpGained = questions * 5; // Reduced XP per question to increase challenge
-    xp += xpGained;
-    questionsCompleted += questions; // Increment questions completed
-    updateProgress();
-    checkAchievements();
-    taskInput.value = "";
-    alert(`You gained ${xpGained} XP and completed ${questions} questions!`);
-  } else {
-    alert("Please enter a valid number of questions.");
-  }
 }
 
 // Render the specialties and their tasks
