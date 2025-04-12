@@ -1,4 +1,4 @@
-const API_BASE_URL = "http://localhost:3000"; // Update with your Render URL when deployed
+const API_BASE_URL = ""; // Use relative URLs for GitHub Pages and Render
 
 let currentWorld = null;
 
