@@ -215,3 +215,29 @@ app.get('*', (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
+
+// Package.json scripts
+const packageJson = {
+  "scripts": {
+    "start": "node index.js"
+  }
+};
+
+// Deployment configuration
+const deploymentConfig = {
+  services: [
+    {
+      type: 'web',
+      name: 'healers-odyssey',
+      env: 'node',
+      plan: 'free',
+      buildCommand: 'npm install',
+      startCommand: 'npm start',
+      envVars: [
+        { key: 'PORT', value: '3000' },
+        { key: 'NODE_ENV', value: 'production' },
+        { key: 'MONGO_URI', value: 'mongodb+srv://acezimabdk:Abdo5340@healers.uri1zc0.mongodb.net/?retryWrites=true&w=majority&appName=Healers' },
+      ],
+    },
+  ],
+};
