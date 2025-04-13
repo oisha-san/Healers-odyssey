@@ -337,7 +337,7 @@ window.onload = () => {
 // Authentication functions
 let currentUser = null;
 
-const BASE_URL = 'https://your-render-backend-url.com'; // Replace with your Render backend URL
+const BASE_URL = 'https://healers-odyssey.onrender.com'; // Updated to the actual Render backend URL
 
 // Ensure specialties and achievements are dynamically updated after login
 function updateUIAfterLogin(user) {
