@@ -73,19 +73,13 @@ function attachAchievementIcons(achievements) {
 
 // Fetch progress route
 app.get('/api/progress', async (req, res) => {
-  const { username } = req.query;
-
-  if (!username) {
-    return res.status(400).json({ message: 'Username is required.' });
-  }
-
   try {
-    const progress = await UserProgress.findOne({ username });
+    const progress = await UserProgress.findOne();
     if (!progress) {
-      return res.status(404).json({ message: 'No progress found for this user.' });
+      return res.status(404).json({ message: 'No progress found.' });
     }
 
-    res.status(200).json({ username, progress });
+    res.status(200).json({ progress });
   } catch (err) {
     console.error('Error fetching progress:', err);
     res.status(500).json({ message: 'Internal server error.' });
@@ -94,10 +88,10 @@ app.get('/api/progress', async (req, res) => {
 
 // Save progress route
 app.post('/api/save-progress', async (req, res) => {
-  const { username, progress } = req.body;
+  const { progress } = req.body;
 
-  if (!username || !progress) {
-    return res.status(400).json({ message: 'Username and progress data are required.' });
+  if (!progress) {
+    return res.status(400).json({ message: 'Progress data is required.' });
   }
 
   try {
@@ -111,9 +105,8 @@ app.post('/api/save-progress', async (req, res) => {
     if (progress.hoursStudied >= 1000) achievements.push('Immortal Healer');
 
     const updatedProgress = await UserProgress.findOneAndUpdate(
-      { username },
+      {},
       {
-        $setOnInsert: { username },
         $inc: { xp: xpGained },
         $addToSet: { achievements: { $each: achievements } },
       },
@@ -134,19 +127,18 @@ app.post('/api/save-progress', async (req, res) => {
 
 // Update checklist progress route
 app.post('/api/update-checklist', async (req, res) => {
-  const { username, completedSpecialties, completedDiseases } = req.body;
+  const { completedSpecialties, completedDiseases } = req.body;
 
-  if (!username || (!completedSpecialties && !completedDiseases)) {
-    return res.status(400).json({ message: 'Username and completed items are required.' });
+  if (!completedSpecialties && !completedDiseases) {
+    return res.status(400).json({ message: 'Completed items are required.' });
   }
 
   try {
     const xpGained = (completedSpecialties?.length || 0) * 20 + (completedDiseases?.length || 0) * 15;
 
     const updatedProgress = await UserProgress.findOneAndUpdate(
-      { username },
+      {},
       {
-        $setOnInsert: { username },
         $inc: { xp: xpGained },
         $addToSet: {
           completedSpecialties: { $each: completedSpecialties || [] },
@@ -170,19 +162,18 @@ app.post('/api/update-checklist', async (req, res) => {
 
 // Add completed questions route
 app.post('/api/add-questions', async (req, res) => {
-  const { username, completedQuestions } = req.body;
+  const { completedQuestions } = req.body;
 
-  if (!username || !completedQuestions || !Array.isArray(completedQuestions)) {
-    return res.status(400).json({ message: 'Username and a list of completed questions are required.' });
+  if (!completedQuestions || !Array.isArray(completedQuestions)) {
+    return res.status(400).json({ message: 'A list of completed questions is required.' });
   }
 
   try {
     const cpGained = completedQuestions.length * 5;
 
     const updatedProgress = await UserProgress.findOneAndUpdate(
-      { username },
+      {},
       {
-        $setOnInsert: { username },
         $inc: { cp: cpGained },
         $addToSet: { completedQuestions: { $each: completedQuestions } },
       },
