@@ -3,6 +3,8 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
+import session from 'express-session';
+import MongoStore from 'connect-mongo';
 
 // Fix for __dirname in ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -14,10 +16,23 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // MongoDB connection
-const mongoURI = 'mongodb+srv://acezimabdk:Abdo5340@healers.uri1zc0.mongodb.net/?retryWrites=true&w=majority&appName=Healers';
+const mongoURI = process.env.MONGO_URI; // Use environment variable for MongoDB URI
 mongoose.connect(mongoURI)
   .then(() => console.log('Connected to MongoDB'))
   .catch((err) => console.error('Error connecting to MongoDB:', err));
+
+// Configure session middleware
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || 'your-secret-key', // Use environment variable for session secret
+    resave: false,
+    saveUninitialized: true,
+    store: MongoStore.create({
+      mongoUrl: mongoURI, // Use the same MongoDB URI for session store
+    }),
+    cookie: { maxAge: 1000 * 60 * 60 * 24 * 7 }, // 1 week
+  })
+);
 
 // Define UserProgress schema and model
 const userProgressSchema = new mongoose.Schema({
@@ -189,6 +204,19 @@ app.post('/api/add-questions', async (req, res) => {
     console.error('Error adding questions:', err);
     res.status(500).json({ message: 'Internal server error.' });
   }
+});
+
+// Example route to save progress in session
+app.post('/save-progress', (req, res) => {
+  const { progress } = req.body;
+  req.session.progress = progress; // Save progress in session
+  res.send({ message: 'Progress saved successfully' });
+});
+
+// Example route to retrieve progress from session
+app.get('/get-progress', (req, res) => {
+  const progress = req.session.progress || {};
+  res.send({ progress });
 });
 
 // Basic route
