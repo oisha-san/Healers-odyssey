@@ -21,7 +21,6 @@ mongoose.connect(mongoURI)
 
 // Define UserProgress schema and model
 const userProgressSchema = new mongoose.Schema({
-  username: { type: String, required: true, unique: true },
   xp: { type: Number, default: 0 },
   cp: { type: Number, default: 0 },
   achievements: { type: Array, default: [] },
