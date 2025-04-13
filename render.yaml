@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: healers-odyssey
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: PORT
+        value: 3000
+      - key: NODE_ENV
+        value: production
+      - key: MONGO_URI
+        value: <your-mongodb-uri>

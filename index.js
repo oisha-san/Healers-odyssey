@@ -1,10 +1,8 @@
 import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import bodyParser from 'body-parser';
-import cors from 'cors';
-import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+import mongoose from 'mongoose';
 
 // Fix for __dirname in ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -15,68 +13,81 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Middleware
-app.use(cors());
-app.use(bodyParser.json());
-app.use(express.static(path.join(__dirname, 'public')));
-
 // MongoDB connection
-const mongoURI = process.env.MONGO_URI;
-mongoose.connect(mongoURI)
+const mongoURI = 'mongodb+srv://acezimabdk:Abdo5340@healers.uri1zc0.mongodb.net/?retryWrites=true&w=majority&appName=Healers';
+mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('Connected to MongoDB'))
   .catch((err) => console.error('Error connecting to MongoDB:', err));
 
-// User schema and model
-const userSchema = new mongoose.Schema({
+// Define UserProgress schema and model
+const userProgressSchema = new mongoose.Schema({
   username: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
   xp: { type: Number, default: 0 },
-  level: { type: Number, default: 1 },
-  questionsCompleted: { type: Number, default: 0 },
+  cp: { type: Number, default: 0 },
+  achievements: { type: Array, default: [] },
+  completedSpecialties: { type: Array, default: [] },
+  completedDiseases: { type: Array, default: [] },
+  completedQuestions: { type: Array, default: [] },
 });
+const UserProgress = mongoose.model('UserProgress', userProgressSchema);
 
-const User = mongoose.model('User', userSchema);
+// Middleware
+app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.json()); // Middleware to parse JSON request bodies
 
-// Sign-up route
-app.post('/api/signup', async (req, res) => {
-  const { username, password } = req.body;
+// Predefined checklist for specialties and diseases
+const checklist = {
+  specialties: ['Cardiology', 'Neurology', 'Pediatrics', 'Dermatology', 'Oncology'],
+  diseases: ['Diabetes', 'Hypertension', 'Asthma', 'Cancer', 'Arthritis'],
+};
 
-  if (!username || !password) {
-    return res.status(400).json({ message: 'Username and password are required.' });
+// Achievement icons mapping (using emojis)
+const achievementIcons = {
+  'Novice Healer': '🩺',
+  'Skilled Medic': '💉',
+  'Master Physician': '🏥',
+  'Legendary Healer': '🌟',
+  'Ultimate Healer': '🔥',
+  'Immortal Healer': '👑',
+  'Specialist Master': '🎓',
+  'Disease Expert': '🔬',
+  'Specialty Explorer': '🧭',
+  'Disease Investigator': '🕵️‍♂️',
+  'Medical Genius': '🧠',
+  'Specialty Conqueror': '🏆',
+  'Disease Conqueror': '🥇',
+  'Question Explorer': '📖',
+  'Question Master': '📚',
+  'Question Legend': '📝',
+  'Question Conqueror': '🏅',
+  'Question Immortal': '🌌',
+};
+
+// Helper function to attach icons to achievements
+function attachAchievementIcons(achievements) {
+  return achievements.map((achievement) => ({
+    name: achievement,
+    icon: achievementIcons[achievement] || '❓', // Default emoji if not found
+  }));
+}
+
+// Fetch progress route
+app.get('/api/progress', async (req, res) => {
+  const { username } = req.query;
+
+  if (!username) {
+    return res.status(400).json({ message: 'Username is required.' });
   }
 
   try {
-    const existingUser = await User.findOne({ username });
-    if (existingUser) {
-      return res.status(400).json({ message: 'Username already exists.' });
+    const progress = await UserProgress.findOne({ username });
+    if (!progress) {
+      return res.status(404).json({ message: 'No progress found for this user.' });
     }
 
-    const newUser = new User({ username, password });
-    await newUser.save();
-    res.status(201).json({ message: 'User registered successfully.' });
+    res.status(200).json({ username, progress });
   } catch (err) {
-    console.error('Error during sign-up:', err);
-    res.status(500).json({ message: 'Internal server error.' });
-  }
-});
-
-// Login route
-app.post('/api/login', async (req, res) => {
-  const { username, password } = req.body;
-
-  if (!username || !password) {
-    return res.status(400).json({ message: 'Username and password are required.' });
-  }
-
-  try {
-    const user = await User.findOne({ username });
-    if (!user || user.password !== password) {
-      return res.status(401).json({ message: 'Invalid username or password.' });
-    }
-
-    res.status(200).json({ message: 'Login successful.', user });
-  } catch (err) {
-    console.error('Error during login:', err);
+    console.error('Error fetching progress:', err);
     res.status(500).json({ message: 'Internal server error.' });
   }
 });
@@ -90,37 +101,109 @@ app.post('/api/save-progress', async (req, res) => {
   }
 
   try {
-    const user = await User.findOneAndUpdate({ username }, progress, { new: true });
-    if (!user) {
-      return res.status(404).json({ message: 'User not found.' });
-    }
+    const xpGained = progress.hoursStudied * 10; // Example: 10 XP per hour studied
+    const achievements = [];
+    if (progress.hoursStudied >= 10) achievements.push('Novice Healer');
+    if (progress.hoursStudied >= 50) achievements.push('Skilled Medic');
+    if (progress.hoursStudied >= 100) achievements.push('Master Physician');
+    if (progress.hoursStudied >= 200) achievements.push('Legendary Healer');
+    if (progress.hoursStudied >= 500) achievements.push('Ultimate Healer');
+    if (progress.hoursStudied >= 1000) achievements.push('Immortal Healer');
 
-    res.status(200).json({ message: 'Progress saved successfully.', user });
+    const updatedProgress = await UserProgress.findOneAndUpdate(
+      { username },
+      {
+        $setOnInsert: { username },
+        $inc: { xp: xpGained },
+        $addToSet: { achievements: { $each: achievements } },
+      },
+      { new: true, upsert: true }
+    );
+
+    updatedProgress.achievements = attachAchievementIcons(updatedProgress.achievements);
+
+    res.status(200).json({
+      message: 'Progress saved successfully.',
+      progress: updatedProgress,
+    });
   } catch (err) {
     console.error('Error saving progress:', err);
     res.status(500).json({ message: 'Internal server error.' });
   }
 });
 
-// Endpoint to fetch user progress
-app.get('/api/user-progress', async (req, res) => {
-  const { username } = req.query;
+// Update checklist progress route
+app.post('/api/update-checklist', async (req, res) => {
+  const { username, completedSpecialties, completedDiseases } = req.body;
 
-  if (!username) {
-    return res.status(400).json({ message: 'Username is required.' });
+  if (!username || (!completedSpecialties && !completedDiseases)) {
+    return res.status(400).json({ message: 'Username and completed items are required.' });
   }
 
   try {
-    const user = await User.findOne({ username });
-    if (!user) {
-      return res.status(404).json({ message: 'User not found.' });
-    }
+    const xpGained = (completedSpecialties?.length || 0) * 20 + (completedDiseases?.length || 0) * 15;
 
-    res.status(200).json({ user });
+    const updatedProgress = await UserProgress.findOneAndUpdate(
+      { username },
+      {
+        $setOnInsert: { username },
+        $inc: { xp: xpGained },
+        $addToSet: {
+          completedSpecialties: { $each: completedSpecialties || [] },
+          completedDiseases: { $each: completedDiseases || [] },
+        },
+      },
+      { new: true, upsert: true }
+    );
+
+    updatedProgress.achievements = attachAchievementIcons(updatedProgress.achievements);
+
+    res.status(200).json({
+      message: 'Checklist updated successfully.',
+      progress: updatedProgress,
+    });
   } catch (err) {
-    console.error('Error fetching user progress:', err);
+    console.error('Error updating checklist:', err);
     res.status(500).json({ message: 'Internal server error.' });
   }
+});
+
+// Add completed questions route
+app.post('/api/add-questions', async (req, res) => {
+  const { username, completedQuestions } = req.body;
+
+  if (!username || !completedQuestions || !Array.isArray(completedQuestions)) {
+    return res.status(400).json({ message: 'Username and a list of completed questions are required.' });
+  }
+
+  try {
+    const cpGained = completedQuestions.length * 5;
+
+    const updatedProgress = await UserProgress.findOneAndUpdate(
+      { username },
+      {
+        $setOnInsert: { username },
+        $inc: { cp: cpGained },
+        $addToSet: { completedQuestions: { $each: completedQuestions } },
+      },
+      { new: true, upsert: true }
+    );
+
+    updatedProgress.achievements = attachAchievementIcons(updatedProgress.achievements);
+
+    res.status(200).json({
+      message: 'Questions added successfully.',
+      progress: updatedProgress,
+    });
+  } catch (err) {
+    console.error('Error adding questions:', err);
+    res.status(500).json({ message: 'Internal server error.' });
+  }
+});
+
+// Basic route
+app.get('/', (req, res) => {
+  res.send('Welcome to the RPG-themed site!');
 });
 
 // Serve frontend
