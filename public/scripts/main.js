@@ -337,6 +337,8 @@ window.onload = () => {
 // Authentication functions
 let currentUser = null;
 
+const BASE_URL = 'https://your-render-backend-url.com'; // Replace with your Render backend URL
+
 // Ensure specialties and achievements are dynamically updated after login
 function updateUIAfterLogin(user) {
   document.getElementById('auth-section').style.display = 'none';
@@ -357,7 +359,7 @@ async function signUp() {
   console.log('Sign-Up Request:', { username, password });
 
   try {
-    const response = await fetch('/api/signup', {
+    const response = await fetch(`${BASE_URL}/api/signup`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, password }),
@@ -383,7 +385,7 @@ async function logIn() {
   console.log('Login Request:', { username, password });
 
   try {
-    const response = await fetch('/api/login', {
+    const response = await fetch(`${BASE_URL}/api/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, password }),
@@ -424,7 +426,7 @@ async function saveUserProgress() {
     currentUser.questionsCompleted = questionsCompleted;
 
     try {
-      await fetch('/api/save-progress', { // Use a dedicated endpoint
+      await fetch(`${BASE_URL}/api/save-progress`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username: currentUser.username, progress: currentUser }),

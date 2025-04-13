@@ -1,5 +1,7 @@
 import { achievements, xp, questionsCompleted, specialties, getTotalXPFromCompletedTasks } from './main.js';
 
+const BASE_URL = 'https://your-render-backend-url.com'; // Replace with your Render backend URL
+
 // Add debugging logs to verify achievements rendering
 function renderAchievements() {
   console.log('Rendering achievements with current progress:', { xp, questionsCompleted, specialties });
@@ -58,7 +60,7 @@ async function fetchUserProgress() {
       return;
     }
 
-    const response = await fetch(`/api/user-progress?username=${username}`);
+    const response = await fetch(`${BASE_URL}/api/user-progress?username=${username}`);
 
     if (response.ok) {
       const data = await response.json();
