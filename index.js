@@ -49,6 +49,15 @@ db.remove({}, { multi: true }, (err) => {
   }
 });
 
+// Clean up unnecessary entries during database initialization
+db.remove({ users: {} }, { multi: true }, (err) => {
+  if (err) {
+    console.error('Error cleaning up database:', err);
+  } else {
+    console.log('Unnecessary entries removed from database.');
+  }
+});
+
 // Reinitialize database if corrupt
 db.loadDatabase((err) => {
   if (err) {

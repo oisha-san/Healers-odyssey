@@ -1,2 +1,4 @@
-{"username":"testuser","password":"testpass","xp":0,"level":1,"questionsCompleted":0,"_id":"EBaVpTeAAzzev5sN"}
-{"users":{},"_id":"tNDhbYYYHFEarHng"}
+{"username":"testuser2","password":"testpass2","xp":600,"level":4,"questionsCompleted":100,"_id":"QftWZHWtmpbiNyRl"}
+{"username":"frontendTest","password":"testpass","xp":100,"level":2,"questionsCompleted":20,"_id":"a5JX6VtIiOmpW6FU"}
+{"username":"testuser3","password":"testpass3","xp":300,"level":3,"questionsCompleted":50,"_id":"cHiLIJgUP1HGcqAd"}
+{"users":{},"_id":"sBaIgUoewryiG2FQ"}

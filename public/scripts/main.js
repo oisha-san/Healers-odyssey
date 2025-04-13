@@ -395,6 +395,7 @@ async function logIn() {
 
     if (response.ok) {
       currentUser = data.user;
+      localStorage.setItem('username', username); // Store username in localStorage
       loadUserProgress();
       updateUIAfterLogin(currentUser);
     }
